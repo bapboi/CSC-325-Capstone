@@ -1,0 +1,16 @@
+target/
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+*serviceAccount*.json
+firebase-key.json
+
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+Thumbs.db
