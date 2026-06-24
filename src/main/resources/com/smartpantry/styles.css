@@ -1,0 +1,9 @@
+.app-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.hint {
+    -fx-text-fill: #757575;
+    -fx-font-style: italic;
+}
