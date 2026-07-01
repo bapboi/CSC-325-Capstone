@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.smartpantry.controllers.AddIngredientController"
+            stylesheets="@styles.css"
+            prefWidth="420" prefHeight="760">
+    <top>
+        <VBox styleClass="header" spacing="6">
+            <Label text="Add Ingredient" styleClass="header-title"/>
+            <Label text="Take or upload a photo" styleClass="header-subtitle"/>
+        </VBox>
+    </top>
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="content-scroll">
+            <VBox styleClass="content-area" spacing="20">
+                <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label fx:id="statusLabel" text="" wrapText="true"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="connectButton" text="Connect Firebase" onAction="#onConnectFirebase" styleClass="link-button"/>
+                </HBox>
+
+                <VBox styleClass="photo-drop-zone" alignment="CENTER" spacing="10"
+                      prefHeight="240" onMouseClicked="#onChoosePhoto">
+                    <StackPane>
+                        <Circle radius="32" styleClass="photo-icon-circle"/>
+                        <Label text="&#128247;" style="-fx-font-size: 26px;"/>
+                    </StackPane>
+                    <Label fx:id="photoStatusTitle" text="Take Photo" styleClass="photo-title"/>
+                    <Label fx:id="photoStatusSubtitle" text="Tap to open camera" styleClass="photo-subtitle"/>
+                </VBox>
+
+                <HBox alignment="CENTER" spacing="10">
+                    <Separator HBox.hgrow="ALWAYS"/>
+                    <Label text="or" styleClass="divider-text"/>
+                    <Separator HBox.hgrow="ALWAYS"/>
+                </HBox>
+
+                <Button text="Upload from Library" onAction="#onChoosePhoto"
+                        styleClass="upload-button" maxWidth="Infinity"/>
+
+                <VBox spacing="10">
+                    <Label text="Ingredient name" styleClass="field-label"/>
+                    <TextField fx:id="nameField" promptText="e.g. Bananas"/>
+
+                    <HBox spacing="10">
+                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                            <Label text="Quantity" styleClass="field-label"/>
+                            <TextField fx:id="quantityField" promptText="1"/>
+                        </VBox>
+                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                            <Label text="Unit" styleClass="field-label"/>
+                            <TextField fx:id="unitField" promptText="pieces"/>
+                        </VBox>
+                    </HBox>
+
+                    <Label text="Category" styleClass="field-label"/>
+                    <TextField fx:id="categoryField" promptText="e.g. Fruit"/>
+                </VBox>
+
+                <Button text="Add to Pantry" onAction="#onSave"
+                        styleClass="save-button" maxWidth="Infinity"/>
+
+                <VBox spacing="10">
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="Current Pantry Items" styleClass="tips-header"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button text="Refresh" onAction="#onRefreshPantry" styleClass="link-button"/>
+                    </HBox>
+                    <ListView fx:id="pantryListView" prefHeight="160"/>
+                </VBox>
+
+                <VBox styleClass="tips-card" spacing="10">
+                    <Label text="Tips for best results" styleClass="tips-header"/>
+                    <VBox spacing="6">
+                        <HBox spacing="8">
+                            <Label text="&#8226;" styleClass="tip-bullet"/>
+                            <Label text="Ensure ingredients are clearly visible" styleClass="tip-text"/>
+                        </HBox>
+                        <HBox spacing="8">
+                            <Label text="&#8226;" styleClass="tip-bullet"/>
+                            <Label text="Use good lighting" styleClass="tip-text"/>
+                        </HBox>
+                        <HBox spacing="8">
+                            <Label text="&#8226;" styleClass="tip-bullet"/>
+                            <Label text="One ingredient per photo" styleClass="tip-text"/>
+                        </HBox>
+                    </VBox>
+                </VBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+    <bottom>
+        <HBox styleClass="nav-bar" alignment="CENTER" spacing="30">
+            <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+            <Label text="Pantry" styleClass="nav-item"/>
+            <Label text="Recipes" styleClass="nav-item" onMouseClicked="#onOpenRecipes" style="-fx-cursor: hand;"/>
+            <StackPane>
+                <Circle radius="22" styleClass="nav-add-circle"/>
+                <Label text="+" styleClass="nav-add-plus"/>
+            </StackPane>
+            <Label text="Shopping" styleClass="nav-item"/>
+            <Label text="Profile" styleClass="nav-item"/>
+        </HBox>
+    </bottom>
+</BorderPane>
