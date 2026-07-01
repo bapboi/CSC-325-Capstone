@@ -1,0 +1,111 @@
+.header {
+  -fx-background-color: #4d7c5f;
+  -fx-padding: 24 20 20 20;
+}
+.header-title {
+  -fx-font-size: 26px;
+  -fx-font-weight: bold;
+  -fx-text-fill: white;
+}
+.header-subtitle {
+  -fx-font-size: 14px;
+  -fx-font-style: italic;
+  -fx-text-fill: #d7e4da;
+}
+
+.content-scroll {
+  -fx-background-color: #f7f7f2;
+}
+.content-area {
+  -fx-background-color: #f7f7f2;
+}
+
+.photo-drop-zone {
+  -fx-background-color: white;
+  -fx-border-color: #b9c4bb;
+  -fx-border-width: 2;
+  -fx-border-style: segments(6, 4);
+  -fx-border-radius: 12;
+  -fx-background-radius: 12;
+  -fx-cursor: hand;
+}
+.photo-icon-circle {
+  -fx-fill: #dde9e0;
+}
+.photo-title {
+  -fx-font-size: 16px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #2e5339;
+}
+.photo-subtitle {
+  -fx-font-size: 13px;
+  -fx-text-fill: #8a8f8a;
+}
+
+.divider-text {
+  -fx-text-fill: #9aa09a;
+  -fx-font-size: 12px;
+}
+
+.upload-button,
+.save-button {
+  -fx-background-color: #3f6b4f;
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+  -fx-font-size: 14px;
+  -fx-background-radius: 10;
+  -fx-padding: 12 0 12 0;
+}
+.upload-button:hover,
+.save-button:hover {
+  -fx-background-color: #355c43;
+}
+
+.field-label {
+  -fx-font-size: 12px;
+  -fx-text-fill: #5b5f5b;
+}
+
+.tips-card {
+  -fx-background-color: white;
+  -fx-background-radius: 12;
+  -fx-border-color: #e3e3dd;
+  -fx-border-radius: 12;
+  -fx-padding: 16;
+}
+.tips-header {
+  -fx-font-weight: bold;
+  -fx-font-size: 14px;
+}
+.tip-bullet {
+  -fx-text-fill: #3f6b4f;
+}
+.tip-text {
+  -fx-text-fill: #5b5f5b;
+}
+
+.link-button {
+  -fx-background-color: transparent;
+  -fx-text-fill: #3f6b4f;
+  -fx-font-size: 11px;
+  -fx-underline: true;
+  -fx-cursor: hand;
+}
+
+.nav-bar {
+  -fx-background-color: white;
+  -fx-border-color: #e3e3dd transparent transparent transparent;
+  -fx-border-width: 1 0 0 0;
+}
+.nav-item {
+  -fx-text-fill: #8a8f8a;
+  -fx-font-size: 12px;
+}
+.nav-add-circle {
+  -fx-fill: #3f6b4f;
+}
+.nav-add-plus {
+  -fx-text-fill: white;
+  -fx-font-size: 18px;
+  -fx-font-weight: bold;
+}
