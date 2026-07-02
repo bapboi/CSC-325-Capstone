@@ -7,10 +7,8 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-/**
- * Centralises all scene transitions. Every controller calls Nav.go(...) instead
- * of copying FXMLLoader boilerplate.
- */
+//wip navbar (currently all inlined)
+
 public class Nav {
 
   public enum Screen {
