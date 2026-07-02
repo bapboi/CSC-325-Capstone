@@ -37,7 +37,6 @@ public class RecipeSuggestionController {
   private final FirebaseService firebaseService = FirebaseService.getInstance();
   private final GeminiRecipeService geminiService = new GeminiRecipeService();
 
-  // Held so the "add missing to shopping list" button can use it
   private List<String> lastMissingIngredients = List.of();
 
   @FXML
@@ -81,8 +80,6 @@ public class RecipeSuggestionController {
         resultLink.setVisible(true);
       }
 
-      // Ask Gemini what ingredients the recipe needs that aren't already in the
-      // pantry
       if (result.description() != null && !result.description().isBlank()) {
         fetchMissingIngredients(result.description());
       }
@@ -101,10 +98,6 @@ public class RecipeSuggestionController {
     new Thread(task, "gemini-recipe-search").start();
   }
 
-  /**
-   * Asks Gemini which ingredients from the suggested recipe are NOT already in
-   * the pantry.
-   */
   private void fetchMissingIngredients(String recipeDescription) {
     Task<List<String>> task = new Task<>() {
       @Override
@@ -122,7 +115,7 @@ public class RecipeSuggestionController {
       }
     });
     task.setOnFailed(e -> {
-      /* non-critical — don't surface this to the user */ });
+    });
     new Thread(task, "gemini-missing-ingredients").start();
   }
 
@@ -160,7 +153,7 @@ public class RecipeSuggestionController {
     }
   }
 
-  // ── Nav ──────────────────────────────────────────────────────────────────
+  // inline nav
   @FXML
   private void onNavPantry() {
     nav(Nav.Screen.PANTRY);
