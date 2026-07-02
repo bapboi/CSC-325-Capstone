@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
@@ -36,7 +37,7 @@
                 </HBox>
 
                 <VBox styleClass="photo-drop-zone" alignment="CENTER" spacing="10"
-                      prefHeight="240" onMouseClicked="#onChoosePhoto">
+                      prefHeight="180" onMouseClicked="#onChoosePhoto">
                     <StackPane>
                         <Circle radius="32" styleClass="photo-icon-circle"/>
                         <Label text="&#128247;" style="-fx-font-size: 26px;"/>
@@ -54,16 +55,16 @@
                 <Button text="Upload from Library" onAction="#onChoosePhoto"
                         styleClass="upload-button" maxWidth="Infinity"/>
 
-                <VBox spacing="10">
+                <VBox spacing="8">
                     <Label text="Ingredient name" styleClass="field-label"/>
                     <TextField fx:id="nameField" promptText="e.g. Bananas"/>
 
                     <HBox spacing="10">
-                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <VBox spacing="4" HBox.hgrow="ALWAYS">
                             <Label text="Quantity" styleClass="field-label"/>
                             <TextField fx:id="quantityField" promptText="1"/>
                         </VBox>
-                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <VBox spacing="4" HBox.hgrow="ALWAYS">
                             <Label text="Unit" styleClass="field-label"/>
                             <TextField fx:id="unitField" promptText="pieces"/>
                         </VBox>
@@ -71,51 +72,36 @@
 
                     <Label text="Category" styleClass="field-label"/>
                     <TextField fx:id="categoryField" promptText="e.g. Fruit"/>
+
+                    <Label text="Expiration Date" styleClass="field-label"/>
+                    <DatePicker fx:id="expirationDatePicker" maxWidth="Infinity"/>
                 </VBox>
 
                 <Button text="Add to Pantry" onAction="#onSave"
                         styleClass="save-button" maxWidth="Infinity"/>
 
-                <VBox spacing="10">
+                <VBox spacing="8">
                     <HBox alignment="CENTER_LEFT" spacing="10">
-                        <Label text="Current Pantry Items" styleClass="tips-header"/>
+                        <Label text="Your Pantry" styleClass="tips-header"/>
                         <Region HBox.hgrow="ALWAYS"/>
                         <Button text="Refresh" onAction="#onRefreshPantry" styleClass="link-button"/>
                     </HBox>
-                    <ListView fx:id="pantryListView" prefHeight="160"/>
-                </VBox>
-
-                <VBox styleClass="tips-card" spacing="10">
-                    <Label text="Tips for best results" styleClass="tips-header"/>
-                    <VBox spacing="6">
-                        <HBox spacing="8">
-                            <Label text="&#8226;" styleClass="tip-bullet"/>
-                            <Label text="Ensure ingredients are clearly visible" styleClass="tip-text"/>
-                        </HBox>
-                        <HBox spacing="8">
-                            <Label text="&#8226;" styleClass="tip-bullet"/>
-                            <Label text="Use good lighting" styleClass="tip-text"/>
-                        </HBox>
-                        <HBox spacing="8">
-                            <Label text="&#8226;" styleClass="tip-bullet"/>
-                            <Label text="One ingredient per photo" styleClass="tip-text"/>
-                        </HBox>
-                    </VBox>
+                    <ListView fx:id="pantryListView" prefHeight="140"/>
                 </VBox>
             </VBox>
         </ScrollPane>
     </center>
     <bottom>
-        <HBox styleClass="nav-bar" alignment="CENTER" spacing="30">
+        <HBox xmlns="http://javafx.com/javafx/21" styleClass="nav-bar" alignment="CENTER" spacing="30">
             <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
-            <Label text="Pantry" styleClass="nav-item"/>
-            <Label text="Recipes" styleClass="nav-item" onMouseClicked="#onOpenRecipes" style="-fx-cursor: hand;"/>
-            <StackPane>
+            <Label text="Pantry"   styleClass="nav-item" onMouseClicked="#onNavPantry"   style="-fx-cursor:hand;"/>
+            <Label text="Recipes"  styleClass="nav-item" onMouseClicked="#onNavRecipes"  style="-fx-cursor:hand;"/>
+            <StackPane onMouseClicked="#onNavAdd" style="-fx-cursor:hand;">
                 <Circle radius="22" styleClass="nav-add-circle"/>
                 <Label text="+" styleClass="nav-add-plus"/>
             </StackPane>
-            <Label text="Shopping" styleClass="nav-item"/>
-            <Label text="Profile" styleClass="nav-item"/>
+            <Label text="Shopping" styleClass="nav-item" onMouseClicked="#onNavShopping" style="-fx-cursor:hand;"/>
+            <Label text="Profile"  styleClass="nav-item" onMouseClicked="#onNavProfile"  style="-fx-cursor:hand;"/>
         </HBox>
     </bottom>
 </BorderPane>
