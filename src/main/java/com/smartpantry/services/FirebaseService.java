@@ -97,9 +97,7 @@ public class FirebaseService {
     }
   }
 
-  // ── Pantry ────────────────────────────────────────────────────────────────
-
-  /** Returns only the calling user's pantry items. */
+  /** returns only the calling user's pantry items */
   public List<Ingredient> getAllIngredients() throws ExecutionException, InterruptedException {
     String uid = Session.getInstance().getUid();
     ApiFuture<QuerySnapshot> future = uid != null
@@ -124,8 +122,6 @@ public class FirebaseService {
   public void deleteIngredient(String id) throws ExecutionException, InterruptedException {
     db.collection(PANTRY_COLLECTION).document(id).delete().get();
   }
-
-  // ── Shopping List ─────────────────────────────────────────────────────────
 
   public List<ShoppingItem> getShoppingList() throws ExecutionException, InterruptedException {
     String uid = Session.getInstance().getUid();
