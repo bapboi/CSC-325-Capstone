@@ -40,7 +40,32 @@ public class PantryDashboardController {
     userLabel.setText("Pantry — " + Session.getInstance().getEmail());
     pantryListView.setItems(items);
     pantryListView.setCellFactory(lv -> new IngredientCell());
-    onRefresh();
+
+    if (firebaseService.isConnected()) {
+      onRefresh();
+    } else {
+      // checks if firebase is live
+      setStatus("Connecting...", true);
+      Thread waitThread = new Thread(() -> {
+        for (int i = 0; i < 20; i++) {
+          try {
+            Thread.sleep(200);
+          } catch (InterruptedException ignored) {
+          }
+          if (firebaseService.isConnected())
+            break;
+        }
+        Platform.runLater(() -> {
+          if (firebaseService.isConnected()) {
+            onRefresh();
+          } else {
+            setStatus("Not connected — open Add screen to connect Firebase", false);
+          }
+        });
+      }, "pantry-wait-firebase");
+      waitThread.setDaemon(true);
+      waitThread.start();
+    }
   }
 
   @FXML
@@ -111,7 +136,6 @@ public class PantryDashboardController {
     });
   }
 
-  // ── Custom cell ───────────────────────────────────────────────────────────
   private static class IngredientCell extends ListCell<Ingredient> {
     private final Label nameLabel = new Label();
     private final Label detailLabel = new Label();

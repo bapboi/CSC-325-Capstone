@@ -123,10 +123,7 @@ public class AddIngredientController {
         ingredient.getName(), ingredient.getQuantity(), ingredient.getUnit(), category);
   }
 
-  /**
-   * Shared handler for both "Take Photo" and "Upload from Library" - both just
-   * open a file picker for now.
-   */
+  // wip
   @FXML
   private void onChoosePhoto() {
     FileChooser chooser = new FileChooser();
