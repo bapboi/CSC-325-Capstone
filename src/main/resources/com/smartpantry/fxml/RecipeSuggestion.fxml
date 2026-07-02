@@ -5,25 +5,46 @@
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
 
-<VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.smartpantry.controllers.RecipeSuggestionController"
-      spacing="14"
-      prefWidth="420" prefHeight="760">
-    <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
-    </padding>
-
-    <Button text="Back to Pantry" onAction="#onBackToPantry"/>
-
-    <Label text="Find a Recipe" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
-    <Label text="Searches the web for a recipe using what's currently in your pantry." wrapText="true"/>
-
-    <Button fx:id="findButton" text="Find a Recipe" onAction="#onFindRecipe"/>
-    <ProgressIndicator fx:id="progressIndicator" maxWidth="30" maxHeight="30"/>
-
-    <Label fx:id="statusLabel" text="" wrapText="true"/>
-    <Label fx:id="resultLabel" text="" wrapText="true"/>
-    <Hyperlink fx:id="resultLink" text="" onAction="#onOpenLink"/>
-</VBox>
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.smartpantry.controllers.RecipeSuggestionController"
+            stylesheets="@styles.css"
+            prefWidth="420" prefHeight="760">
+    <top>
+        <VBox styleClass="header" spacing="4">
+            <Label text="Recipe Suggestions" styleClass="header-title"/>
+            <Label text="Searches the web based on your pantry" styleClass="header-subtitle"/>
+        </VBox>
+    </top>
+    <center>
+        <VBox spacing="14">
+            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+            <Button fx:id="findButton" text="Find a Recipe" onAction="#onFindRecipe"
+                    styleClass="save-button" maxWidth="Infinity"/>
+            <ProgressIndicator fx:id="progressIndicator" maxWidth="30" maxHeight="30"/>
+            <Label fx:id="statusLabel" text="" wrapText="true"/>
+            <Label fx:id="resultLabel" text="" wrapText="true"/>
+            <Hyperlink fx:id="resultLink" text="" onAction="#onOpenLink" wrapText="true"/>
+            <Button fx:id="addMissingButton" text="" onAction="#onAddMissingToShoppingList"
+                    styleClass="upload-button" maxWidth="Infinity"/>
+        </VBox>
+    </center>
+    <bottom>
+        <HBox xmlns="http://javafx.com/javafx/21" styleClass="nav-bar" alignment="CENTER" spacing="30">
+            <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+            <Label text="Pantry"   styleClass="nav-item" onMouseClicked="#onNavPantry"   style="-fx-cursor:hand;"/>
+            <Label text="Recipes"  styleClass="nav-item" onMouseClicked="#onNavRecipes"  style="-fx-cursor:hand;"/>
+            <StackPane onMouseClicked="#onNavAdd" style="-fx-cursor:hand;">
+                <Circle radius="22" styleClass="nav-add-circle"/>
+                <Label text="+" styleClass="nav-add-plus"/>
+            </StackPane>
+            <Label text="Shopping" styleClass="nav-item" onMouseClicked="#onNavShopping" style="-fx-cursor:hand;"/>
+            <Label text="Profile"  styleClass="nav-item" onMouseClicked="#onNavProfile"  style="-fx-cursor:hand;"/>
+        </HBox>
+    </bottom>
+</BorderPane>
