@@ -9,5 +9,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="javafx-sdk-26.0" level="project" />
+    <orderEntry type="library" exported="" name="CSC-325-Capstone" level="project" />
+    <orderEntry type="library" exported="" name="lib" level="project" />
   </component>
 </module>

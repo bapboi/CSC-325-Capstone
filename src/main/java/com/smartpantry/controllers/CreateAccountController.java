@@ -7,7 +7,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
-public class LoginController {
+public class CreateAccountController {
+
+    @FXML
+    private TextField nameField;
 
     @FXML
     private TextField emailField;
@@ -19,22 +22,23 @@ public class LoginController {
     private Label statusLabel;
 
     @FXML
-    private void handleLogin(ActionEvent event) {
+    private void handleCreateAccount(ActionEvent event) {
+        String name = nameField.getText().trim();
         String email = emailField.getText().trim();
         String password = passwordField.getText().trim();
 
-        if (email.isEmpty() || password.isEmpty()) {
-            statusLabel.setText("Enter an email and password to continue.");
+        if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
+            statusLabel.setText("Complete all fields before creating an account.");
             return;
         }
 
-        // Temporary login until Firebase authentication is connected.
+        // Temporary account creation until Firebase authentication is connected.
         AppData.currentUserEmail = email;
         Navigation.goTo(event, "Pantry.fxml");
     }
 
     @FXML
-    private void handleCreateAccount(ActionEvent event) {
-        Navigation.goTo(event, "CreateAccount.fxml");
+    private void handleBackToLogin(ActionEvent event) {
+        Navigation.goTo(event, "Login.fxml");
     }
 }

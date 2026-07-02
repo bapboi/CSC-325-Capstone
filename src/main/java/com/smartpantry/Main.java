@@ -16,6 +16,7 @@ public class Main extends Application {
         Scene scene = new Scene(loader.load(), 400, 700);
         stage.setTitle("SmartPantry");
         stage.setScene(scene);
+        stage.setResizable(false);
         stage.show();
     }
 

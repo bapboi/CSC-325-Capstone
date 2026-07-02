@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="12" prefWidth="400" prefHeight="700"
+      style="-fx-background-color: #f5f7f3;"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.smartpantry.controllers.ShoppingListController">
+    <padding>
+        <Insets top="25" right="20" bottom="25" left="20" />
+    </padding>
+
+    <Label text="Shopping List" style="-fx-font-size: 26px; -fx-font-weight: bold;" />
+    <ListView fx:id="shoppingListView" prefHeight="430" />
+    <TextField fx:id="itemField" promptText="Add item manually" />
+
+    <HBox spacing="8">
+        <Button text="Add" onAction="#handleAddItem" prefWidth="105" />
+        <Button text="Purchased" onAction="#handleMarkPurchased" prefWidth="105" />
+        <Button text="Back" onAction="#handleBackToPantry" prefWidth="105" />
+    </HBox>
+</VBox>
