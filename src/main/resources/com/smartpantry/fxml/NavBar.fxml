@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Circle?>
+
+<!-- Included inside each screen's BorderPane bottom slot.
+     The including controller must implement all five onNav* handlers. -->
+<HBox xmlns:fx="http://javafx.com/fxml"
+      styleClass="nav-bar" alignment="CENTER" spacing="30">
+    <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+    <Label text="Pantry"    styleClass="nav-item" onMouseClicked="#onNavPantry"   style="-fx-cursor:hand;"/>
+    <Label text="Recipes"   styleClass="nav-item" onMouseClicked="#onNavRecipes"  style="-fx-cursor:hand;"/>
+    <StackPane onMouseClicked="#onNavAdd" style="-fx-cursor:hand;">
+        <Circle radius="22" styleClass="nav-add-circle"/>
+        <Label text="+" styleClass="nav-add-plus"/>
+    </StackPane>
+    <Label text="Shopping"  styleClass="nav-item" onMouseClicked="#onNavShopping" style="-fx-cursor:hand;"/>
+    <Label text="Profile"   styleClass="nav-item" onMouseClicked="#onNavProfile"  style="-fx-cursor:hand;"/>
+</HBox>
