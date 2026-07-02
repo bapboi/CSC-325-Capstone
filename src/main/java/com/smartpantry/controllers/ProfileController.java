@@ -35,7 +35,7 @@ public class ProfileController {
     }
   }
 
-  // ── Nav ──────────────────────────────────────────────────────────────────
+  // inline nav control (wip)
   @FXML
   private void onNavPantry() {
     nav(Nav.Screen.PANTRY);
