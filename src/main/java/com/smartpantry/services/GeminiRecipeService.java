@@ -121,13 +121,8 @@ public class GeminiRecipeService {
   public record RecipeResult(String description, String link) {
   }
 
-  /**
-   * Given a recipe description and a list of ingredients the user already has,
-   * asks Gemini which ingredients are still needed. Returns a plain list of
-   * names.
-   * Uses plain text (no Google Search tool) since this is purely a reasoning
-   * task.
-   */
+  // gemini prompt using pure plaintext instead of google serach (hopefully saves
+  // tokens)
   public List<String> findMissingIngredients(String recipeDescription, List<String> pantryIngredients)
       throws GeminiException {
     String apiKey;
@@ -178,7 +173,7 @@ public class GeminiRecipeService {
           .get(0).getAsJsonObject()
           .get("text").getAsString().trim();
 
-      // Strip markdown fences if Gemini wrapped the JSON in them
+      // strip markdown fences if gemini wrapped the json in them
       text = text.replaceAll("(?s)```json\\s*|```", "").trim();
 
       JsonArray arr = gson.fromJson(text, JsonArray.class);
