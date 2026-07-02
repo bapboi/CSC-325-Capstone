@@ -121,6 +121,78 @@ public class GeminiRecipeService {
   public record RecipeResult(String description, String link) {
   }
 
+  /**
+   * Given a recipe description and a list of ingredients the user already has,
+   * asks Gemini which ingredients are still needed. Returns a plain list of
+   * names.
+   * Uses plain text (no Google Search tool) since this is purely a reasoning
+   * task.
+   */
+  public List<String> findMissingIngredients(String recipeDescription, List<String> pantryIngredients)
+      throws GeminiException {
+    String apiKey;
+    try {
+      apiKey = AppConfig.load().getGeminiApiKey();
+    } catch (AppConfig.ConfigException e) {
+      throw new GeminiException(e.getMessage());
+    }
+
+    String prompt = "This recipe was suggested: \"" + recipeDescription + "\". "
+        + "The user already has these ingredients: " + String.join(", ", pantryIngredients) + ". "
+        + "List ONLY the ingredient names that are missing from what the user has. "
+        + "Return them as a JSON array of strings, nothing else. Example: [\"flour\",\"eggs\"]";
+
+    JsonObject part = new JsonObject();
+    part.addProperty("text", prompt);
+    JsonArray parts = new JsonArray();
+    parts.add(part);
+    JsonObject content = new JsonObject();
+    content.add("parts", parts);
+    JsonArray contents = new JsonArray();
+    contents.add(content);
+    JsonObject body = new JsonObject();
+    body.add("contents", contents);
+
+    HttpRequest request = HttpRequest.newBuilder()
+        .uri(URI.create(ENDPOINT))
+        .header("Content-Type", "application/json")
+        .header("x-goog-api-key", apiKey)
+        .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(body)))
+        .build();
+
+    try {
+      HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+      JsonObject json = gson.fromJson(response.body(), JsonObject.class);
+
+      if (response.statusCode() != 200) {
+        String code = json.has("error")
+            ? json.getAsJsonObject("error").get("message").getAsString()
+            : "status " + response.statusCode();
+        throw new GeminiException("Gemini error: " + code);
+      }
+
+      String text = json.getAsJsonArray("candidates")
+          .get(0).getAsJsonObject()
+          .getAsJsonObject("content")
+          .getAsJsonArray("parts")
+          .get(0).getAsJsonObject()
+          .get("text").getAsString().trim();
+
+      // Strip markdown fences if Gemini wrapped the JSON in them
+      text = text.replaceAll("(?s)```json\\s*|```", "").trim();
+
+      JsonArray arr = gson.fromJson(text, JsonArray.class);
+      List<String> result = new java.util.ArrayList<>();
+      for (JsonElement el : arr)
+        result.add(el.getAsString());
+      return result;
+    } catch (GeminiException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new GeminiException("Network error: " + e.getMessage());
+    }
+  }
+
   public static class GeminiException extends Exception {
     public GeminiException(String message) {
       super(message);
