@@ -27,11 +27,18 @@ replay_pid*
 # Maven build output
 target/
 
-# Never commit your Firebase service account key
+# secrets
 *serviceAccount*.json
 firebase-key.json
 
-# Local app settings (contains your Web API key) - copy app-config.example.json instead
 app-config.json
 
+
+#osx 
+.DS_Store
+
+# random eclipse things becasue of nvim
+.classpath
+.settings/
+.project
 
