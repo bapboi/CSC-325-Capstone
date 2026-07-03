@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="TOP_CENTER" spacing="25" prefWidth="390" prefHeight="844"
+      xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml">
+
+    <VBox alignment="CENTER" spacing="10" prefHeight="180" prefWidth="390"
+          style="-fx-background-color: #2f6b4f;">
+
+        <Label text="SmartPantry"
+               style="-fx-text-fill: white; -fx-font-size: 28px;" />
+
+        <Label text="Track, Scan, and Cook Smarter"
+               style="-fx-text-fill: white; -fx-font-size: 14px;" />
+
+    </VBox>
+
+    <HBox alignment="CENTER" spacing="10">
+        <Button text="Sign In" prefWidth="140" />
+        <Button text="Create Account" prefWidth="140" />
+    </HBox>
+
+    <TextField promptText="Email" maxWidth="300" />
+
+    <PasswordField promptText="Password" maxWidth="300" />
+
+    <Button text="Sign In" prefWidth="300"
+            style="-fx-background-color: #2f6b4f; -fx-text-fill: white;" />
+
+</VBox>
