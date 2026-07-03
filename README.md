@@ -1,2 +1,7 @@
-# CSC-325-Capstone
-Capstone Project for CSC-325.
+## SmartPantry
+
+TODO: description
+
+# build instructions
+
+`mvn clean javafx:run` runs the maven project

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.smartpantry.controllers.PantryDashboardController"
+            stylesheets="@styles.css"
+            prefWidth="420" prefHeight="760">
+    <top>
+        <VBox styleClass="header" spacing="4">
+            <Label fx:id="userLabel" text="Pantry" styleClass="header-title"/>
+            <Label fx:id="statusLabel" text="" styleClass="header-subtitle"/>
+            <Label fx:id="statsLabel" text="" styleClass="header-subtitle"/>
+        </VBox>
+    </top>
+    <center>
+        <VBox spacing="10">
+            <padding><Insets top="14" right="14" bottom="14" left="14"/></padding>
+            <HBox spacing="8">
+                <Button text="Refresh" onAction="#onRefresh"/>
+                <Button text="Delete Selected" onAction="#onDelete"/>
+            </HBox>
+            <ListView fx:id="pantryListView" VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </center>
+    <bottom>
+        <HBox xmlns="http://javafx.com/javafx/21" styleClass="nav-bar" alignment="CENTER" spacing="30">
+            <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+            <Label text="Pantry"   styleClass="nav-item" onMouseClicked="#onNavPantry"   style="-fx-cursor:hand;"/>
+            <Label text="Recipes"  styleClass="nav-item" onMouseClicked="#onNavRecipes"  style="-fx-cursor:hand;"/>
+            <StackPane onMouseClicked="#onNavAdd" style="-fx-cursor:hand;">
+                <Circle radius="22" styleClass="nav-add-circle"/>
+                <Label text="+" styleClass="nav-add-plus"/>
+            </StackPane>
+            <Label text="Shopping" styleClass="nav-item" onMouseClicked="#onNavShopping" style="-fx-cursor:hand;"/>
+            <Label text="Profile"  styleClass="nav-item" onMouseClicked="#onNavProfile"  style="-fx-cursor:hand;"/>
+        </HBox>
+    </bottom>
+</BorderPane>
