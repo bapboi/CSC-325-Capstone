@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="TOP_CENTER"
+      spacing="0"
+      prefWidth="390"
+      prefHeight="844"
+      xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml">
+
+    <VBox alignment="CENTER_LEFT"
+          spacing="6"
+          prefHeight="120"
+          prefWidth="390"
+          style="-fx-background-color: #2f6b4f;">
+
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20"/>
+        </padding>
+
+        <Label text="Settings"
+               style="-fx-text-fill: white; -fx-font-size: 28px;" />
+
+        <Label text="Manage app preferences"
+               style="-fx-text-fill: white; -fx-font-size: 14px;" />
+
+    </VBox>
+
+    <ScrollPane fitToWidth="true"
+                prefWidth="390"
+                prefHeight="660"
+                style="-fx-background-color: transparent;">
+
+        <VBox spacing="18" style="-fx-padding: 15;">
+
+            <Label text="ACCOUNT"
+                   style="-fx-text-fill: gray; -fx-font-size: 12px;" />
+
+            <VBox spacing="12"
+                  style="-fx-background-color: white;
+                         -fx-border-color: lightgray;
+                         -fx-border-radius: 18;
+                         -fx-background-radius: 18;
+                         -fx-padding: 14;">
+
+                <HBox spacing="80">
+                    <Label text="Email"/>
+                    <Label text="jane@example.com"
+                           style="-fx-text-fill: gray;" />
+                </HBox>
+
+                <HBox spacing="85">
+                    <Label text="Password"/>
+                    <Label text="Change >"
+                           style="-fx-text-fill: gray;" />
+                </HBox>
+
+            </VBox>
+
+            <Label text="PREFERENCES"
+                   style="-fx-text-fill: gray; -fx-font-size: 12px;" />
+
+            <VBox spacing="12"
+                  style="-fx-background-color: white;
+                         -fx-border-color: lightgray;
+                         -fx-border-radius: 18;
+                         -fx-background-radius: 18;
+                         -fx-padding: 14;">
+
+                <CheckBox text="Recipe reminders" selected="true"/>
+                <CheckBox text="Expiration alerts" selected="true"/>
+                <CheckBox text="Save recipes automatically"/>
+
+            </VBox>
+
+            <Label text="APP"
+                   style="-fx-text-fill: gray; -fx-font-size: 12px;" />
+
+            <VBox spacing="12"
+                  style="-fx-background-color: white;
+                         -fx-border-color: lightgray;
+                         -fx-border-radius: 18;
+                         -fx-background-radius: 18;
+                         -fx-padding: 14;">
+
+                <HBox spacing="150">
+                    <Label text="Version"/>
+                    <Label text="1.0.0"
+                           style="-fx-text-fill: gray;" />
+                </HBox>
+
+                <HBox spacing="130">
+                    <Label text="Help"/>
+                    <Label text="Contact Us >"
+                           style="-fx-text-fill: gray;" />
+                </HBox>
+
+            </VBox>
+
+            <Button text="Save Settings"
+                    prefWidth="330"
+                    style="-fx-background-color: #2f6b4f; -fx-text-fill: white;"/>
+
+        </VBox>
+
+    </ScrollPane>
+
+    <HBox alignment="CENTER" spacing="15" prefHeight="64">
+        <Button text="Pantry" prefWidth="70"/>
+        <Button text="Recipes" prefWidth="70"/>
+        <Button text="+" prefWidth="55"
+                style="-fx-background-color: #2f6b4f; -fx-text-fill: white; -fx-font-size: 20px;"/>
+        <Button text="Shopping" prefWidth="80"/>
+        <Button text="Profile" prefWidth="70"/>
+    </HBox>
+
+</VBox>

@@ -10,18 +10,17 @@
 <VBox spacing="12" prefWidth="400" prefHeight="700"
       style="-fx-background-color: #f5f7f3;"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.smartpantry.controllers.RecipesController">
+      fx:controller="com.smartpantry.controllers.SavedRecipesController">
     <padding>
         <Insets top="25" right="20" bottom="25" left="20" />
     </padding>
 
-    <Label text="Recipes" style="-fx-font-size: 26px; -fx-font-weight: bold;" />
-    <Label text="Temporary recipe suggestions based on pantry items." wrapText="true" />
-    <ListView fx:id="recipeListView" prefHeight="460" />
+    <Label text="Saved Recipes" style="-fx-font-size: 26px; -fx-font-weight: bold;" />
+    <ListView fx:id="savedRecipeListView" prefHeight="500" />
 
     <HBox spacing="8">
-        <Button text="View Details" onAction="#handleViewDetails" prefWidth="115" />
-        <Button text="Save" onAction="#handleSaveRecipe" prefWidth="115" />
-        <Button text="Back" onAction="#handleBackToPantry" prefWidth="115" />
+        <Button text="View" onAction="#handleViewDetails" prefWidth="105" />
+        <Button text="Remove" onAction="#handleRemoveSavedRecipe" prefWidth="105" />
+        <Button text="Back" onAction="#handleBackToPantry" prefWidth="105" />
     </HBox>
 </VBox>
