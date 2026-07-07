@@ -16,7 +16,10 @@ public class Nav {
     ADD("/com/smartpantry/fxml/AddIngredient.fxml", 420, 760),
     RECIPES("/com/smartpantry/fxml/RecipeSuggestion.fxml", 420, 760),
     SHOPPING("/com/smartpantry/fxml/ShoppingList.fxml", 420, 760),
-    PROFILE("/com/smartpantry/fxml/Profile.fxml", 420, 760);
+    PROFILE("/com/smartpantry/fxml/Profile.fxml", 420, 760),
+    LOGIN("/com/smartpantry/fxml/Login.fxml", 420, 760),
+    RECIPE_DETAILS("/com/smartpantry/fxml/RecipeDetails.fxml", 420, 760);
+    
 
     final String fxml;
     final int w, h;
