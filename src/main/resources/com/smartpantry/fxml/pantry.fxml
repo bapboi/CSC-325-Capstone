@@ -1,38 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
 
 <VBox alignment="TOP_CENTER" spacing="18" prefWidth="390" prefHeight="844"
       xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml">
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.smartpantry.controllers.PantryDashboardController"
+      stylesheets="@styles.css">
 
     <VBox alignment="CENTER" spacing="8" prefHeight="140" prefWidth="390"
           style="-fx-background-color: #2f6b4f;">
 
-        <Label text="My Pantry"
+        <Label fx:id="userLabel" text="My Pantry"
                style="-fx-text-fill: white; -fx-font-size: 28px;" />
 
-        <Label text="View and manage your ingredients"
+        <Label fx:id="statusLabel" text="View and manage your ingredients"
                style="-fx-text-fill: white; -fx-font-size: 14px;" />
+
+        <Label fx:id="statsLabel" text=""
+               style="-fx-text-fill: white; -fx-font-size: 12px;" />
 
     </VBox>
 
     <TextField promptText="Search pantry items" maxWidth="320" />
 
-    <ListView prefWidth="320" prefHeight="430" />
+    <HBox alignment="CENTER" spacing="10">
+        <Button text="Refresh" onAction="#onRefresh" prefWidth="150" />
+        <Button text="Delete Selected" onAction="#onDelete" prefWidth="150" />
+    </HBox>
 
-    <Button text="Add Ingredient" prefWidth="320"
+    <ListView fx:id="pantryListView" prefWidth="320" prefHeight="380" />
+
+    <Button text="Add Ingredient" prefWidth="320" onAction="#onNavAdd"
             style="-fx-background-color: #2f6b4f; -fx-text-fill: white;" />
 
-    <HBox alignment="CENTER" spacing="15">
-        <Button text="Pantry" prefWidth="90" />
-        <Button text="Recipes" prefWidth="90" />
-        <Button text="Account" prefWidth="90" />
+    <HBox styleClass="nav-bar" alignment="CENTER" spacing="30">
+        <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+        <Label text="Pantry"   styleClass="nav-item" onMouseClicked="#onNavPantry"   style="-fx-cursor:hand;"/>
+        <Label text="Recipes"  styleClass="nav-item" onMouseClicked="#onNavRecipes"  style="-fx-cursor:hand;"/>
+        <StackPane onMouseClicked="#onNavAdd" style="-fx-cursor:hand;">
+            <Circle radius="22" styleClass="nav-add-circle"/>
+            <Label text="+" styleClass="nav-add-plus"/>
+        </StackPane>
+        <Label text="Shopping" styleClass="nav-item" onMouseClicked="#onNavShopping" style="-fx-cursor:hand;"/>
+        <Label text="Profile"  styleClass="nav-item" onMouseClicked="#onNavProfile"  style="-fx-cursor:hand;"/>
     </HBox>
 
 </VBox>

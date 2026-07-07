@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="TOP_CENTER"
+      spacing="0"
+      prefWidth="390"
+      prefHeight="844"
+      xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.smartpantry.controllers.ShoppingListController"
+      stylesheets="@styles.css">
+
+    <VBox alignment="CENTER_LEFT"
+          spacing="6"
+          prefHeight="120"
+          prefWidth="390"
+          style="-fx-background-color: #2f6b4f;">
+
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20"/>
+        </padding>
+
+        <Label text="Shopping List"
+               style="-fx-text-fill: white; -fx-font-size: 26px;" />
+
+        <Label fx:id="statusLabel" text=""
+               style="-fx-text-fill: white; -fx-font-size: 12px;" />
+
+    </VBox>
+
+    <VBox spacing="12" style="-fx-padding: 15;">
+
+        <HBox spacing="8">
+            <TextField fx:id="nameField" promptText="Item name" prefWidth="150"/>
+            <TextField fx:id="quantityField" promptText="Qty" prefWidth="55"/>
+            <TextField fx:id="unitField" promptText="Unit" prefWidth="65"/>
+            <Button text="Add" onAction="#onAdd"
+                    style="-fx-background-color: #2f6b4f; -fx-text-fill: white;"/>
+        </HBox>
+
+        <ListView fx:id="listView" prefWidth="360" prefHeight="480"/>
+
+        <HBox spacing="8" alignment="CENTER">
+            <Button text="✓ Toggle" onAction="#onToggleChecked" prefWidth="80"/>
+            <Button text="→ To Pantry" onAction="#onMoveToPantry" prefWidth="90"/>
+            <Button text="Delete" onAction="#onDelete" prefWidth="70"/>
+            <Button text="Refresh" onAction="#onRefresh" prefWidth="80"/>
+        </HBox>
+
+    </VBox>
+
+    <HBox alignment="CENTER" spacing="15" prefHeight="64">
+        <Button text="Pantry" prefWidth="70" onAction="#onNavPantry"/>
+        <Button text="Recipes" prefWidth="70" onAction="#onNavRecipes"/>
+        <Button text="+" prefWidth="55" onAction="#onNavAdd"
+                style="-fx-background-color: #2f6b4f; -fx-text-fill: white; -fx-font-size: 20px;"/>
+        <Button text="Shopping" prefWidth="80" onAction="#onNavShopping"/>
+        <Button text="Profile" prefWidth="70" onAction="#onNavProfile"/>
+    </HBox>
+
+</VBox>

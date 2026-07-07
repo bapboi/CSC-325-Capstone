@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="TOP_CENTER"
+      spacing="0"
+      prefWidth="390"
+      prefHeight="844"
+      xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml">
+
+    <VBox alignment="CENTER_LEFT"
+          spacing="6"
+          prefHeight="120"
+          prefWidth="390"
+          style="-fx-background-color: #2f6b4f;">
+
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20"/>
+        </padding>
+
+        <Label text="Recipe Details"
+               style="-fx-text-fill: white; -fx-font-size: 28px;" />
+
+        <Label text="View ingredients and steps"
+               style="-fx-text-fill: white; -fx-font-size: 14px;" />
+
+    </VBox>
+
+    <ScrollPane fitToWidth="true"
+                prefWidth="390"
+                prefHeight="660"
+                style="-fx-background-color: transparent;">
+
+        <VBox spacing="18" style="-fx-padding: 15;">
+
+            <VBox spacing="8"
+                  style="-fx-background-color: white;
+                         -fx-border-color: lightgray;
+                         -fx-border-radius: 10;
+                         -fx-background-radius: 10;
+                         -fx-padding: 10;">
+
+                <Label text="Recipe Image"
+                       alignment="CENTER"
+                       prefWidth="320"
+                       prefHeight="130"
+                       style="-fx-background-color: #d9d9d9; -fx-text-fill: #666666;" />
+
+                <Label text="Tomato Soup"
+                       style="-fx-font-size: 22px; -fx-font-weight: bold;" />
+
+                <HBox spacing="10">
+                    <Label text="30 min"/>
+                    <Label text="Easy"/>
+                    <Label text="2 Servings"/>
+                </HBox>
+
+                <Label text="85% Pantry Match"
+                       style="-fx-text-fill: green; -fx-font-weight: bold;" />
+
+            </VBox>
+
+            <HBox alignment="CENTER" spacing="50">
+                <Button text="Ingredients"
+                        prefWidth="130"
+                        style="-fx-background-color: #2f6b4f; -fx-text-fill: white;"/>
+
+                <Button text="Instructions"
+                        prefWidth="130"/>
+            </HBox>
+
+            <VBox spacing="8"
+                  style="-fx-background-color: white;
+                         -fx-border-color: lightgray;
+                         -fx-border-radius: 10;
+                         -fx-background-radius: 10;
+                         -fx-padding: 12;">
+
+                <Label text="You Have"
+                       style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2f6b4f;" />
+
+                <Label text="✓ Tomatoes"/>
+                <Label text="✓ Onion"/>
+                <Label text="✓ Garlic"/>
+                <Label text="✓ Olive Oil"/>
+                <Label text="✓ Salt"/>
+                <Label text="✓ Pepper"/>
+
+            </VBox>
+
+            <VBox spacing="8"
+                  style="-fx-background-color: white;
+                         -fx-border-color: lightgray;
+                         -fx-border-radius: 10;
+                         -fx-background-radius: 10;
+                         -fx-padding: 12;">
+
+                <Label text="Missing"
+                       style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #a66a00;" />
+
+                <Label text="○ Vegetable Broth"/>
+                <Label text="○ Heavy Cream"/>
+
+                <Button text="Add Missing Items to Shopping List"
+                        prefWidth="320"
+                        style="-fx-background-color: #2f6b4f; -fx-text-fill: white;"/>
+
+            </VBox>
+
+        </VBox>
+
+    </ScrollPane>
+
+    <HBox alignment="CENTER" spacing="15" prefHeight="64">
+        <Button text="Pantry" prefWidth="70"/>
+        <Button text="Recipes" prefWidth="70"/>
+        <Button text="+" prefWidth="55"
+                style="-fx-background-color: #2f6b4f; -fx-text-fill: white; -fx-font-size: 20px;"/>
+        <Button text="Shopping" prefWidth="80"/>
+        <Button text="Profile" prefWidth="70"/>
+    </HBox>
+
+</VBox>

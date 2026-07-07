@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="TOP_CENTER"
+      spacing="0"
+      prefWidth="390"
+      prefHeight="844"
+      xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.smartpantry.controllers.RecipeSuggestionController"
+      stylesheets="@styles.css">
+
+    <VBox alignment="CENTER_LEFT"
+          spacing="6"
+          prefHeight="120"
+          prefWidth="390"
+          style="-fx-background-color: #2f6b4f;">
+
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20"/>
+        </padding>
+
+        <Label text="Recipes"
+               style="-fx-text-fill: white; -fx-font-size: 28px;" />
+
+        <Label text="Based on your pantry"
+               style="-fx-text-fill: white; -fx-font-size: 14px;" />
+
+    </VBox>
+
+    <VBox spacing="10" alignment="CENTER">
+        <padding><Insets top="14" right="20" bottom="6" left="20"/></padding>
+        <Button fx:id="findButton" text="Find a Recipe" onAction="#onFindRecipe"
+                maxWidth="Infinity" prefWidth="320"
+                style="-fx-background-color: #2f6b4f; -fx-text-fill: white;"/>
+        <ProgressIndicator fx:id="progressIndicator" maxWidth="30" maxHeight="30"/>
+        <Label fx:id="statusLabel" text="" wrapText="true"/>
+        <Label fx:id="resultLabel" text="" wrapText="true"/>
+        <Hyperlink fx:id="resultLink" text="" onAction="#onOpenLink" wrapText="true"/>
+        <Button fx:id="addMissingButton" text="" onAction="#onAddMissingToShoppingList"
+                maxWidth="Infinity" prefWidth="320"/>
+    </VBox>
+
+    <ScrollPane fitToWidth="true"
+                prefWidth="390"
+                prefHeight="540"
+                style="-fx-background-color: transparent;">
+
+        <VBox spacing="18" style="-fx-padding: 15;">
+
+            <VBox spacing="8"
+                  style="-fx-background-color: white;
+                         -fx-border-color: lightgray;
+                         -fx-border-radius: 10;
+                         -fx-background-radius: 10;
+                         -fx-padding: 10;">
+
+                <Label text="Recipe Image"
+                       alignment="CENTER"
+                       prefWidth="320"
+                       prefHeight="110"
+                       style="-fx-background-color: #d9d9d9; -fx-text-fill: #666666;" />
+
+                <Label text="Tomato Omelette"
+                       style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+
+                <HBox spacing="10">
+                    <Label text="20 min"/>
+                    <Label text="Easy"/>
+                    <Label text="100% Match"
+                           style="-fx-text-fill: green; -fx-font-weight: bold;"/>
+                </HBox>
+
+                <Button text="View Recipe"
+                        prefWidth="320"
+                        style="-fx-background-color: #2f6b4f; -fx-text-fill: white;"/>
+
+            </VBox>
+
+            <VBox spacing="8"
+                  style="-fx-background-color: white;
+                         -fx-border-color: lightgray;
+                         -fx-border-radius: 10;
+                         -fx-background-radius: 10;
+                         -fx-padding: 10;">
+
+                <Label text="Recipe Image"
+                       alignment="CENTER"
+                       prefWidth="320"
+                       prefHeight="110"
+                       style="-fx-background-color: #d9d9d9; -fx-text-fill: #666666;" />
+
+                <Label text="Pasta Tomato Sauce"
+                       style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+
+                <HBox spacing="10">
+                    <Label text="25 min"/>
+                    <Label text="Easy"/>
+                    <Label text="90% Match"
+                           style="-fx-text-fill: green; -fx-font-weight: bold;"/>
+                </HBox>
+
+                <Button text="View Recipe"
+                        prefWidth="320"
+                        style="-fx-background-color: #2f6b4f; -fx-text-fill: white;"/>
+
+            </VBox>
+
+        </VBox>
+
+    </ScrollPane>
+
+    <HBox alignment="CENTER" spacing="15" prefHeight="64">
+        <Button text="Pantry" prefWidth="70" onAction="#onNavPantry"/>
+        <Button text="Recipes" prefWidth="70" onAction="#onNavRecipes"/>
+        <Button text="+" prefWidth="55" onAction="#onNavAdd"
+                style="-fx-background-color: #2f6b4f; -fx-text-fill: white; -fx-font-size: 20px;"/>
+        <Button text="Shopping" prefWidth="80" onAction="#onNavShopping"/>
+        <Button text="Profile" prefWidth="70" onAction="#onNavProfile"/>
+    </HBox>
+
+</VBox>
