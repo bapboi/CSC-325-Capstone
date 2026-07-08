@@ -3,8 +3,13 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox alignment="TOP_CENTER"
@@ -12,7 +17,8 @@
       prefWidth="390"
       prefHeight="844"
       xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml">
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.smartpantry.controllers.RecipeDetailsController">
 
     <VBox alignment="CENTER_LEFT"
           spacing="6"
@@ -46,23 +52,42 @@
                          -fx-background-radius: 10;
                          -fx-padding: 10;">
 
-                <Label text="Recipe Image"
-                       alignment="CENTER"
-                       prefWidth="320"
-                       prefHeight="130"
-                       style="-fx-background-color: #d9d9d9; -fx-text-fill: #666666;" />
+                <StackPane prefWidth="320"
+                           prefHeight="130"
+                           style="-fx-background-color: #d9d9d9;">
 
-                <Label text="Tomato Soup"
+                    <ImageView fx:id="recipeImageView"
+                               fitWidth="320"
+                               fitHeight="130"
+                               preserveRatio="true"/>
+
+                    <Label fx:id="imagePlaceholderLabel"
+                           text="Recipe Image"
+                           alignment="CENTER"
+                           prefWidth="320"
+                           prefHeight="130"
+                           style="-fx-text-fill: #666666;" />
+
+                </StackPane>
+
+                <Label fx:id="recipeNameLabel"
+                       text="Tomato Soup"
+                       wrapText="true"
                        style="-fx-font-size: 22px; -fx-font-weight: bold;" />
 
                 <HBox spacing="10">
-                    <Label text="30 min"/>
-                    <Label text="Easy"/>
-                    <Label text="2 Servings"/>
+                    <Label fx:id="cookTimeLabel" text="30 min"/>
+                    <Label fx:id="difficultyLabel" text="Easy"/>
+                    <Label fx:id="servingsLabel" text="2 Servings"/>
                 </HBox>
 
-                <Label text="85% Pantry Match"
+                <Label fx:id="pantryMatchLabel"
+                       text="85% Pantry Match"
                        style="-fx-text-fill: green; -fx-font-weight: bold;" />
+
+                <ProgressBar fx:id="pantryMatchProgressBar"
+                             prefWidth="320"
+                             progress="0.85"/>
 
             </VBox>
 
@@ -85,12 +110,9 @@
                 <Label text="You Have"
                        style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2f6b4f;" />
 
-                <Label text="✓ Tomatoes"/>
-                <Label text="✓ Onion"/>
-                <Label text="✓ Garlic"/>
-                <Label text="✓ Olive Oil"/>
-                <Label text="✓ Salt"/>
-                <Label text="✓ Pepper"/>
+                <ListView fx:id="availableIngredientsListView"
+                          prefHeight="130"
+                          prefWidth="320"/>
 
             </VBox>
 
@@ -104,14 +126,39 @@
                 <Label text="Missing"
                        style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #a66a00;" />
 
-                <Label text="○ Vegetable Broth"/>
-                <Label text="○ Heavy Cream"/>
+                <ListView fx:id="missingIngredientsListView"
+                          prefHeight="100"
+                          prefWidth="320"/>
 
-                <Button text="Add Missing Items to Shopping List"
+                <Button fx:id="addMissingButton"
+                        text="Add Missing Items to Shopping List"
                         prefWidth="320"
+                        onAction="#handleAddMissingToShoppingList"
                         style="-fx-background-color: #2f6b4f; -fx-text-fill: white;"/>
 
             </VBox>
+
+            <VBox spacing="8"
+                  style="-fx-background-color: white;
+                         -fx-border-color: lightgray;
+                         -fx-border-radius: 10;
+                         -fx-background-radius: 10;
+                         -fx-padding: 12;">
+
+                <Label text="Instructions"
+                       style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2f6b4f;" />
+
+                <TextArea fx:id="instructionsTextArea"
+                          editable="false"
+                          wrapText="true"
+                          prefHeight="180"
+                          prefWidth="320"/>
+
+            </VBox>
+
+            <Label fx:id="statusLabel"
+                   wrapText="true"
+                   style="-fx-text-fill: #2f6b4f;"/>
 
         </VBox>
 
@@ -119,8 +166,11 @@
 
     <HBox alignment="CENTER" spacing="15" prefHeight="64">
         <Button text="Pantry" prefWidth="70"/>
-        <Button text="Recipes" prefWidth="70"/>
-        <Button text="+" prefWidth="55"
+        <Button text="Recipes"
+                prefWidth="70"
+                onAction="#handleBackToRecipes"/>
+        <Button text="+"
+                prefWidth="55"
                 style="-fx-background-color: #2f6b4f; -fx-text-fill: white; -fx-font-size: 20px;"/>
         <Button text="Shopping" prefWidth="80"/>
         <Button text="Profile" prefWidth="70"/>

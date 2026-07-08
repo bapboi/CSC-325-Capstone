@@ -1,5 +1,7 @@
 package com.smartpantry.controllers;
 
+import com.smartpantry.model.Recipe;
+import com.smartpantry.services.SelectedRecipeStore;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -8,6 +10,7 @@ import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.List;
 
 public class SavedRecipesController {
 
@@ -35,7 +38,8 @@ public class SavedRecipesController {
             return;
         }
 
-        RecipeDetailsController.setSelectedRecipeName(selectedRecipe);
+        Recipe recipe = createRecipeFromSavedName(selectedRecipe);
+        SelectedRecipeStore.setSelectedRecipe(recipe);
 
         try {
             Nav.go((Stage) savedRecipeListView.getScene().getWindow(), Nav.Screen.RECIPE_DETAILS);
@@ -63,6 +67,26 @@ public class SavedRecipesController {
         } catch (IOException e) {
             showInfo("Navigation Error", "Failed to load pantry screen: " + e.getMessage());
         }
+    }
+
+    private Recipe createRecipeFromSavedName(String recipeName) {
+        Recipe recipe = new Recipe(recipeName);
+
+        recipe.setCookTime("30 min");
+        recipe.setDifficulty("Easy");
+        recipe.setServings(2);
+
+        recipe.setPantryIngredients(List.of("Rice", "Garlic"));
+        recipe.setMissingIngredients(List.of("Chicken Breast", "Spinach"));
+        recipe.setIngredients(List.of("Rice", "Garlic", "Chicken Breast", "Spinach"));
+
+        recipe.setInstructions(List.of(
+                "Prepare all ingredients.",
+                "Cook the main ingredients until done.",
+                "Combine everything and serve."
+        ));
+
+        return recipe;
     }
 
     private void showInfo(String title, String message) {
