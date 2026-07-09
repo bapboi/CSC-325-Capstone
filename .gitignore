@@ -29,8 +29,8 @@ target/
 
 # secrets
 *serviceAccount*.json
-firebase-key.json
 
+firebase-key.json
 app-config.json
 
 
