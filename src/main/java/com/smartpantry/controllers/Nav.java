@@ -7,7 +7,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-// WIP navbar. Navigation currently loads full FXML screens.
+// Helper class for screen navigation
 
 public class Nav {
 
