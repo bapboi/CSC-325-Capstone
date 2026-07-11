@@ -7,16 +7,16 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-//wip navbar (currently all inlined)
+// Helper class for screen navigation
 
 public class Nav {
 
   public enum Screen {
     PANTRY("/com/smartpantry/fxml/PantryDashboard.fxml", 420, 760),
-    ADD("/com/smartpantry/fxml/AddIngredient.fxml", 420, 760),
+    ADD("/com/smartpantry/fxml/Addingredient.fxml", 420, 760),
     RECIPES("/com/smartpantry/fxml/RecipeSuggestion.fxml", 420, 760),
     SHOPPING("/com/smartpantry/fxml/ShoppingList.fxml", 420, 760),
-    PROFILE("/com/smartpantry/fxml/Profile.fxml", 420, 760);
+    PROFILE("/com/smartpantry/fxml/profile.fxml", 390, 844);
 
     final String fxml;
     final int w, h;
