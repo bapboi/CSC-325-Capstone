@@ -17,7 +17,7 @@ public class Ingredient {
   private String userID;
   private String photoFileName;
   private Timestamp createdAt;
-  private Timestamp experationDate;
+  private Timestamp expirationDate;
 
   public Ingredient() {
   }
@@ -103,12 +103,12 @@ public class Ingredient {
     this.createdAt = createdAt;
   }
 
-  public Timestamp getExperationDate() {
-    return experationDate;
+  public Timestamp getExpirationDate() {
+    return expirationDate;
   }
 
-  public void setExperationDate(Timestamp experationDate) {
-    this.experationDate = experationDate;
+  public void setExpirationDate(Timestamp expirationDate) {
+    this.expirationDate = expirationDate;
   }
 
   public Map<String, Object> toMap() {
@@ -120,8 +120,8 @@ public class Ingredient {
     map.put("detectedByAI", detectedByAI);
     map.put("userID", userID);
     map.put("createdAt", createdAt != null ? createdAt : Timestamp.now());
-    if (experationDate != null) {
-      map.put("experationDate", experationDate);
+    if (expirationDate != null) {
+      map.put("expirationDate", expirationDate);
     }
     if (photoFileName != null) {
       map.put("photoFileName", photoFileName);

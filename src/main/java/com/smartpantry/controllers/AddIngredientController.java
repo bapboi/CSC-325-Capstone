@@ -168,7 +168,7 @@ public class AddIngredientController {
     LocalDate expiration = expirationDatePicker.getValue();
     if (expiration != null) {
       Date date = Date.from(expiration.atStartOfDay(ZoneId.systemDefault()).toInstant());
-      ingredient.setExperationDate(Timestamp.of(date));
+      ingredient.setExpirationDate(Timestamp.of(date));
     }
 
     if (selectedPhotoFile != null) {
