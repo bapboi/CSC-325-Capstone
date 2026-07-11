@@ -113,7 +113,7 @@ public class PantryDashboardController {
     long expired = 0, expiringSoon = 0;
     LocalDate today = LocalDate.now();
     for (Ingredient i : ingredients) {
-      Timestamp ts = i.getExperationDate();
+      Timestamp ts = i.getExpirationDate();
       if (ts == null)
         continue;
       LocalDate exp = Instant.ofEpochSecond(ts.getSeconds())
@@ -160,7 +160,7 @@ public class PantryDashboardController {
       detailLabel.setText(item.getQuantity() + " " + nullSafe(item.getUnit())
           + " · " + nullSafe(item.getCategory()));
 
-      Timestamp ts = item.getExperationDate();
+      Timestamp ts = item.getExpirationDate();
       if (ts != null) {
         LocalDate exp = Instant.ofEpochSecond(ts.getSeconds())
             .atZone(ZoneId.systemDefault()).toLocalDate();
