@@ -13,7 +13,9 @@
       prefWidth="390"
       prefHeight="844"
       xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml">
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.smartpantry.controllers.ProfileController"
+      stylesheets="@styles.css">
 
     <VBox alignment="CENTER_LEFT"
           spacing="6"
@@ -35,7 +37,7 @@
 
     <ScrollPane fitToWidth="true"
                 prefWidth="390"
-                prefHeight="660"
+                prefHeight="600"
                 style="-fx-background-color: transparent;">
 
         <VBox spacing="18" style="-fx-padding: 15;">
@@ -52,13 +54,19 @@
 
                 <HBox spacing="80">
                     <Label text="Email"/>
-                    <Label text="jane@example.com"
+                    <Label fx:id="emailLabel" text="jane@example.com"
                            style="-fx-text-fill: gray;" />
+                </HBox>
+
+                <HBox spacing="80">
+                    <Label text="User ID"/>
+                    <Label fx:id="uidLabel" text=""
+                           style="-fx-text-fill: gray; -fx-font-size: 10px;" wrapText="true"/>
                 </HBox>
 
                 <HBox spacing="85">
                     <Label text="Password"/>
-                    <Label text="Change >"
+                    <Label text="Change &gt;"
                            style="-fx-text-fill: gray;" />
                 </HBox>
 
@@ -98,7 +106,7 @@
 
                 <HBox spacing="130">
                     <Label text="Help"/>
-                    <Label text="Contact Us >"
+                    <Label text="Contact Us &gt;"
                            style="-fx-text-fill: gray;" />
                 </HBox>
 
@@ -108,17 +116,21 @@
                     prefWidth="330"
                     style="-fx-background-color: #2f6b4f; -fx-text-fill: white;"/>
 
+            <Button text="Sign Out" onAction="#onSignOut"
+                    prefWidth="330"
+                    style="-fx-background-color: #c62828; -fx-text-fill: white;"/>
+
         </VBox>
 
     </ScrollPane>
 
     <HBox alignment="CENTER" spacing="15" prefHeight="64">
-        <Button text="Pantry" prefWidth="70"/>
-        <Button text="Recipes" prefWidth="70"/>
-        <Button text="+" prefWidth="55"
+        <Button text="Pantry" prefWidth="70" onAction="#onNavPantry"/>
+        <Button text="Recipes" prefWidth="70" onAction="#onNavRecipes"/>
+        <Button text="+" prefWidth="55" onAction="#onNavAdd"
                 style="-fx-background-color: #2f6b4f; -fx-text-fill: white; -fx-font-size: 20px;"/>
-        <Button text="Shopping" prefWidth="80"/>
-        <Button text="Profile" prefWidth="70"/>
+        <Button text="Shopping" prefWidth="80" onAction="#onNavShopping"/>
+        <Button text="Profile" prefWidth="70" onAction="#onNavProfile"/>
     </HBox>
 
 </VBox>
