@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" spacing="16" prefWidth="400" prefHeight="700"
+      style="-fx-background-color: #f5f7f3;"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.smartpantry.controllers.AIDetectionController">
+    <padding>
+        <Insets top="35" right="30" bottom="35" left="30" />
+    </padding>
+
+    <Label text="AI Detection" style="-fx-font-size: 26px; -fx-font-weight: bold;" />
+    <Label text="Temporary screen for camera/image ingredient detection." wrapText="true" />
+    <Label fx:id="detectionResultLabel" text="No scan has been run yet." wrapText="true" />
+
+    <Button text="Run Sample Detection" onAction="#handleRunDetection" maxWidth="280" />
+    <Button text="Add Detected Items" onAction="#handleAddDetectedItems" maxWidth="280" />
+    <Button text="Back to Pantry" onAction="#handleBackToPantry" maxWidth="280" />
+</VBox>

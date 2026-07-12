@@ -30,6 +30,7 @@
             <Label fx:id="statusLabel" text="" wrapText="true"/>
             <Label fx:id="resultLabel" text="" wrapText="true"/>
             <Hyperlink fx:id="resultLink" text="" onAction="#onOpenLink" wrapText="true"/>
+            <Button fx:id="viewDetailsButton" text="View Recipe Details" onAction="#onViewDetails" maxWidth="Infinity" style="-fx-background-color: #2f6b4f; -fx-text-fill: white;" />
             <Button fx:id="addMissingButton" text="" onAction="#onAddMissingToShoppingList"
                     styleClass="upload-button" maxWidth="Infinity"/>
         </VBox>
