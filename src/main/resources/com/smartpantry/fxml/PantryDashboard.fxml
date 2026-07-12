@@ -4,44 +4,222 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml"
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.smartpantry.controllers.PantryDashboardController"
             stylesheets="@styles.css"
-            prefWidth="420" prefHeight="760">
+            prefWidth="420"
+            prefHeight="760"
+            style="-fx-background-color: white;">
+
+    <!-- Top green section -->
     <top>
-        <VBox styleClass="header" spacing="4">
-            <Label fx:id="userLabel" text="Pantry" styleClass="header-title"/>
-            <Label fx:id="statusLabel" text="" styleClass="header-subtitle"/>
-            <Label fx:id="statsLabel" text="" styleClass="header-subtitle"/>
+        <VBox spacing="10"
+              prefHeight="175"
+              style="-fx-background-color: #21634D;">
+
+            <padding>
+                <Insets top="24" right="18" bottom="16" left="18"/>
+            </padding>
+
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <VBox spacing="3" HBox.hgrow="ALWAYS">
+                    <Label fx:id="userLabel"
+                           text="Good morning,"
+                           style="-fx-font-size: 14px;
+                                  -fx-text-fill: white;"/>
+
+                    <Label text="My Pantry"
+                           style="-fx-font-size: 28px;
+                                  -fx-font-weight: bold;
+                                  -fx-text-fill: white;"/>
+                </VBox>
+
+                <Button text="+"
+                        onAction="#onNavAdd"
+                        prefWidth="48"
+                        prefHeight="48"
+                        focusTraversable="false"
+                        style="-fx-background-color: #83B394;
+                               -fx-background-radius: 24;
+                               -fx-text-fill: white;
+                               -fx-font-size: 26px;
+                               -fx-font-weight: bold;
+                               -fx-cursor: hand;"/>
+            </HBox>
+
+            <StackPane prefHeight="55"
+                       style="-fx-background-color: #83B394;
+                              -fx-background-radius: 28;">
+
+                <VBox alignment="CENTER" spacing="0">
+                    <Label text="Pantry"
+                           style="-fx-font-size: 18px;
+                                  -fx-font-weight: bold;
+                                  -fx-text-fill: white;"/>
+
+                    <Label text="Items"
+                           style="-fx-font-size: 14px;
+                                  -fx-text-fill: white;"/>
+                </VBox>
+            </StackPane>
+
+            <Label fx:id="statusLabel"
+                   text=""
+                   wrapText="true"
+                   style="-fx-font-size: 12px;
+                          -fx-text-fill: white;"/>
         </VBox>
     </top>
+
+    <!-- Main pantry content -->
     <center>
-        <VBox spacing="10">
-            <padding><Insets top="14" right="14" bottom="14" left="14"/></padding>
-            <HBox spacing="8">
-                <Button text="Refresh" onAction="#onRefresh"/>
-                <Button text="Delete Selected" onAction="#onDelete"/>
+        <VBox spacing="12"
+              style="-fx-background-color: white;">
+
+            <padding>
+                <Insets top="14" right="16" bottom="14" left="16"/>
+            </padding>
+
+            <TextField promptText="Search ingredients..."
+                       prefHeight="40"
+                       style="-fx-background-color: white;
+                              -fx-background-radius: 20;
+                              -fx-border-color: #D8D8D8;
+                              -fx-border-radius: 20;
+                              -fx-padding: 0 14 0 14;
+                              -fx-font-size: 14px;"/>
+
+            <HBox alignment="CENTER_LEFT">
+                <Label text="ALL INGREDIENTS"
+                       style="-fx-font-size: 14px;
+                              -fx-font-weight: bold;
+                              -fx-text-fill: #777777;"/>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <Button text="Refresh"
+                        onAction="#onRefresh"
+                        focusTraversable="false"
+                        style="-fx-background-color: #E1EFE8;
+                               -fx-background-radius: 15;
+                               -fx-text-fill: #21634D;
+                               -fx-font-size: 12px;
+                               -fx-cursor: hand;"/>
+
+                <Button text="Delete"
+                        onAction="#onDelete"
+                        focusTraversable="false"
+                        style="-fx-background-color: #F6E2E2;
+                               -fx-background-radius: 15;
+                               -fx-text-fill: #A83232;
+                               -fx-font-size: 12px;
+                               -fx-cursor: hand;">
+                    <HBox.margin>
+                        <Insets left="6"/>
+                    </HBox.margin>
+                </Button>
             </HBox>
-            <ListView fx:id="pantryListView" VBox.vgrow="ALWAYS"/>
+
+            <ListView fx:id="pantryListView"
+                      VBox.vgrow="ALWAYS"
+                      style="-fx-background-color: white;
+                             -fx-border-color: #E2E2E2;
+                             -fx-border-radius: 12;
+                             -fx-background-radius: 12;"/>
         </VBox>
     </center>
+
+    <!-- Bottom navigation -->
     <bottom>
-        <HBox xmlns="http://javafx.com/javafx/21" styleClass="nav-bar" alignment="CENTER" spacing="30">
-            <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
-            <Label text="Pantry"   styleClass="nav-item" onMouseClicked="#onNavPantry"   style="-fx-cursor:hand;"/>
-            <Label text="Recipes"  styleClass="nav-item" onMouseClicked="#onNavRecipes"  style="-fx-cursor:hand;"/>
-            <StackPane onMouseClicked="#onNavAdd" style="-fx-cursor:hand;">
-                <Circle radius="22" styleClass="nav-add-circle"/>
-                <Label text="+" styleClass="nav-add-plus"/>
+        <HBox alignment="CENTER"
+              spacing="24"
+              prefHeight="72"
+              style="-fx-background-color: white;
+                     -fx-border-color: #E4E4E4;
+                     -fx-border-width: 1 0 0 0;">
+
+            <padding>
+                <Insets top="8" right="12" bottom="8" left="12"/>
+            </padding>
+
+            <VBox alignment="CENTER"
+                  spacing="3"
+                  onMouseClicked="#onNavPantry"
+                  style="-fx-cursor: hand;">
+
+                <Label text="⌂"
+                       style="-fx-font-size: 23px;
+                              -fx-text-fill: #21634D;"/>
+
+                <Label text="Pantry"
+                       style="-fx-font-size: 11px;
+                              -fx-font-weight: bold;
+                              -fx-text-fill: #21634D;"/>
+            </VBox>
+
+            <VBox alignment="CENTER"
+                  spacing="3"
+                  onMouseClicked="#onNavRecipes"
+                  style="-fx-cursor: hand;">
+
+                <Label text="▤"
+                       style="-fx-font-size: 22px;
+                              -fx-text-fill: #A5A5A5;"/>
+
+                <Label text="Recipes"
+                       style="-fx-font-size: 11px;
+                              -fx-text-fill: #777777;"/>
+            </VBox>
+
+            <StackPane onMouseClicked="#onNavAdd"
+                       style="-fx-cursor: hand;">
+
+                <Circle radius="24"
+                        style="-fx-fill: #21634D;"/>
+
+                <Label text="+"
+                       style="-fx-font-size: 28px;
+                              -fx-font-weight: bold;
+                              -fx-text-fill: white;"/>
             </StackPane>
-            <Label text="Shopping" styleClass="nav-item" onMouseClicked="#onNavShopping" style="-fx-cursor:hand;"/>
-            <Label text="Profile"  styleClass="nav-item" onMouseClicked="#onNavProfile"  style="-fx-cursor:hand;"/>
+
+            <VBox alignment="CENTER"
+                  spacing="3"
+                  onMouseClicked="#onNavShopping"
+                  style="-fx-cursor: hand;">
+
+                <Label text="🛒"
+                       style="-fx-font-size: 19px;
+                              -fx-text-fill: #A5A5A5;"/>
+
+                <Label text="Shopping"
+                       style="-fx-font-size: 11px;
+                              -fx-text-fill: #777777;"/>
+            </VBox>
+
+            <VBox alignment="CENTER"
+                  spacing="3"
+                  onMouseClicked="#onNavProfile"
+                  style="-fx-cursor: hand;">
+
+                <Label text="♙"
+                       style="-fx-font-size: 21px;
+                              -fx-text-fill: #A5A5A5;"/>
+
+                <Label text="Profile"
+                       style="-fx-font-size: 11px;
+                              -fx-text-fill: #777777;"/>
+            </VBox>
         </HBox>
     </bottom>
+
 </BorderPane>
