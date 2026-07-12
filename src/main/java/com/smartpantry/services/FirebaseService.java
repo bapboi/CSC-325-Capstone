@@ -127,7 +127,7 @@ public class FirebaseService {
     String uid = Session.getInstance().getUid();
     if (uid == null)
       return new ArrayList<>();
-    ApiFuture<QuerySnapshot> future = db.collection(PANTRY_COLLECTION)
+    ApiFuture<QuerySnapshot> future = db.collection(SHOPPING_COLLECTION)
         .whereEqualTo("userID", uid).get();
     List<ShoppingItem> result = new ArrayList<>();
     for (QueryDocumentSnapshot doc : future.get().getDocuments()) {
@@ -162,7 +162,7 @@ public class FirebaseService {
     String uid = Session.getInstance().getUid();
     if (uid == null)
       return new ArrayList<>();
-    ApiFuture<QuerySnapshot> future = db.collection(PANTRY_COLLECTION)
+    ApiFuture<QuerySnapshot> future = db.collection(SAVED_RECIPES_COLLECTION)
         .whereEqualTo("userID", uid).get();
     List<com.smartpantry.model.Recipe> result = new ArrayList<>();
     for (QueryDocumentSnapshot doc : future.get().getDocuments()) {
