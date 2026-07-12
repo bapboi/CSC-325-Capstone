@@ -14,52 +14,24 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 
 public class RecipeDetailsController {
 
-    @FXML
-    private Label recipeNameLabel;
-
-    @FXML
-    private ImageView recipeImageView;
-
-    @FXML
-    private Label imagePlaceholderLabel;
-
-    @FXML
-    private Label cookTimeLabel;
-
-    @FXML
-    private Label difficultyLabel;
-
-    @FXML
-    private Label servingsLabel;
-
-    @FXML
-    private Label pantryMatchLabel;
-
-    @FXML
-    private ProgressBar pantryMatchProgressBar;
-
-    @FXML
-    private ListView<String> availableIngredientsListView;
-
-    @FXML
-    private ListView<String> missingIngredientsListView;
-
-    @FXML
-    private TextArea instructionsTextArea;
-
-    @FXML
-    private Button addMissingButton;
-
-    @FXML
-    private Label statusLabel;
+    @FXML private Label recipeNameLabel;
+    @FXML private Label cookTimeLabel;
+    @FXML private Label difficultyLabel;
+    @FXML private Label servingsLabel;
+    @FXML private Label pantryMatchLabel;
+    @FXML private ProgressBar pantryMatchProgressBar;
+    @FXML private ListView<String> availableIngredientsListView;
+    @FXML private ListView<String> missingIngredientsListView;
+    @FXML private TextArea instructionsTextArea;
+    @FXML private Button addMissingButton;
+    @FXML private Button saveButton;
+    @FXML private Label statusLabel;
 
     private final FirebaseService firebaseService = FirebaseService.getInstance();
     private Recipe recipe;
@@ -67,98 +39,94 @@ public class RecipeDetailsController {
     @FXML
     private void initialize() {
         recipe = SelectedRecipeStore.getSelectedRecipe();
-
         if (recipe == null) {
-            recipe = createPlaceholderRecipe();
-            statusLabel.setText("Showing placeholder recipe. Select a recipe from the Recipes screen for real details.");
+            statusLabel.setText("No recipe selected. Go back and choose a recipe.");
+            addMissingButton.setDisable(true);
+            saveButton.setDisable(true);
+            return;
         }
-
         displayRecipe(recipe);
     }
 
-    private void displayRecipe(Recipe recipe) {
-        recipeNameLabel.setText(valueOrDefault(recipe.getName(), "Untitled Recipe"));
+    private void displayRecipe(Recipe r) {
+        recipeNameLabel.setText(or(r.getName(), "Untitled Recipe"));
+        cookTimeLabel.setText("Cook time: " + or(r.getCookTime(), "N/A"));
+        difficultyLabel.setText("Difficulty: " + or(r.getDifficulty(), "N/A"));
+        servingsLabel.setText("Servings: " + (r.getServings() > 0 ? r.getServings() : "N/A"));
 
-        cookTimeLabel.setText("Cook time: " + valueOrDefault(recipe.getCookTime(), "N/A"));
-        difficultyLabel.setText("Difficulty: " + valueOrDefault(recipe.getDifficulty(), "N/A"));
-        servingsLabel.setText("Servings: " + (recipe.getServings() > 0 ? recipe.getServings() : "N/A"));
-
-        int matchPercent = recipe.getPantryMatchPercent();
-        pantryMatchLabel.setText("Pantry match: " + matchPercent + "%");
-        pantryMatchProgressBar.setProgress(matchPercent / 100.0);
+        int match = r.getPantryMatchPercent();
+        pantryMatchLabel.setText("Pantry match: " + match + "%");
+        pantryMatchProgressBar.setProgress(match / 100.0);
 
         availableIngredientsListView.setItems(
-                FXCollections.observableArrayList(recipe.getPantryIngredients())
-        );
-
+                FXCollections.observableArrayList(r.getPantryIngredients()));
         missingIngredientsListView.setItems(
-                FXCollections.observableArrayList(recipe.getMissingIngredients())
-        );
+                FXCollections.observableArrayList(r.getMissingIngredients()));
 
-        instructionsTextArea.setText(recipe.getInstructionsAsText());
-
-        addMissingButton.setDisable(recipe.getMissingIngredients().isEmpty());
-
-        loadRecipeImage(recipe.getImageUrl());
+        instructionsTextArea.setText(r.getInstructionsAsText());
+        addMissingButton.setDisable(r.getMissingIngredients().isEmpty());
     }
 
-    private void loadRecipeImage(String imageUrl) {
-        if (imageUrl == null || imageUrl.isBlank()) {
-            imagePlaceholderLabel.setVisible(true);
-            recipeImageView.setImage(null);
+    @FXML
+    private void handleSaveRecipe() {
+        if (recipe == null) return;
+        if (!firebaseService.isConnected()) {
+            setStatus("Not connected to Firebase.", false);
             return;
         }
+        saveButton.setDisable(true);
+        setStatus("Saving recipe...", true);
 
-        try {
-            Image image = new Image(imageUrl, true);
-            recipeImageView.setImage(image);
-            imagePlaceholderLabel.setVisible(false);
-        } catch (Exception e) {
-            recipeImageView.setImage(null);
-            imagePlaceholderLabel.setVisible(true);
-        }
+        Task<Void> task = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                firebaseService.saveRecipe(recipe);
+                return null;
+            }
+        };
+        task.setOnSucceeded(e -> {
+            setStatus("Recipe saved to your collection.", true);
+            saveButton.setDisable(false);
+        });
+        task.setOnFailed(e -> {
+            setStatus("Failed to save: " + task.getException().getMessage(), false);
+            saveButton.setDisable(false);
+        });
+        new Thread(task, "save-recipe").start();
     }
 
     @FXML
     private void handleAddMissingToShoppingList() {
         if (recipe == null || recipe.getMissingIngredients().isEmpty()) {
-            statusLabel.setText("There are no missing ingredients to add.");
+            setStatus("No missing ingredients to add.", false);
             return;
         }
-
         if (!firebaseService.isConnected()) {
-            statusLabel.setText("Not connected to Firebase.");
+            setStatus("Not connected to Firebase.", false);
             return;
         }
-
         addMissingButton.setDisable(true);
-        statusLabel.setText("Adding missing ingredients...");
+        setStatus("Adding missing ingredients to shopping list...", true);
 
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() throws Exception {
                 String uid = Session.getInstance().getUid();
-
-                for (String ingredientName : recipe.getMissingIngredients()) {
-                    ShoppingItem item = new ShoppingItem(ingredientName, 1.0, "", uid);
-                    firebaseService.addShoppingItem(item);
+                for (String name : recipe.getMissingIngredients()) {
+                    firebaseService.addShoppingItem(new ShoppingItem(name, 1.0, "", uid));
                 }
-
                 return null;
             }
         };
-
-        task.setOnSucceeded(event -> {
-            statusLabel.setText("Missing ingredients added to shopping list.");
+        task.setOnSucceeded(e -> {
+            setStatus(recipe.getMissingIngredients().size() + " item(s) added to shopping list.", true);
             addMissingButton.setDisable(false);
         });
-
-        task.setOnFailed(event -> {
-            statusLabel.setText("Failed to add items: " + task.getException().getMessage());
+        task.setOnFailed(e -> {
+            setStatus("Failed to add items: " + task.getException().getMessage(), false);
             addMissingButton.setDisable(false);
         });
-
-        new Thread(task, "add-missing-recipe-items").start();
+        new Thread(task, "add-missing-to-shopping").start();
     }
 
     @FXML
@@ -166,28 +134,18 @@ public class RecipeDetailsController {
         try {
             Nav.go((Stage) recipeNameLabel.getScene().getWindow(), Nav.Screen.RECIPES);
         } catch (IOException e) {
-            statusLabel.setText("Failed to load recipes screen: " + e.getMessage());
+            setStatus("Navigation error: " + e.getMessage(), false);
         }
     }
 
-    private Recipe createPlaceholderRecipe() {
-        Recipe placeholder = new Recipe("Chicken Rice Bowl");
-        placeholder.setCookTime("30 min");
-        placeholder.setDifficulty("Easy");
-        placeholder.setServings(2);
-        placeholder.setPantryIngredients(java.util.List.of("Rice", "Garlic"));
-        placeholder.setMissingIngredients(java.util.List.of("Chicken Breast", "Spinach"));
-        placeholder.setIngredients(java.util.List.of("Rice", "Garlic", "Chicken Breast", "Spinach"));
-        placeholder.setInstructions(java.util.List.of(
-                "Cook the rice according to package directions.",
-                "Season and cook the chicken until done.",
-                "Sauté garlic and spinach.",
-                "Combine everything in a bowl and serve."
-        ));
-        return placeholder;
+    private String or(String value, String fallback) {
+        return (value == null || value.isBlank()) ? fallback : value;
     }
 
-    private String valueOrDefault(String value, String fallback) {
-        return value == null || value.isBlank() ? fallback : value;
+    private void setStatus(String msg, boolean ok) {
+        Platform.runLater(() -> {
+            statusLabel.setText(msg);
+            statusLabel.setStyle(ok ? "-fx-text-fill: #2e7d32;" : "-fx-text-fill: #c62828;");
+        });
     }
 }
