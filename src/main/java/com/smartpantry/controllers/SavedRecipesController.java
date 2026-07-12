@@ -1,11 +1,15 @@
 package com.smartpantry.controllers;
 
 import com.smartpantry.model.Recipe;
+import com.smartpantry.services.FirebaseService;
 import com.smartpantry.services.SelectedRecipeStore;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 
@@ -14,50 +18,76 @@ import java.util.List;
 
 public class SavedRecipesController {
 
-    @FXML
-    private ListView<String> savedRecipeListView;
+    @FXML private ListView<Recipe> savedRecipeListView;
+    @FXML private Label statusLabel;
 
-    private final ObservableList<String> savedRecipes = FXCollections.observableArrayList(
-            "Chicken Rice Bowl",
-            "Spinach Smoothie",
-            "Garlic Fried Rice"
-    );
+    private final FirebaseService firebaseService = FirebaseService.getInstance();
+    private final ObservableList<Recipe> recipes = FXCollections.observableArrayList();
 
     @FXML
     private void initialize() {
-        savedRecipeListView.setItems(savedRecipes);
-        savedRecipeListView.getSelectionModel().selectFirst();
+        savedRecipeListView.setItems(recipes);
+        savedRecipeListView.setCellFactory(lv -> new RecipeCell());
+        onRefresh();
+    }
+
+    @FXML
+    private void onRefresh() {
+        if (!firebaseService.isConnected()) {
+            setStatus("Not connected to Firebase.", false);
+            return;
+        }
+        setStatus("Loading saved recipes...", true);
+
+        Task<List<Recipe>> task = new Task<>() {
+            @Override
+            protected List<Recipe> call() throws Exception {
+                return firebaseService.getSavedRecipes();
+            }
+        };
+        task.setOnSucceeded(e -> {
+            recipes.setAll(task.getValue());
+            setStatus(recipes.size() + " saved recipe(s)", true);
+        });
+        task.setOnFailed(e -> setStatus("Failed to load: " + task.getException().getMessage(), false));
+        new Thread(task, "load-saved-recipes").start();
     }
 
     @FXML
     private void handleViewDetails() {
-        String selectedRecipe = savedRecipeListView.getSelectionModel().getSelectedItem();
-
-        if (selectedRecipe == null) {
-            showInfo("No Recipe Selected", "Choose a saved recipe before viewing details.");
+        Recipe selected = savedRecipeListView.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            setStatus("Select a recipe to view.", false);
             return;
         }
-
-        Recipe recipe = createRecipeFromSavedName(selectedRecipe);
-        SelectedRecipeStore.setSelectedRecipe(recipe);
-
+        SelectedRecipeStore.setSelectedRecipe(selected);
         try {
             Nav.go((Stage) savedRecipeListView.getScene().getWindow(), Nav.Screen.RECIPE_DETAILS);
         } catch (IOException e) {
-            showInfo("Navigation Error", "Failed to load recipe details screen: " + e.getMessage());
+            setStatus("Failed to load recipe details: " + e.getMessage(), false);
         }
     }
 
     @FXML
     private void handleRemoveSavedRecipe() {
-        String selectedRecipe = savedRecipeListView.getSelectionModel().getSelectedItem();
-
-        if (selectedRecipe == null) {
-            showInfo("No Recipe Selected", "Choose a recipe before removing it.");
+        Recipe selected = savedRecipeListView.getSelectionModel().getSelectedItem();
+        if (selected == null || selected.getId() == null) {
+            setStatus("Select a recipe to remove.", false);
             return;
         }
-
-        savedRecipes.remove(selectedRecipe);
+        Task<Void> task = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                firebaseService.deleteSavedRecipe(selected.getId());
+                return null;
+            }
+        };
+        task.setOnSucceeded(e -> {
+            setStatus("Recipe removed.", true);
+            onRefresh();
+        });
+        task.setOnFailed(e -> setStatus("Failed to remove: " + task.getException().getMessage(), false));
+        new Thread(task, "remove-saved-recipe").start();
     }
 
     @FXML
@@ -65,35 +95,26 @@ public class SavedRecipesController {
         try {
             Nav.go((Stage) savedRecipeListView.getScene().getWindow(), Nav.Screen.PANTRY);
         } catch (IOException e) {
-            showInfo("Navigation Error", "Failed to load pantry screen: " + e.getMessage());
+            setStatus("Navigation error: " + e.getMessage(), false);
         }
     }
 
-    private Recipe createRecipeFromSavedName(String recipeName) {
-        Recipe recipe = new Recipe(recipeName);
-
-        recipe.setCookTime("30 min");
-        recipe.setDifficulty("Easy");
-        recipe.setServings(2);
-
-        recipe.setPantryIngredients(List.of("Rice", "Garlic"));
-        recipe.setMissingIngredients(List.of("Chicken Breast", "Spinach"));
-        recipe.setIngredients(List.of("Rice", "Garlic", "Chicken Breast", "Spinach"));
-
-        recipe.setInstructions(List.of(
-                "Prepare all ingredients.",
-                "Cook the main ingredients until done.",
-                "Combine everything and serve."
-        ));
-
-        return recipe;
+    private static class RecipeCell extends ListCell<Recipe> {
+        @Override
+        protected void updateItem(Recipe item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty || item == null) { setText(null); return; }
+            String match = item.getPantryMatchPercent() > 0
+                    ? " — " + item.getPantryMatchPercent() + "% pantry match" : "";
+            String time = item.getCookTime() != null ? " · " + item.getCookTime() : "";
+            setText(item.getName() + match + time);
+        }
     }
 
-    private void showInfo(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+    private void setStatus(String msg, boolean ok) {
+        Platform.runLater(() -> {
+            statusLabel.setText(msg);
+            statusLabel.setStyle(ok ? "-fx-text-fill: #2e7d32;" : "-fx-text-fill: #c62828;");
+        });
     }
 }

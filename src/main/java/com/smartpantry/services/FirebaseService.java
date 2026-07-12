@@ -152,4 +152,41 @@ public class FirebaseService {
   public void deleteShoppingItem(String id) throws ExecutionException, InterruptedException {
     db.collection(SHOPPING_COLLECTION).document(id).delete().get();
   }
+
+  // ── Saved Recipes ────────────────────────────────────────────────────────────
+
+  private static final String SAVED_RECIPES_COLLECTION = "savedRecipes";
+
+  public List<com.smartpantry.model.Recipe> getSavedRecipes()
+      throws ExecutionException, InterruptedException {
+    String uid = Session.getInstance().getUid();
+    ApiFuture<QuerySnapshot> future = uid != null
+        ? db.collection(SAVED_RECIPES_COLLECTION).whereEqualTo("userID", uid).get()
+        : db.collection(SAVED_RECIPES_COLLECTION).get();
+
+    List<com.smartpantry.model.Recipe> result = new ArrayList<>();
+    for (QueryDocumentSnapshot doc : future.get().getDocuments()) {
+      com.smartpantry.model.Recipe recipe = doc.toObject(com.smartpantry.model.Recipe.class);
+      recipe.setId(doc.getId());
+      result.add(recipe);
+    }
+    return result;
+  }
+
+  public String saveRecipe(com.smartpantry.model.Recipe recipe)
+      throws ExecutionException, InterruptedException {
+    recipe.setUserID(Session.getInstance().getUid());
+    if (recipe.getId() != null && !recipe.getId().isBlank()) {
+      // update existing
+      db.collection(SAVED_RECIPES_COLLECTION).document(recipe.getId()).set(recipe.toMap()).get();
+      return recipe.getId();
+    }
+    DocumentReference ref = db.collection(SAVED_RECIPES_COLLECTION).document();
+    ref.set(recipe.toMap()).get();
+    return ref.getId();
+  }
+
+  public void deleteSavedRecipe(String id) throws ExecutionException, InterruptedException {
+    db.collection(SAVED_RECIPES_COLLECTION).document(id).delete().get();
+  }
 }
