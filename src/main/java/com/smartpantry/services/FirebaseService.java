@@ -100,10 +100,10 @@ public class FirebaseService {
   /** returns only the calling user's pantry items */
   public List<Ingredient> getAllIngredients() throws ExecutionException, InterruptedException {
     String uid = Session.getInstance().getUid();
-    ApiFuture<QuerySnapshot> future = uid != null
-        ? db.collection(PANTRY_COLLECTION).whereEqualTo("userID", uid).get()
-        : db.collection(PANTRY_COLLECTION).get();
-
+    if (uid == null)
+      return new ArrayList<>();
+    ApiFuture<QuerySnapshot> future = db.collection(PANTRY_COLLECTION)
+        .whereEqualTo("userID", uid).get();
     List<Ingredient> result = new ArrayList<>();
     for (QueryDocumentSnapshot doc : future.get().getDocuments()) {
       Ingredient ingredient = doc.toObject(Ingredient.class);
@@ -125,10 +125,10 @@ public class FirebaseService {
 
   public List<ShoppingItem> getShoppingList() throws ExecutionException, InterruptedException {
     String uid = Session.getInstance().getUid();
-    ApiFuture<QuerySnapshot> future = uid != null
-        ? db.collection(SHOPPING_COLLECTION).whereEqualTo("userID", uid).get()
-        : db.collection(SHOPPING_COLLECTION).get();
-
+    if (uid == null)
+      return new ArrayList<>();
+    ApiFuture<QuerySnapshot> future = db.collection(PANTRY_COLLECTION)
+        .whereEqualTo("userID", uid).get();
     List<ShoppingItem> result = new ArrayList<>();
     for (QueryDocumentSnapshot doc : future.get().getDocuments()) {
       ShoppingItem item = doc.toObject(ShoppingItem.class);
@@ -160,10 +160,10 @@ public class FirebaseService {
   public List<com.smartpantry.model.Recipe> getSavedRecipes()
       throws ExecutionException, InterruptedException {
     String uid = Session.getInstance().getUid();
-    ApiFuture<QuerySnapshot> future = uid != null
-        ? db.collection(SAVED_RECIPES_COLLECTION).whereEqualTo("userID", uid).get()
-        : db.collection(SAVED_RECIPES_COLLECTION).get();
-
+    if (uid == null)
+      return new ArrayList<>();
+    ApiFuture<QuerySnapshot> future = db.collection(PANTRY_COLLECTION)
+        .whereEqualTo("userID", uid).get();
     List<com.smartpantry.model.Recipe> result = new ArrayList<>();
     for (QueryDocumentSnapshot doc : future.get().getDocuments()) {
       com.smartpantry.model.Recipe recipe = doc.toObject(com.smartpantry.model.Recipe.class);
@@ -177,13 +177,16 @@ public class FirebaseService {
       throws ExecutionException, InterruptedException {
     recipe.setUserID(Session.getInstance().getUid());
     if (recipe.getId() != null && !recipe.getId().isBlank()) {
-      // update existing
-      db.collection(SAVED_RECIPES_COLLECTION).document(recipe.getId()).set(recipe.toMap()).get();
+      db.collection(SAVED_RECIPES_COLLECTION)
+          .document(recipe.getId())
+          .set(recipe.toMap())
+          .get();
       return recipe.getId();
     }
     DocumentReference ref = db.collection(SAVED_RECIPES_COLLECTION).document();
+    recipe.setId(ref.getId());
     ref.set(recipe.toMap()).get();
-    return ref.getId();
+    return recipe.getId();
   }
 
   public void deleteSavedRecipe(String id) throws ExecutionException, InterruptedException {
