@@ -193,4 +193,101 @@ public class GeminiRecipeService {
       super(message);
     }
   }
+
+  /**
+   * Sends a base64-encoded image to Gemini and asks it to identify the
+   * ingredient, returning a JsonObject with fields:
+   * name, category, quantity, unit, detectedByAI
+   */
+  public com.google.gson.JsonObject identifyIngredientFromImage(String imageBase64, String mimeType)
+      throws GeminiException {
+
+    String apiKey;
+    try {
+      apiKey = AppConfig.load().getGeminiApiKey();
+    } catch (AppConfig.ConfigException e) {
+      throw new GeminiException(e.getMessage());
+    }
+
+    JsonObject inlineData = new JsonObject();
+    inlineData.addProperty("mime_type", mimeType);
+    inlineData.addProperty("data", imageBase64);
+
+    JsonObject imagePart = new JsonObject();
+    imagePart.add("inline_data", inlineData);
+
+    JsonObject textPart = new JsonObject();
+    textPart.addProperty("text",
+        "You are a pantry ingredient scanner.\n\n"
+        + "Identify the ingredient in this image.\n\n"
+        + "Return STRICT JSON ONLY — no markdown, no backticks, no extra text:\n\n"
+        + "{\n"
+        + "  \"name\": \"\",\n"
+        + "  \"category\": \"\",\n"
+        + "  \"quantity\": 1,\n"
+        + "  \"unit\": \"\",\n"
+        + "  \"detectedByAI\": true\n"
+        + "}\n\n"
+        + "Rules:\n"
+        + "- name: common ingredient name (e.g. \"Tomato\", \"Chicken Breast\")\n"
+        + "- category: one of: Fruit, Vegetable, Meat, Dairy, Grain, Spice, Beverage, Other\n"
+        + "- quantity: estimate a reasonable default amount visible (default 1 if unsure)\n"
+        + "- unit: e.g. pcs, g, kg, ml, cups — empty string if not applicable\n"
+        + "- detectedByAI: always true\n"
+        + "- Return ONLY the JSON object, nothing else"
+    );
+
+    JsonArray parts = new JsonArray();
+    parts.add(imagePart);
+    parts.add(textPart);
+
+    JsonObject content = new JsonObject();
+    content.add("parts", parts);
+
+    JsonArray contents = new JsonArray();
+    contents.add(content);
+
+    JsonObject body = new JsonObject();
+    body.add("contents", contents);
+
+    HttpRequest request = HttpRequest.newBuilder()
+        .uri(URI.create(ENDPOINT))
+        .header("Content-Type", "application/json")
+        .header("x-goog-api-key", apiKey)
+        .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(body)))
+        .build();
+
+    try {
+      HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+      JsonObject json = gson.fromJson(response.body(), JsonObject.class);
+
+      if (response.statusCode() != 200) {
+        String code = json.has("error")
+            ? json.getAsJsonObject("error").get("message").getAsString()
+            : "status " + response.statusCode();
+        throw new GeminiException("Gemini error: " + code);
+      }
+
+      String rawText = json.getAsJsonArray("candidates")
+          .get(0).getAsJsonObject()
+          .getAsJsonObject("content")
+          .getAsJsonArray("parts")
+          .get(0).getAsJsonObject()
+          .get("text").getAsString().trim();
+
+      String clean = rawText.replaceAll("(?s)```json\\s*|```", "").trim();
+      int start = clean.indexOf('{');
+      int end   = clean.lastIndexOf('}');
+      if (start == -1 || end == -1) {
+        throw new GeminiException("No valid JSON found in Gemini response");
+      }
+
+      return gson.fromJson(clean.substring(start, end + 1), JsonObject.class);
+
+    } catch (GeminiException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new GeminiException("Network error: " + e.getMessage());
+    }
+  }
 }
