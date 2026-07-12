@@ -1,7 +1,11 @@
 package com.smartpantry.controllers;
 
-import javafx.event.ActionEvent;
+import com.smartpantry.services.AuthService;
+import com.smartpantry.services.Session;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -11,37 +15,58 @@ import java.io.IOException;
 
 public class CreateAccountController {
 
-    @FXML
-    private TextField nameField;
+    @FXML private TextField nameField;
+    @FXML private TextField emailField;
+    @FXML private PasswordField passwordField;
+    @FXML private PasswordField confirmPasswordField;
+    @FXML private Label statusLabel;
+    @FXML private Button createButton;
+    @FXML private Button backButton;
+
+    private final AuthService authService = new AuthService();
 
     @FXML
-    private TextField emailField;
-
-    @FXML
-    private PasswordField passwordField;
-
-    @FXML
-    private Label statusLabel;
-
-    @FXML
-    private void handleCreateAccount(ActionEvent event) {
-        String name = nameField.getText().trim();
-        String email = emailField.getText().trim();
-        String password = passwordField.getText().trim();
+    private void handleCreateAccount() {
+        String name     = nameField.getText().trim();
+        String email    = emailField.getText().trim();
+        String password = passwordField.getText();
+        String confirm  = confirmPasswordField.getText();
 
         if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
-            statusLabel.setText("Complete all fields before creating an account.");
+            setStatus("Complete all fields before creating an account.", false);
+            return;
+        }
+        if (!password.equals(confirm)) {
+            setStatus("Passwords do not match.", false);
             return;
         }
 
-        // Temporary account creation until Firebase authentication is connected here.
-        statusLabel.setText("Account created temporarily.");
+        createButton.setDisable(true);
+        setStatus("Creating account...", true);
 
-        goTo(Nav.Screen.PANTRY);
+        Task<AuthService.AuthResult> task = new Task<>() {
+            @Override
+            protected AuthService.AuthResult call() throws Exception {
+                return authService.signUp(email, password);
+            }
+        };
+
+        task.setOnSucceeded(e -> {
+            AuthService.AuthResult result = task.getValue();
+            Session.getInstance().setUser(result.uid(), result.email());
+            Platform.runLater(() -> goTo(Nav.Screen.PANTRY));
+        });
+
+        task.setOnFailed(e -> {
+            setStatus(task.getException().getMessage(), false);
+            createButton.setDisable(false);
+        });
+
+        new Thread(task, "create-account").start();
     }
 
     @FXML
-    private void handleBackToLogin(ActionEvent event) {
+    private void handleBackToLogin() {
         goTo(Nav.Screen.LOGIN);
     }
 
@@ -49,7 +74,14 @@ public class CreateAccountController {
         try {
             Nav.go((Stage) emailField.getScene().getWindow(), screen);
         } catch (IOException e) {
-            statusLabel.setText("Failed to load screen: " + e.getMessage());
+            setStatus("Failed to load screen: " + e.getMessage(), false);
         }
+    }
+
+    private void setStatus(String message, boolean ok) {
+        Platform.runLater(() -> {
+            statusLabel.setText(message);
+            statusLabel.setStyle(ok ? "-fx-text-fill: #2e7d32;" : "-fx-text-fill: #c62828;");
+        });
     }
 }
