@@ -9,130 +9,159 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx/17"
+<VBox xmlns="http://javafx.com/javafx/21"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.smartpantry.controllers.LoginController"
       prefWidth="400"
       prefHeight="700"
+      minWidth="400"
+      minHeight="700"
+      maxWidth="400"
+      maxHeight="700"
       spacing="0"
-      style="-fx-background-color: white;">
+      style="-fx-background-color: #FFFFFF;">
 
-    <!-- Header -->
+    <!-- Green header -->
     <VBox alignment="CENTER"
-          spacing="8"
+          spacing="9"
           prefWidth="400"
-          prefHeight="210"
+          prefHeight="190"
+          minHeight="190"
           style="-fx-background-color: #21634D;">
 
         <padding>
-            <Insets top="35" right="20" bottom="25" left="20"/>
+            <Insets top="28" right="20" bottom="22" left="20"/>
         </padding>
 
+        <!-- Simple pantry logo placeholder -->
         <Label text="▣"
-               style="-fx-font-size: 30px;
-                      -fx-text-fill: white;"/>
+               style="-fx-font-size: 32px;
+                      -fx-text-fill: #9BC5A6;"/>
 
         <Label text="SmartPantry"
-               style="-fx-font-size: 30px;
-                      -fx-font-weight: bold;
+               style="-fx-font-size: 29px;
+                      -fx-font-weight: normal;
                       -fx-text-fill: white;"/>
 
         <Label text="Track, Scan, and Cook Smarter"
                style="-fx-font-size: 15px;
                       -fx-font-style: italic;
-                      -fx-text-fill: #F2F2F2;"/>
+                      -fx-text-fill: #F1F5F2;"/>
     </VBox>
 
-    <!-- Login form -->
+    <!-- Login content -->
     <VBox alignment="TOP_CENTER"
-          spacing="18"
+          spacing="0"
           prefWidth="400"
-          prefHeight="490">
+          prefHeight="510"
+          style="-fx-background-color: white;">
 
         <padding>
-            <Insets top="22" right="24" bottom="24" left="24"/>
+            <Insets top="23" right="24" bottom="24" left="24"/>
         </padding>
 
-        <!-- Sign In / Create Account tabs -->
+        <!-- Sign In and Create Account tabs -->
         <HBox alignment="CENTER"
               prefWidth="352"
+              maxWidth="352"
               prefHeight="44"
+              minHeight="44"
               spacing="0"
-              style="-fx-background-color: #E2E2E2;
+              style="-fx-background-color: #DEDEDE;
                      -fx-background-radius: 22;">
 
             <Button text="Sign In"
                     prefWidth="176"
+                    maxWidth="176"
                     prefHeight="44"
+                    minHeight="44"
                     focusTraversable="false"
                     style="-fx-background-color: #21634D;
                            -fx-background-radius: 22;
                            -fx-text-fill: white;
                            -fx-font-size: 15px;
-                           -fx-font-weight: bold;"/>
+                           -fx-font-weight: normal;
+                           -fx-cursor: hand;"/>
 
             <Button fx:id="signUpButton"
                     text="Create Account"
                     onAction="#onSignUp"
                     prefWidth="176"
+                    maxWidth="176"
                     prefHeight="44"
+                    minHeight="44"
                     focusTraversable="false"
                     style="-fx-background-color: transparent;
+                           -fx-background-radius: 22;
                            -fx-text-fill: #111111;
                            -fx-font-size: 15px;
+                           -fx-font-weight: normal;
                            -fx-cursor: hand;"/>
         </HBox>
 
-        <Region prefHeight="18"/>
+        <Region prefHeight="52"/>
 
+        <!-- Email field -->
         <TextField fx:id="emailField"
                    promptText="Email address"
                    prefWidth="352"
                    maxWidth="352"
                    prefHeight="46"
+                   minHeight="46"
                    style="-fx-background-color: white;
                           -fx-background-radius: 23;
-                          -fx-border-color: #D8D8D8;
+                          -fx-border-color: #D9D9D9;
                           -fx-border-radius: 23;
                           -fx-border-width: 1;
                           -fx-padding: 0 16 0 16;
-                          -fx-font-size: 15px;"/>
+                          -fx-font-size: 15px;
+                          -fx-prompt-text-fill: #BDBDBD;"/>
 
+        <Region prefHeight="15"/>
+
+        <!-- Password field -->
         <PasswordField fx:id="passwordField"
                        promptText="Password"
                        prefWidth="352"
                        maxWidth="352"
                        prefHeight="46"
+                       minHeight="46"
                        style="-fx-background-color: white;
                               -fx-background-radius: 23;
-                              -fx-border-color: #D8D8D8;
+                              -fx-border-color: #D9D9D9;
                               -fx-border-radius: 23;
                               -fx-border-width: 1;
                               -fx-padding: 0 16 0 16;
-                              -fx-font-size: 15px;"/>
+                              -fx-font-size: 15px;
+                              -fx-prompt-text-fill: #BDBDBD;"/>
 
+        <!-- Login error or success message -->
         <Label fx:id="statusLabel"
                text=""
-               wrapText="true"
                alignment="CENTER"
+               wrapText="true"
                prefWidth="352"
-               minHeight="20"
-               style="-fx-font-size: 13px;"/>
+               maxWidth="352"
+               minHeight="35"
+               style="-fx-font-size: 13px;
+                      -fx-text-fill: #C62828;"/>
 
-        <Region prefHeight="8"/>
+        <Region prefHeight="18"/>
 
+        <!-- Sign In button -->
         <Button fx:id="loginButton"
                 text="Sign In"
                 onAction="#onLogin"
                 prefWidth="352"
                 maxWidth="352"
                 prefHeight="46"
+                minHeight="46"
                 focusTraversable="false"
                 style="-fx-background-color: #21634D;
                        -fx-background-radius: 23;
                        -fx-text-fill: white;
                        -fx-font-size: 16px;
-                       -fx-font-weight: bold;
+                       -fx-font-weight: normal;
                        -fx-cursor: hand;"/>
     </VBox>
 
