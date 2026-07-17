@@ -7,20 +7,56 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="12" prefWidth="400" prefHeight="700"
-      style="-fx-background-color: #f5f7f3;"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.smartpantry.controllers.SavedRecipesController">
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.smartpantry.controllers.SavedRecipesController"
+      prefWidth="420"
+      prefHeight="760"
+      spacing="14"
+      style="-fx-background-color: white;">
+
     <padding>
-        <Insets top="25" right="20" bottom="25" left="20" />
+        <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
 
-    <Label text="Saved Recipes" style="-fx-font-size: 26px; -fx-font-weight: bold;" />
-    <ListView fx:id="savedRecipeListView" prefHeight="500" />
+    <Label text="Saved Recipes"
+           style="-fx-font-size: 26px;
+                  -fx-font-weight: bold;
+                  -fx-text-fill: #21634D;"/>
 
-    <HBox spacing="8">
-        <Button text="View" onAction="#handleViewDetails" prefWidth="105" />
-        <Button text="Remove" onAction="#handleRemoveSavedRecipe" prefWidth="105" />
-        <Button text="Back" onAction="#handleBackToPantry" prefWidth="105" />
+    <Label fx:id="statusLabel"
+           text=""
+           wrapText="true"
+           minHeight="22"
+           style="-fx-font-size: 13px;"/>
+
+    <ListView fx:id="savedRecipeListView"
+              prefHeight="560"
+              VBox.vgrow="ALWAYS"/>
+
+    <HBox spacing="10">
+
+        <Button text="Refresh"
+                onAction="#onRefresh"
+                prefHeight="42"
+                HBox.hgrow="ALWAYS"
+                maxWidth="Infinity"/>
+
+        <Button text="View Details"
+                onAction="#handleViewDetails"
+                prefHeight="42"
+                HBox.hgrow="ALWAYS"
+                maxWidth="Infinity"/>
     </HBox>
+
+    <Button text="Remove Selected Recipe"
+            onAction="#handleRemoveSavedRecipe"
+            prefHeight="42"
+            maxWidth="Infinity"/>
+
+    <Button text="Back to Pantry"
+            onAction="#handleBackToPantry"
+            prefHeight="42"
+            maxWidth="Infinity"/>
+
 </VBox>
