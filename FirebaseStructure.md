@@ -17,15 +17,15 @@ Fields:
 - expirationDate
 - detectedByAI
 - photoFileName
-- photoStoragePath
+- createdAt
 
-### shoppingLists
+### shoppingList
 Stores user shopping list items.
 
 ### recipes
 Stores recipe information.
 
-### favoriteRecipes
+### savedRecipes
 Stores recipes saved by users.
 
 Fields:
@@ -45,8 +45,7 @@ ingredientImage/testuser/tomato.jpg
 
 ## Notes
 - Firestore stores application data.
-- Firebase Storage stores ingredient images.
-- Pantry items reference images through photoStoragePath.
+- Firebase Storage stores ingredient images associated with pantry items.
 - Recipe information may be populated through the recipe API.
 
 ## Security
