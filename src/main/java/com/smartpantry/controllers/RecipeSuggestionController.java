@@ -40,7 +40,6 @@ public class RecipeSuggestionController {
   @FXML
   private Hyperlink resultLink;
 
-
   private final FirebaseService firebaseService = FirebaseService.getInstance();
   private final GeminiRecipeService geminiService = new GeminiRecipeService();
 
@@ -53,7 +52,10 @@ public class RecipeSuggestionController {
   public void initialize() {
     progressIndicator.setVisible(false);
     resultLink.setVisible(false);
+
     addMissingButton.setVisible(false);
+    addMissingButton.setManaged(false);
+
     viewDetailsButton.setVisible(false);
     viewDetailsButton.setManaged(false);
   }
@@ -66,7 +68,10 @@ public class RecipeSuggestionController {
     }
 
     findButton.setDisable(true);
+
     addMissingButton.setVisible(false);
+    addMissingButton.setManaged(false);
+
     progressIndicator.setVisible(true);
     resultLink.setVisible(false);
     resultLabel.setText("");
@@ -85,7 +90,12 @@ public class RecipeSuggestionController {
       @Override
       protected GeminiRecipeService.RecipeResult call() throws Exception {
         List<Ingredient> pantry = firebaseService.getAllIngredients();
-        if (pantry.isEmpty()) throw new IllegalStateException("Your pantry is empty — add some ingredients first.");
+
+        if (pantry.isEmpty()) {
+          throw new IllegalStateException(
+                  "Your pantry is empty — add some ingredients first."
+          );
+        }
 
         List<String> names = pantry.stream()
                 .map(Ingredient::getName)
@@ -97,16 +107,32 @@ public class RecipeSuggestionController {
       }
     };
 
-    task.setOnSucceeded(e -> {
+    task.setOnSucceeded(event -> {
       GeminiRecipeService.RecipeResult result = task.getValue();
+
       resultLabel.setText(result.description());
 
-      currentRecipe = new Recipe(extractRecipeName(result.description()));
+      currentRecipe = new Recipe(
+              extractRecipeName(result.description())
+      );
+
       currentRecipe.setSourceLink(result.link());
       currentRecipe.setCookTime("30 min");
       currentRecipe.setDifficulty("Medium");
       currentRecipe.setServings(2);
-      currentRecipe.setPantryIngredients(new ArrayList<>(lastPantryIngredients));
+
+      currentRecipe.setPantryIngredients(
+              new ArrayList<>(lastPantryIngredients)
+      );
+
+      currentRecipe.setMissingIngredients(
+              new ArrayList<>()
+      );
+
+      currentRecipe.setIngredients(
+              new ArrayList<>(lastPantryIngredients)
+      );
+
       currentRecipe.setInstructions(List.of(
               result.description(),
               "Review the listed ingredients.",
@@ -122,8 +148,13 @@ public class RecipeSuggestionController {
         resultLink.setVisible(true);
       }
 
-      if (result.description() != null && !result.description().isBlank()) {
+      if (result.description() != null
+              && !result.description().isBlank()) {
+
         fetchMissingIngredients(result.description());
+
+      } else {
+        viewDetailsButton.setDisable(false);
       }
 
       setStatus("Done", true);
@@ -131,8 +162,12 @@ public class RecipeSuggestionController {
       findButton.setDisable(false);
     });
 
-    task.setOnFailed(e -> {
-      setStatus(task.getException().getMessage(), false);
+    task.setOnFailed(event -> {
+      String message = task.getException() == null
+              ? "Unknown error"
+              : task.getException().getMessage();
+
+      setStatus(message, false);
       progressIndicator.setVisible(false);
       findButton.setDisable(false);
     });
@@ -141,70 +176,185 @@ public class RecipeSuggestionController {
   }
 
   private void fetchMissingIngredients(String recipeDescription) {
-    Task<List<String>> task = new Task<>() {
+
+    Task<GeminiRecipeService.IngredientAnalysis> task = new Task<>() {
       @Override
-      protected List<String> call() throws Exception {
-        List<Ingredient> pantry = firebaseService.getAllIngredients();
-        List<String> pantryNames = pantry.stream().map(Ingredient::getName).collect(Collectors.toList());
-        return geminiService.findMissingIngredients(recipeDescription, pantryNames);
+      protected GeminiRecipeService.IngredientAnalysis call()
+              throws Exception {
+
+        return geminiService.analyzeRecipeIngredients(
+                recipeDescription,
+                lastPantryIngredients
+        );
       }
     };
-    task.setOnSucceeded(e -> {
-      lastMissingIngredients = task.getValue();
+
+    task.setOnSucceeded(event -> {
+      GeminiRecipeService.IngredientAnalysis analysis =
+              task.getValue();
+
+      List<String> usedPantryIngredients =
+              analysis.usedPantryIngredients() == null
+                      ? new ArrayList<>()
+                      : new ArrayList<>(
+                      analysis.usedPantryIngredients()
+              );
+
+      lastMissingIngredients =
+              analysis.missingIngredients() == null
+                      ? new ArrayList<>()
+                      : new ArrayList<>(
+                      analysis.missingIngredients()
+              );
 
       if (currentRecipe != null) {
-        currentRecipe.setMissingIngredients(new ArrayList<>(lastMissingIngredients));
+        currentRecipe.setPantryIngredients(
+                usedPantryIngredients
+        );
+
+        currentRecipe.setMissingIngredients(
+                new ArrayList<>(lastMissingIngredients)
+        );
 
         List<String> allIngredients = new ArrayList<>();
-        allIngredients.addAll(currentRecipe.getPantryIngredients());
+        allIngredients.addAll(usedPantryIngredients);
         allIngredients.addAll(lastMissingIngredients);
+
         currentRecipe.setIngredients(allIngredients);
       }
 
       if (!lastMissingIngredients.isEmpty()) {
-        addMissingButton.setText("Add " + lastMissingIngredients.size() + " missing to Shopping List");
+        addMissingButton.setText(
+                "Add "
+                        + lastMissingIngredients.size()
+                        + " missing to Shopping List"
+        );
+
         addMissingButton.setVisible(true);
+        addMissingButton.setManaged(true);
+
+      } else {
+        addMissingButton.setVisible(false);
+        addMissingButton.setManaged(false);
+
+        setStatus(
+                "You already have the ingredients needed for this recipe.",
+                true
+        );
       }
 
       viewDetailsButton.setDisable(false);
     });
-    task.setOnFailed(e -> {
+
+    task.setOnFailed(event -> {
+      lastMissingIngredients = List.of();
+
+      if (currentRecipe != null) {
+        currentRecipe.setPantryIngredients(
+                new ArrayList<>(lastPantryIngredients)
+        );
+
+        currentRecipe.setMissingIngredients(
+                new ArrayList<>()
+        );
+
+        currentRecipe.setIngredients(
+                new ArrayList<>(lastPantryIngredients)
+        );
+      }
+
+      addMissingButton.setVisible(false);
+      addMissingButton.setManaged(false);
+
+      setStatus(
+              "Recipe found. Showing your pantry ingredients, but the match could not be verified.",
+              false
+      );
+
       viewDetailsButton.setDisable(false);
     });
-    new Thread(task, "gemini-missing-ingredients").start();
+
+    new Thread(
+            task,
+            "gemini-recipe-ingredient-analysis"
+    ).start();
   }
 
   @FXML
   private void onAddMissingToShoppingList() {
-    if (lastMissingIngredients.isEmpty() || !firebaseService.isConnected())
+    if (lastMissingIngredients.isEmpty()
+            || !firebaseService.isConnected()) {
       return;
+    }
+
     String uid = Session.getInstance().getUid();
+
+    if (uid == null || uid.isBlank()) {
+      setStatus("No user is currently signed in.", false);
+      return;
+    }
 
     Task<Void> task = new Task<>() {
       @Override
       protected Void call() throws Exception {
         for (String name : lastMissingIngredients) {
-          firebaseService.addShoppingItem(new ShoppingItem(name, 1.0, "", uid));
+          firebaseService.addShoppingItem(
+                  new ShoppingItem(
+                          name,
+                          1.0,
+                          "",
+                          uid
+                  )
+          );
         }
+
         return null;
       }
     };
-    task.setOnSucceeded(e -> {
+
+    task.setOnSucceeded(event -> {
+      int addedCount = lastMissingIngredients.size();
+
       addMissingButton.setVisible(false);
-      setStatus("Added " + lastMissingIngredients.size() + " item(s) to your shopping list", true);
+      addMissingButton.setManaged(false);
+
+      setStatus(
+              "Added "
+                      + addedCount
+                      + " item(s) to your shopping list",
+              true
+      );
+
       lastMissingIngredients = List.of();
     });
-    task.setOnFailed(e -> setStatus("Failed to add items: " + task.getException().getMessage(), false));
+
+    task.setOnFailed(event -> {
+      String message = task.getException() == null
+              ? "Unknown error"
+              : task.getException().getMessage();
+
+      setStatus(
+              "Failed to add items: " + message,
+              false
+      );
+    });
+
     new Thread(task, "add-missing-shopping").start();
   }
 
   @FXML
   private void onOpenLink() {
     try {
-      if (Desktop.isDesktopSupported())
-        Desktop.getDesktop().browse(new URI(resultLink.getText()));
-    } catch (Exception ex) {
-      setStatus("Could not open link: " + ex.getMessage(), false);
+      if (Desktop.isDesktopSupported()) {
+        Desktop.getDesktop().browse(
+                new URI(resultLink.getText())
+        );
+      }
+    } catch (Exception exception) {
+      setStatus(
+              "Could not open link: " + exception.getMessage(),
+              false
+      );
     }
   }
 
@@ -221,7 +371,8 @@ public class RecipeSuggestionController {
 
   @FXML
   private void onNavRecipes() {
-    /* already here */ }
+    /* already here */
+  }
 
   @FXML
   private void onNavShopping() {
@@ -235,23 +386,36 @@ public class RecipeSuggestionController {
 
   private void nav(Nav.Screen screen) {
     try {
-      Nav.go((Stage) findButton.getScene().getWindow(), screen);
-    } catch (Exception ex) {
-      setStatus("Navigation error: " + ex.getMessage(), false);
+      Nav.go(
+              (Stage) findButton.getScene().getWindow(),
+              screen
+      );
+    } catch (Exception exception) {
+      setStatus(
+              "Navigation error: " + exception.getMessage(),
+              false
+      );
     }
   }
 
   private void setStatus(String message, boolean ok) {
     Platform.runLater(() -> {
       statusLabel.setText(message);
-      statusLabel.setStyle(ok ? "-fx-text-fill: #2e7d32;" : "-fx-text-fill: #c62828;");
+      statusLabel.setStyle(
+              ok
+                      ? "-fx-text-fill: #2e7d32;"
+                      : "-fx-text-fill: #c62828;"
+      );
     });
   }
 
   @FXML
   private void onViewDetails() {
     if (currentRecipe == null) {
-      setStatus("Find a recipe before viewing details.", false);
+      setStatus(
+              "Find a recipe before viewing details.",
+              false
+      );
       return;
     }
 
@@ -264,7 +428,9 @@ public class RecipeSuggestionController {
       return "Suggested Recipe";
     }
 
-    String firstLine = description.split("\\R")[0].trim();
+    String firstLine = description
+            .split("\\R")[0]
+            .trim();
 
     if (firstLine.length() > 60) {
       return firstLine.substring(0, 60) + "...";
