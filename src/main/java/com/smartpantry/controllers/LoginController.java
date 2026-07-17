@@ -17,12 +17,16 @@ public class LoginController {
 
   @FXML
   private TextField emailField;
+
   @FXML
   private PasswordField passwordField;
+
   @FXML
   private Label statusLabel;
+
   @FXML
   private Button loginButton;
+
   @FXML
   private Button signUpButton;
 
@@ -35,14 +39,22 @@ public class LoginController {
 
   @FXML
   private void onSignUp() {
-    attemptAuth(true);
+    try {
+      Nav.go(
+          (Stage) emailField.getScene().getWindow(),
+          Nav.Screen.CREATE_ACCOUNT
+      );
+    } catch (IOException e) {
+      setStatus("Failed to load create account screen", false);
+    }
   }
 
   private void attemptAuth(boolean isSignUp) {
     String email = emailField.getText();
     String password = passwordField.getText();
 
-    if (email == null || email.isBlank() || password == null || password.isBlank()) {
+    if (email == null || email.isBlank()
+        || password == null || password.isBlank()) {
       setStatus("Enter an email and password", false);
       return;
     }
@@ -63,11 +75,18 @@ public class LoginController {
     task.setOnSucceeded(e -> {
       AuthService.AuthResult result = task.getValue();
       Session.getInstance().setUser(result.uid(), result.email());
+
       Platform.runLater(() -> {
         try {
-          Nav.go((Stage) emailField.getScene().getWindow(), Nav.Screen.PANTRY);
+          Nav.go(
+              (Stage) emailField.getScene().getWindow(),
+              Nav.Screen.PANTRY
+          );
         } catch (IOException ex) {
-          setStatus("Failed to load main screen: " + ex.getMessage(), false);
+          setStatus(
+              "Failed to load main screen: " + ex.getMessage(),
+              false
+          );
         }
       });
     });
@@ -84,7 +103,11 @@ public class LoginController {
   private void setStatus(String message, boolean ok) {
     Platform.runLater(() -> {
       statusLabel.setText(message);
-      statusLabel.setStyle(ok ? "-fx-text-fill: #2e7d32;" : "-fx-text-fill: #c62828;");
+      statusLabel.setStyle(
+          ok
+              ? "-fx-text-fill: #2e7d32;"
+              : "-fx-text-fill: #c62828;"
+      );
     });
   }
 }
