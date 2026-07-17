@@ -9,7 +9,7 @@
 
 <VBox alignment="CENTER" spacing="14" prefWidth="400" prefHeight="700"
       style="-fx-background-color: #f5f7f3;"
-      xmlns:fx="http://javafx.com/fxml"
+xmlns="http://javafx.com/javafx/21"
       fx:controller="com.smartpantry.controllers.CreateAccountController">
     <padding>
         <Insets top="35" right="30" bottom="35" left="30" />
@@ -21,6 +21,12 @@
     <PasswordField fx:id="passwordField" promptText="Password" maxWidth="280" />
     <Label fx:id="statusLabel" textFill="#a83232" wrapText="true" />
 
-    <Button text="Create Account" onAction="#handleCreateAccount" maxWidth="280" />
-    <Button text="Back to Login" onAction="#handleBackToLogin" maxWidth="280" />
+   <Button fx:id="createButton"
+        text="Create Account"
+        onAction="#handleCreateAccount"
+        maxWidth="280" />
+<Button fx:id="backButton"
+        text="Back to Login"
+        onAction="#handleBackToLogin"
+        maxWidth="280" />
 </VBox>
