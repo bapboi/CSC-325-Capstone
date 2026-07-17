@@ -210,6 +210,14 @@
                                 onAction="#handleAddMissingToShoppingList"
                                 maxWidth="Infinity"/>
 
+                        <Button fx:id="addAllMissingButton"
+                                text="Add All Missing Ingredients to Shopping List"
+                                onAction="#handleAddAllMissingToShoppingList"
+                                maxWidth="Infinity"
+                                style="-fx-background-color: #2f6b4f;
+                                       -fx-text-fill: white;
+                                       -fx-font-weight: bold;"/>
+
                     </VBox>
 
                 </VBox>
