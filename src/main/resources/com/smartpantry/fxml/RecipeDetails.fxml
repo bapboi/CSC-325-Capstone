@@ -3,27 +3,97 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="12" prefWidth="400" prefHeight="700"
-      style="-fx-background-color: #f5f7f3;"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.smartpantry.controllers.RecipeDetailsController">
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.smartpantry.controllers.RecipeDetailsController"
+      prefWidth="420"
+      prefHeight="760"
+      spacing="12"
+      style="-fx-background-color: white;">
+
     <padding>
-        <Insets top="25" right="20" bottom="25" left="20" />
+        <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
 
-    <Label fx:id="recipeTitleLabel" text="Recipe Details" style="-fx-font-size: 26px; -fx-font-weight: bold;" />
-    <Label text="Ingredients" style="-fx-font-weight: bold;" />
-    <TextArea fx:id="ingredientsTextArea" editable="false" wrapText="true" prefHeight="170" />
-    <Label text="Instructions" style="-fx-font-weight: bold;" />
-    <TextArea fx:id="instructionsTextArea" editable="false" wrapText="true" prefHeight="230" />
+    <Label fx:id="recipeNameLabel"
+           text="Recipe Details"
+           wrapText="true"
+           style="-fx-font-size: 25px;
+                  -fx-font-weight: bold;
+                  -fx-text-fill: #21634D;"/>
 
-    <HBox spacing="8">
-        <Button text="Save" onAction="#handleSaveRecipe" prefWidth="100" />
-        <Button text="Add Missing" onAction="#handleAddMissingToShoppingList" prefWidth="115" />
-        <Button text="Back" onAction="#handleBackToRecipes" prefWidth="100" />
+    <HBox spacing="12">
+        <Label fx:id="cookTimeLabel"
+               text="Cook time: N/A"/>
+
+        <Label fx:id="difficultyLabel"
+               text="Difficulty: N/A"/>
+
+        <Label fx:id="servingsLabel"
+               text="Servings: N/A"/>
     </HBox>
+
+    <Label fx:id="pantryMatchLabel"
+           text="Pantry match: 0%"
+           style="-fx-font-weight: bold;"/>
+
+    <ProgressBar fx:id="pantryMatchProgressBar"
+                 progress="0"
+                 prefWidth="380"
+                 maxWidth="Infinity"/>
+
+    <Label text="Ingredients You Have"
+           style="-fx-font-size: 15px;
+                  -fx-font-weight: bold;"/>
+
+    <ListView fx:id="availableIngredientsListView"
+              prefHeight="110"
+              VBox.vgrow="ALWAYS"/>
+
+    <Label text="Missing Ingredients"
+           style="-fx-font-size: 15px;
+                  -fx-font-weight: bold;"/>
+
+    <ListView fx:id="missingIngredientsListView"
+              prefHeight="110"
+              VBox.vgrow="ALWAYS"/>
+
+    <Label text="Instructions"
+           style="-fx-font-size: 15px;
+                  -fx-font-weight: bold;"/>
+
+    <TextArea fx:id="instructionsTextArea"
+              editable="false"
+              wrapText="true"
+              prefHeight="150"
+              VBox.vgrow="ALWAYS"/>
+
+    <Label fx:id="statusLabel"
+           text=""
+           wrapText="true"
+           minHeight="22"/>
+
+    <Button fx:id="saveButton"
+            text="Save Recipe"
+            onAction="#handleSaveRecipe"
+            maxWidth="Infinity"
+            prefHeight="42"/>
+
+    <Button fx:id="addMissingButton"
+            text="Add Missing Items"
+            onAction="#handleAddMissingToShoppingList"
+            maxWidth="Infinity"
+            prefHeight="42"/>
+
+    <Button text="Back to Recipes"
+            onAction="#handleBackToRecipes"
+            maxWidth="Infinity"
+            prefHeight="42"/>
+
 </VBox>
