@@ -22,7 +22,7 @@
     <top>
         <VBox styleClass="header" spacing="6">
             <Label text="Add Ingredient" styleClass="header-title"/>
-            <Label text="Take or upload a photo" styleClass="header-subtitle"/>
+<Label text="Choose a photo from your device" styleClass="header-subtitle"/>
         </VBox>
     </top>
     <center>
@@ -60,9 +60,6 @@
                     <Label text="or" styleClass="divider-text"/>
                     <Separator HBox.hgrow="ALWAYS"/>
                 </HBox>
-
-                <Button text="Upload from Library" onAction="#onChoosePhoto"
-                        styleClass="upload-button" maxWidth="Infinity"/>
 
                 <VBox spacing="8">
                     <Label text="Ingredient name" styleClass="field-label"/>
