@@ -26,7 +26,10 @@
             <padding><Insets top="14" right="14" bottom="14" left="14"/></padding>
             <HBox spacing="8">
                 <Button text="Refresh" onAction="#onRefresh"/>
-                <Button text="Delete Selected" onAction="#onDelete"/>
+<Button fx:id="deleteButton"
+        text="Delete Selected"
+        onAction="#onDelete"
+        disable="true"/>
             </HBox>
             <ListView fx:id="pantryListView" VBox.vgrow="ALWAYS"/>
         </VBox>
