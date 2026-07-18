@@ -24,13 +24,15 @@ import java.util.List;
 public class PantryDashboardController {
 
   @FXML
-  private Label userLabel;
-  @FXML
-  private Label statusLabel;
-  @FXML
-  private Label statsLabel;
-  @FXML
-  private ListView<Ingredient> pantryListView;
+private Label userLabel;
+@FXML
+private Label statusLabel;
+@FXML
+private Label statsLabel;
+@FXML
+private ListView<Ingredient> pantryListView;
+@FXML
+private Button deleteButton;
 
   private final FirebaseService firebaseService = FirebaseService.getInstance();
   private final ObservableList<Ingredient> items = FXCollections.observableArrayList();
@@ -39,6 +41,11 @@ public class PantryDashboardController {
   public void initialize() {
     userLabel.setText("Pantry — " + Session.getInstance().getEmail());
     pantryListView.setItems(items);
+    pantryListView.getSelectionModel()
+    .selectedItemProperty()
+    .addListener((observable, oldItem, newItem) ->
+        deleteButton.setDisable(newItem == null)
+    );
     pantryListView.setCellFactory(lv -> new IngredientCell());
 
     if (firebaseService.isConnected()) {
