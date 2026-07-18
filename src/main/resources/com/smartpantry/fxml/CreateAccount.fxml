@@ -19,6 +19,9 @@ xmlns="http://javafx.com/javafx/21"
     <TextField fx:id="nameField" promptText="Name" maxWidth="280" />
     <TextField fx:id="emailField" promptText="Email" maxWidth="280" />
     <PasswordField fx:id="passwordField" promptText="Password" maxWidth="280" />
+<PasswordField fx:id="confirmPasswordField"
+               promptText="Confirm Password"
+               maxWidth="280" />
     <Label fx:id="statusLabel" textFill="#a83232" wrapText="true" />
 
    <Button fx:id="createButton"
