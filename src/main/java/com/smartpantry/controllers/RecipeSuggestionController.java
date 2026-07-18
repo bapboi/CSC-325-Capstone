@@ -207,6 +207,11 @@ public class RecipeSuggestionController {
       setStatus("Not connected to Firebase.", false);
       return;
     }
+    String uid = Session.getInstance().getUid();
+    if (uid == null || uid.isBlank()) {
+      setStatus("No user is currently signed in.", false);
+      return;
+    }
     Task<Void> task = new Task<>() {
       @Override
       protected Void call() throws Exception {
