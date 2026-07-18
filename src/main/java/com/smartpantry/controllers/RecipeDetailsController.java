@@ -67,6 +67,8 @@ public class RecipeDetailsController {
   @FXML
   private Button addMissingButton;
   @FXML
+  private Button addAllMissingButton;
+  @FXML
   private Label statusLabel;
 
   private final FirebaseService firebaseService = FirebaseService.getInstance();
@@ -79,6 +81,8 @@ public class RecipeDetailsController {
     if (recipe == null) {
       statusLabel.setText("No recipe selected. Go back and choose one.");
       addMissingButton.setDisable(true);
+      if (addAllMissingButton != null)
+        addAllMissingButton.setDisable(true);
       if (heartButton != null)
         heartButton.setDisable(true);
       return;
@@ -88,6 +92,7 @@ public class RecipeDetailsController {
     loadRecipeImage(recipe);
 
     addMissingButton.setDisable(true);
+    updateAddAllMissingButtonState();
     missingIngredientsListView.getSelectionModel().selectedItemProperty()
         .addListener((obs, old, selected) -> addMissingButton.setDisable(selected == null));
 
@@ -296,6 +301,7 @@ public class RecipeDetailsController {
         recipe.getMissingIngredients().remove(selected);
       missingIngredientsListView.getSelectionModel().clearSelection();
       addMissingButton.setDisable(true);
+      updateAddAllMissingButtonState();
     });
     task.setOnFailed(e -> {
       setStatus("Failed to add: " + task.getException().getMessage(), false);
@@ -303,6 +309,67 @@ public class RecipeDetailsController {
           missingIngredientsListView.getSelectionModel().getSelectedItem() == null);
     });
     new Thread(task, "add-missing-to-shopping").start();
+  }
+
+  /**
+   * Adds every ingredient currently in the "Missing" list to the shopping
+   * list in one action.
+   */
+  @FXML
+  private void handleAddAllMissingToShoppingList() {
+    if (recipe == null) {
+      setStatus("No recipe is selected.", false);
+      return;
+    }
+
+    List<String> missing = new java.util.ArrayList<>(missingIngredientsListView.getItems());
+    if (missing.isEmpty()) {
+      setStatus("No missing ingredients to add.", true);
+      return;
+    }
+    if (!firebaseService.isConnected()) {
+      setStatus("Not connected to Firebase.", false);
+      return;
+    }
+    String uid = Session.getInstance().getUid();
+    if (uid == null || uid.isBlank()) {
+      setStatus("No user is currently signed in.", false);
+      return;
+    }
+
+    addMissingButton.setDisable(true);
+    addAllMissingButton.setDisable(true);
+    setStatus("Adding " + missing.size() + " item(s) to shopping list...", true);
+
+    Task<Void> task = new Task<>() {
+      @Override
+      protected Void call() throws Exception {
+        for (String ingredientName : missing) {
+          firebaseService.addShoppingItem(new ShoppingItem(ingredientName, 1.0, "", uid));
+        }
+        return null;
+      }
+    };
+    task.setOnSucceeded(e -> {
+      setStatus(missing.size() + " item(s) added to shopping list.", true);
+      missingIngredientsListView.getItems().removeAll(missing);
+      if (recipe.getMissingIngredients() != null)
+        recipe.getMissingIngredients().removeAll(missing);
+      missingIngredientsListView.getSelectionModel().clearSelection();
+      addMissingButton.setDisable(true);
+      updateAddAllMissingButtonState();
+    });
+    task.setOnFailed(e -> {
+      setStatus("Failed to add items: " + task.getException().getMessage(), false);
+      updateAddAllMissingButtonState();
+    });
+    new Thread(task, "add-all-missing-to-shopping").start();
+  }
+
+  private void updateAddAllMissingButtonState() {
+    if (addAllMissingButton != null) {
+      addAllMissingButton.setDisable(missingIngredientsListView.getItems().isEmpty());
+    }
   }
 
   @FXML
