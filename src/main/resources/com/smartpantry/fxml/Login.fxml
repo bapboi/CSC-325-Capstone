@@ -12,8 +12,8 @@
       fx:controller="com.smartpantry.controllers.LoginController"
       alignment="CENTER"
       spacing="14"
-      prefWidth="400"
-      prefHeight="700">
+      prefWidth="420"
+prefHeight="760"
     <padding>
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
