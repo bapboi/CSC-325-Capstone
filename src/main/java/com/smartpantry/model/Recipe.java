@@ -72,6 +72,8 @@ public class Recipe {
     Map<String, Object> map = new HashMap<>();
 
     map.put("name", name);
+    map.put("description", description);
+    map.put("prepTime", prepTime);
     map.put("cookTime", cookTime);
     map.put("difficulty", difficulty);
     map.put("servings", servings);
