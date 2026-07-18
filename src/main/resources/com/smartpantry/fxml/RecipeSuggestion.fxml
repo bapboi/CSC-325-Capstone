@@ -2,50 +2,73 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.shape.Circle?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.smartpantry.controllers.RecipeSuggestionController"
-            stylesheets="@styles.css"
-            prefWidth="420" prefHeight="760">
+            prefWidth="420" prefHeight="760"
+            style="-fx-background-color: #f5f7f3;">
+
     <top>
-        <VBox styleClass="header" spacing="4">
-            <Label text="Recipe Suggestions" styleClass="header-title"/>
-            <Label text="Based on your pantry" styleClass="header-subtitle"/>
+
+        <VBox style="-fx-background-color: #2f6b4f;" spacing="4">
+            <padding><Insets top="24" right="20" bottom="16" left="20"/></padding>
+            <Label text="Recipe Suggestions"
+                   style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+            <Label text="Based on what's in your pantry"
+                   style="-fx-font-size: 13px; -fx-text-fill: #c8ddd0;"/>
         </VBox>
     </top>
+
     <center>
-        <VBox spacing="14">
-            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
-            <Button fx:id="findButton" text="Find a Recipe" onAction="#onFindRecipe"
-                    styleClass="save-button" maxWidth="Infinity"/>
-            <ProgressIndicator fx:id="progressIndicator" maxWidth="30" maxHeight="30"/>
+        <VBox spacing="8">
+            <padding><Insets top="12" right="14" bottom="8" left="14"/></padding>
+
+            <!-- Controls row -->
+            <HBox spacing="8" alignment="CENTER_LEFT">
+                <Button fx:id="findButton" text="Find Recipes"
+                        onAction="#onFindRecipe"
+                        style="-fx-background-color: #2f6b4f; -fx-text-fill: white; -fx-font-weight: bold;"/>
+                <Button fx:id="clearCacheButton" text="Clear Cache"
+                        onAction="#onClearCache"
+                        style="-fx-font-size: 11px;"/>
+                <ProgressIndicator fx:id="progressIndicator" maxWidth="22" maxHeight="22"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="cacheLabel" text=""
+                       style="-fx-font-size: 11px; -fx-text-fill: #999; -fx-font-style: italic;"/>
+            </HBox>
+
             <Label fx:id="statusLabel" text="" wrapText="true"/>
-            <Label fx:id="resultLabel" text="" wrapText="true"/>
-            <Hyperlink fx:id="resultLink" text="" onAction="#onOpenLink" wrapText="true"/>
-            <Button fx:id="viewDetailsButton" text="View Recipe Details" onAction="#onViewDetails" maxWidth="Infinity" style="-fx-background-color: #2f6b4f; -fx-text-fill: white;" />
-            <Button fx:id="addMissingButton" text="" onAction="#onAddMissingToShoppingList"
-                    styleClass="upload-button" maxWidth="Infinity"/>
+
+            <ListView fx:id="recipeListView" VBox.vgrow="ALWAYS"
+                      style="-fx-background-color: transparent; -fx-border-color: transparent;"/>
+
+            <Button fx:id="loadMoreButton" text="Load 5 More Recipes"
+                    onAction="#onLoadMore"
+                    maxWidth="Infinity"
+                    style="-fx-background-color: #e8f0ea; -fx-text-fill: #2f6b4f; -fx-font-weight: bold;"/>
         </VBox>
     </center>
+
     <bottom>
-        <HBox xmlns="http://javafx.com/javafx/21" styleClass="nav-bar" alignment="CENTER" spacing="30">
+        <HBox alignment="CENTER" spacing="15" prefHeight="64"
+              style="-fx-background-color: white;
+                     -fx-border-color: #e0e0e0 transparent transparent transparent;
+                     -fx-border-width: 1 0 0 0;">
             <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
-            <Label text="Pantry"   styleClass="nav-item" onMouseClicked="#onNavPantry"   style="-fx-cursor:hand;"/>
-            <Label text="Recipes"  styleClass="nav-item" onMouseClicked="#onNavRecipes"  style="-fx-cursor:hand;"/>
-            <StackPane onMouseClicked="#onNavAdd" style="-fx-cursor:hand;">
-                <Circle radius="22" styleClass="nav-add-circle"/>
-                <Label text="+" styleClass="nav-add-plus"/>
-            </StackPane>
-            <Label text="Shopping" styleClass="nav-item" onMouseClicked="#onNavShopping" style="-fx-cursor:hand;"/>
-            <Label text="Profile"  styleClass="nav-item" onMouseClicked="#onNavProfile"  style="-fx-cursor:hand;"/>
+            <Button text="Pantry"   prefWidth="70"  onAction="#onNavPantry"/>
+            <Button text="Recipes"  prefWidth="70"
+                    style="-fx-font-weight: bold;"/>
+            <Button text="+"        prefWidth="55"  onAction="#onNavAdd"
+                    style="-fx-background-color: #2f6b4f; -fx-text-fill: white; -fx-font-size: 20px;"/>
+            <Button text="Shopping" prefWidth="80"  onAction="#onNavShopping"/>
+            <Button text="Profile"  prefWidth="70"  onAction="#onNavProfile"/>
         </HBox>
     </bottom>
 </BorderPane>

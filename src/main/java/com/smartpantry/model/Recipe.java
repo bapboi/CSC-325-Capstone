@@ -7,170 +7,201 @@ import java.util.Map;
 
 public class Recipe {
 
-    private String id;
-    private String name;
-    private String imageUrl;
-    private String cookTime;
-    private String difficulty;
-    private int servings;
-    private String sourceLink;
-    private String userID;
+  private String id;
+  private String name;
+  private String description;
+  private String imageUrl;
+  private String prepTime;
+  private String cookTime;
+  private String difficulty;
+  private int servings;
+  private String sourceLink;
+  private String userID;
 
-    private List<String> ingredients = new ArrayList<>();
-    private List<String> pantryIngredients = new ArrayList<>();
-    private List<String> missingIngredients = new ArrayList<>();
-    private List<String> instructions = new ArrayList<>();
+  private List<String> ingredients = new ArrayList<>();
+  private List<String> pantryIngredients = new ArrayList<>();
+  private List<String> missingIngredients = new ArrayList<>();
+  private List<String> instructions = new ArrayList<>();
 
-    public Recipe() {
+  public Recipe() {
+  }
+
+  public Recipe(String name) {
+    this.name = name;
+  }
+
+  public String getTotalTime() {
+    if ((prepTime == null || prepTime.isBlank()) && (cookTime == null || cookTime.isBlank()))
+      return "N/A";
+    if (prepTime == null || prepTime.isBlank())
+      return cookTime;
+    if (cookTime == null || cookTime.isBlank())
+      return prepTime;
+    return prepTime + " prep · " + cookTime + " cook";
+  }
+
+  public int getPantryMatchPercent() {
+    int total = pantryIngredients.size() + missingIngredients.size();
+
+    if (total == 0) {
+      return 0;
     }
 
-    public Recipe(String name) {
-        this.name = name;
+    return (int) Math.round((pantryIngredients.size() * 100.0) / total);
+  }
+
+  public String getInstructionsAsText() {
+    if (instructions == null || instructions.isEmpty()) {
+      return "Instructions not available.";
     }
 
-    public int getPantryMatchPercent() {
-        int total = pantryIngredients.size() + missingIngredients.size();
+    StringBuilder text = new StringBuilder();
 
-        if (total == 0) {
-            return 0;
-        }
-
-        return (int) Math.round((pantryIngredients.size() * 100.0) / total);
+    for (int i = 0; i < instructions.size(); i++) {
+      text.append(i + 1)
+          .append(". ")
+          .append(instructions.get(i))
+          .append("\n");
     }
 
-    public String getInstructionsAsText() {
-        if (instructions == null || instructions.isEmpty()) {
-            return "Instructions not available.";
-        }
+    return text.toString();
+  }
 
-        StringBuilder text = new StringBuilder();
+  /** Converts this Recipe into a Firestore-compatible map. */
+  public Map<String, Object> toMap() {
+    Map<String, Object> map = new HashMap<>();
 
-        for (int i = 0; i < instructions.size(); i++) {
-            text.append(i + 1)
-                    .append(". ")
-                    .append(instructions.get(i))
-                    .append("\n");
-        }
+    map.put("name", name);
+    map.put("description", description);
+    map.put("prepTime", prepTime);
+    map.put("cookTime", cookTime);
+    map.put("difficulty", difficulty);
+    map.put("servings", servings);
+    map.put("sourceLink", sourceLink);
+    map.put("imageUrl", imageUrl);
+    map.put("userID", userID);
+    map.put("ingredients", ingredients != null ? ingredients : new ArrayList<>());
+    map.put("pantryIngredients", pantryIngredients != null ? pantryIngredients : new ArrayList<>());
+    map.put("missingIngredients", missingIngredients != null ? missingIngredients : new ArrayList<>());
+    map.put("instructions", instructions != null ? instructions : new ArrayList<>());
 
-        return text.toString();
-    }
+    return map;
+  }
 
-    /** Converts this Recipe into a Firestore-compatible map. */
-    public Map<String, Object> toMap() {
-        Map<String, Object> map = new HashMap<>();
+  // -------------------------
+  // Getters and Setters
+  // -------------------------
 
-        map.put("name", name);
-        map.put("cookTime", cookTime);
-        map.put("difficulty", difficulty);
-        map.put("servings", servings);
-        map.put("sourceLink", sourceLink);
-        map.put("imageUrl", imageUrl);
-        map.put("userID", userID);
-        map.put("ingredients", ingredients != null ? ingredients : new ArrayList<>());
-        map.put("pantryIngredients", pantryIngredients != null ? pantryIngredients : new ArrayList<>());
-        map.put("missingIngredients", missingIngredients != null ? missingIngredients : new ArrayList<>());
-        map.put("instructions", instructions != null ? instructions : new ArrayList<>());
+  public String getId() {
+    return id;
+  }
 
-        return map;
-    }
+  public void setId(String id) {
+    this.id = id;
+  }
 
-    // -------------------------
-    // Getters and Setters
-    // -------------------------
+  public String getName() {
+    return name;
+  }
 
-    public String getId() {
-        return id;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+  public String getImageUrl() {
+    return imageUrl;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public void setImageUrl(String imageUrl) {
+    this.imageUrl = imageUrl;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public String getCookTime() {
+    return cookTime;
+  }
 
-    public String getImageUrl() {
-        return imageUrl;
-    }
+  public void setCookTime(String cookTime) {
+    this.cookTime = cookTime;
+  }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
+  public String getDifficulty() {
+    return difficulty;
+  }
 
-    public String getCookTime() {
-        return cookTime;
-    }
+  public void setDifficulty(String difficulty) {
+    this.difficulty = difficulty;
+  }
 
-    public void setCookTime(String cookTime) {
-        this.cookTime = cookTime;
-    }
+  public int getServings() {
+    return servings;
+  }
 
-    public String getDifficulty() {
-        return difficulty;
-    }
+  public void setServings(int servings) {
+    this.servings = servings;
+  }
 
-    public void setDifficulty(String difficulty) {
-        this.difficulty = difficulty;
-    }
+  public String getSourceLink() {
+    return sourceLink;
+  }
 
-    public int getServings() {
-        return servings;
-    }
+  public void setSourceLink(String sourceLink) {
+    this.sourceLink = sourceLink;
+  }
 
-    public void setServings(int servings) {
-        this.servings = servings;
-    }
+  public String getUserID() {
+    return userID;
+  }
 
-    public String getSourceLink() {
-        return sourceLink;
-    }
+  public void setUserID(String userID) {
+    this.userID = userID;
+  }
 
-    public void setSourceLink(String sourceLink) {
-        this.sourceLink = sourceLink;
-    }
+  public List<String> getIngredients() {
+    return ingredients;
+  }
 
-    public String getUserID() {
-        return userID;
-    }
+  public void setIngredients(List<String> ingredients) {
+    this.ingredients = ingredients;
+  }
 
-    public void setUserID(String userID) {
-        this.userID = userID;
-    }
+  public String getDescription() {
 
-    public List<String> getIngredients() {
-        return ingredients;
-    }
+    return description;
+  }
 
-    public void setIngredients(List<String> ingredients) {
-        this.ingredients = ingredients;
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-    public List<String> getPantryIngredients() {
-        return pantryIngredients;
-    }
+  public List<String> getPantryIngredients() {
+    return pantryIngredients;
+  }
 
-    public void setPantryIngredients(List<String> pantryIngredients) {
-        this.pantryIngredients = pantryIngredients;
-    }
+  public void setPantryIngredients(List<String> pantryIngredients) {
+    this.pantryIngredients = pantryIngredients;
+  }
 
-    public List<String> getMissingIngredients() {
-        return missingIngredients;
-    }
+  public List<String> getMissingIngredients() {
+    return missingIngredients;
+  }
 
-    public void setMissingIngredients(List<String> missingIngredients) {
-        this.missingIngredients = missingIngredients;
-    }
+  public void setMissingIngredients(List<String> missingIngredients) {
+    this.missingIngredients = missingIngredients;
+  }
 
-    public List<String> getInstructions() {
-        return instructions;
-    }
+  public List<String> getInstructions() {
+    return instructions;
+  }
 
-    public void setInstructions(List<String> instructions) {
-        this.instructions = instructions;
-    }
+  public void setInstructions(List<String> instructions) {
+    this.instructions = instructions;
+  }
+
+  public String getPrepTime() {
+    return prepTime;
+  }
+
+  public void setPrepTime(String prepTime) {
+    this.prepTime = prepTime;
+  }
 }
