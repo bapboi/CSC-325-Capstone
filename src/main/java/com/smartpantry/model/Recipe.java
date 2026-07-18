@@ -194,4 +194,12 @@ public class Recipe {
   public void setInstructions(List<String> instructions) {
     this.instructions = instructions;
   }
+
+  public String getPrepTime() {
+    return prepTime;
+  }
+
+  public void setPrepTime(String prepTime) {
+    this.prepTime = prepTime;
+  }
 }

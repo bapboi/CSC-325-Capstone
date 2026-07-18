@@ -17,13 +17,13 @@ import java.util.stream.Collectors;
 
 public class GeminiRecipeService {
 
-  private static final String MODEL = "gemini-2.5-flash-lite";
+  private static final String MODEL = "gemini-3.1-flash-lite";
   private static final String ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/"
       + MODEL + ":generateContent";
 
   private final HttpClient httpClient = HttpClient.newBuilder()
-          .connectTimeout(Duration.ofSeconds(20))
-          .build();
+      .connectTimeout(Duration.ofSeconds(20))
+      .build();
   private final Gson gson = new Gson();
 
   public List<Recipe> findRecipesByPantry(List<String> pantryIngredients) throws GeminiException {
@@ -64,12 +64,7 @@ public class GeminiRecipeService {
     return result;
   }
 
-  // ── Single-recipe API (kept for backwards compat) ─────────────────────────
-
-  /**
-   * Original single-recipe method — kept so any older code that uses it
-   * continues to compile. Returns the first result from findRecipesByPantry.
-   */
+  // single recipe lookup
   public RecipeResult findRecipe(List<String> pantryIngredients) throws GeminiException {
     List<Recipe> recipes = findRecipesByPantry(pantryIngredients);
     if (recipes.isEmpty())
@@ -120,6 +115,7 @@ public class GeminiRecipeService {
     contents.add(content);
     JsonObject body = new JsonObject();
     body.add("contents", contents);
+    body.add("generationConfig", defaultGenerationConfig());
 
     return (JsonObject) callGeminiRaw(body, apiKey, false);
   }
@@ -142,6 +138,7 @@ public class GeminiRecipeService {
     contents.add(content);
     JsonObject body = new JsonObject();
     body.add("contents", contents);
+    body.add("generationConfig", defaultGenerationConfig());
 
     String rawText = (String) callGeminiRaw(body, apiKey, true);
     String clean = rawText.replaceAll("(?s)```json\\s*|```", "").trim();
@@ -182,6 +179,7 @@ public class GeminiRecipeService {
     contents.add(content);
     JsonObject body = new JsonObject();
     body.add("contents", contents);
+    body.add("generationConfig", defaultGenerationConfig());
 
     String text = (String) callGeminiRaw(body, apiKey, true);
     text = text.replaceAll("(?s)```json\\s*|```", "").trim();
@@ -249,11 +247,11 @@ public class GeminiRecipeService {
 
     JsonObject body = buildBodyWithSearch(prompt);
     HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(ENDPOINT))
-            .header("Content-Type", "application/json")
-            .header("x-goog-api-key", apiKey)
-            .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(body)))
-            .build();
+        .uri(URI.create(ENDPOINT))
+        .header("Content-Type", "application/json")
+        .header("x-goog-api-key", apiKey)
+        .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(body)))
+        .build();
 
     try {
       HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -276,11 +274,7 @@ public class GeminiRecipeService {
             + " You may have exceeded your Gemini quota — try again later.");
       }
 
-      String rawText = candidates.get(0).getAsJsonObject()
-          .getAsJsonObject("content")
-          .getAsJsonArray("parts")
-          .get(0).getAsJsonObject()
-          .get("text").getAsString().trim();
+      String rawText = extractCandidateText(candidates.get(0).getAsJsonObject());
 
       String clean = rawText.replaceAll("(?s)```json\\s*|```", "").trim();
       int start = clean.indexOf('[');
@@ -324,11 +318,7 @@ public class GeminiRecipeService {
             "Gemini returned no results. You may have exceeded your quota.");
       }
 
-      String rawText = candidates.get(0).getAsJsonObject()
-          .getAsJsonObject("content")
-          .getAsJsonArray("parts")
-          .get(0).getAsJsonObject()
-          .get("text").getAsString().trim();
+      String rawText = extractCandidateText(candidates.get(0).getAsJsonObject());
 
       if (returnText)
         return rawText;
@@ -346,6 +336,33 @@ public class GeminiRecipeService {
     } catch (Exception e) {
       throw new GeminiException("Network error: " + e.getMessage());
     }
+  }
+
+  // gemini candidate parsing to fix null return
+  private String extractCandidateText(JsonObject candidate) throws GeminiException {
+    JsonObject content = candidate.has("content") && candidate.get("content").isJsonObject()
+        ? candidate.getAsJsonObject("content")
+        : null;
+
+    JsonArray parts = (content != null && content.has("parts") && content.get("parts").isJsonArray())
+        ? content.getAsJsonArray("parts")
+        : null;
+
+    if (parts == null || parts.size() == 0) {
+      String finishReason = candidate.has("finishReason")
+          ? candidate.get("finishReason").getAsString()
+          : "unknown";
+      throw new GeminiException(
+          "Gemini returned an empty response (finishReason: " + finishReason + "). "
+              + "This usually means it ran out of output tokens or the response was filtered — try again.");
+    }
+
+    JsonObject firstPart = parts.get(0).getAsJsonObject();
+    if (!firstPart.has("text")) {
+      throw new GeminiException("Gemini response part had no text field.");
+    }
+
+    return firstPart.get("text").getAsString().trim();
   }
 
   private List<Recipe> parseRecipesJson(String json) {
@@ -402,7 +419,19 @@ public class GeminiRecipeService {
     JsonObject body = new JsonObject();
     body.add("contents", contents);
     body.add("tools", tools);
+    body.add("generationConfig", defaultGenerationConfig());
     return body;
+  }
+
+  // generation config for gemini flash
+  private JsonObject defaultGenerationConfig() {
+    JsonObject thinkingConfig = new JsonObject();
+    thinkingConfig.addProperty("thinkingBudget", 0);
+
+    JsonObject generationConfig = new JsonObject();
+    generationConfig.addProperty("maxOutputTokens", 4096);
+    generationConfig.add("thinkingConfig", thinkingConfig);
+    return generationConfig;
   }
 
   private String getApiKey() throws GeminiException {

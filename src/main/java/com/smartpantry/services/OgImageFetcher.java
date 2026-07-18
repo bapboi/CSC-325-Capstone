@@ -9,18 +9,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Fetches a reliable thumbnail image URL for a recipe by reading the
- * Open Graph ("og:image") meta tag from the recipe's source page.
- *
- * Gemini-provided imageUrl values are frequently missing, expired, or
- * point at pages rather than direct image files, so this is used as a
- * fallback whenever a recipe's own imageUrl fails to load.
- *
- * Results are cached in-memory (per source URL) since the same recipe
- * page may be looked up multiple times across the suggestion list and
- * the details screen.
- */
 public class OgImageFetcher {
 
   private static final Pattern OG_IMAGE_PATTERN = Pattern.compile(
@@ -42,13 +30,6 @@ public class OgImageFetcher {
   private OgImageFetcher() {
   }
 
-  /**
-   * Returns a direct image URL scraped from the page's og:image meta tag,
-   * or null if the page has none or could not be fetched.
-   *
-   * Safe to call from a background thread only — this makes a blocking
-   * network request.
-   */
   public static String fetchImageUrl(String pageUrl) {
     if (pageUrl == null || pageUrl.isBlank()) {
       return null;
@@ -62,6 +43,14 @@ public class OgImageFetcher {
     String result = fetchFresh(pageUrl);
     cache.put(pageUrl, result == null ? NO_IMAGE : result);
     return result;
+  }
+
+  /**
+   * Alias for fetchImageUrl(String) — kept so existing callers written
+   * against the shorter name (e.g. OgImageFetcher.fetch(url)) still compile.
+   */
+  public static String fetch(String pageUrl) {
+    return fetchImageUrl(pageUrl);
   }
 
   private static String fetchFresh(String pageUrl) {
@@ -100,7 +89,6 @@ public class OgImageFetcher {
     }
   }
 
-  /** Clears the in-memory og:image cache. */
   public static void clearCache() {
     cache.clear();
   }
