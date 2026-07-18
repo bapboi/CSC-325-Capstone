@@ -18,7 +18,7 @@
     <top>
         <VBox styleClass="header" spacing="4">
             <Label text="Recipe Suggestions" styleClass="header-title"/>
-            <Label text="Searches the web based on your pantry" styleClass="header-subtitle"/>
+            <Label text="Based on your pantry" styleClass="header-subtitle"/>
         </VBox>
     </top>
     <center>
