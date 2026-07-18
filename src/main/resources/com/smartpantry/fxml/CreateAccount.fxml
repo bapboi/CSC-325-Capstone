@@ -16,7 +16,6 @@ xmlns="http://javafx.com/javafx/21"
     </padding>
 
     <Label text="Create Account" style="-fx-font-size: 26px; -fx-font-weight: bold;" />
-    <TextField fx:id="nameField" promptText="Name" maxWidth="280" />
     <TextField fx:id="emailField" promptText="Email" maxWidth="280" />
     <PasswordField fx:id="passwordField" promptText="Password" maxWidth="280" />
 <PasswordField fx:id="confirmPasswordField"
