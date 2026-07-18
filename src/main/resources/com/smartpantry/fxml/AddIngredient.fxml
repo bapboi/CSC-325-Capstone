@@ -36,15 +36,24 @@
                     <Button fx:id="connectButton" text="Connect Firebase" onAction="#onConnectFirebase" styleClass="link-button"/>
                 </HBox>
 
-                <VBox styleClass="photo-drop-zone" alignment="CENTER" spacing="10"
-                      prefHeight="180" onMouseClicked="#onChoosePhoto">
-                    <StackPane>
-                        <Circle radius="32" styleClass="photo-icon-circle"/>
-                        <Label text="&#128247;" style="-fx-font-size: 26px;"/>
-                    </StackPane>
-                    <Label fx:id="photoStatusTitle" text="Take Photo" styleClass="photo-title"/>
-                    <Label fx:id="photoStatusSubtitle" text="Tap to open camera" styleClass="photo-subtitle"/>
-                </VBox>
+                <VBox styleClass="photo-drop-zone"
+      alignment="CENTER"
+      spacing="10"
+      prefHeight="180"
+      onMouseClicked="#onChoosePhoto">
+    <StackPane>
+        <Circle radius="32" styleClass="photo-icon-circle"/>
+        <Label text="&#128247;" style="-fx-font-size: 26px;"/>
+    </StackPane>
+
+    <Label fx:id="photoStatusTitle"
+           text="Choose Ingredient Photo"
+           styleClass="photo-title"/>
+
+    <Label fx:id="photoStatusSubtitle"
+           text="Select an image from your device"
+           styleClass="photo-subtitle"/>
+</VBox>
 
                 <HBox alignment="CENTER" spacing="10">
                     <Separator HBox.hgrow="ALWAYS"/>
@@ -77,8 +86,10 @@
                     <DatePicker fx:id="expirationDatePicker" maxWidth="Infinity"/>
                 </VBox>
 
-                <Button text="Add to Pantry" onAction="#onSave"
-                        styleClass="save-button" maxWidth="Infinity"/>
+                <Button text="Choose Photo from Library"
+        onAction="#onChoosePhoto"
+        styleClass="upload-button"
+        maxWidth="Infinity"/>
 
                 <VBox spacing="8">
                     <HBox alignment="CENTER_LEFT" spacing="10">
