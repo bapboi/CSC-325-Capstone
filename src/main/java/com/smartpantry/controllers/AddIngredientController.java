@@ -232,8 +232,8 @@ public class AddIngredientController {
     categoryField.clear();
     expirationDatePicker.setValue(null);
     selectedPhotoFile = null;
-    photoStatusTitle.setText("Take Photo");
-    photoStatusSubtitle.setText("Tap to open camera");
+photoStatusTitle.setText("Choose Ingredient Photo");
+photoStatusSubtitle.setText("Select an image from your device");
   }
 
   private void setStatus(String message, boolean ok) {
