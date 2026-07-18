@@ -7,7 +7,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" spacing="14" prefWidth="400" prefHeight="700"
+<VBox alignment="CENTER" spacing="14" prefWidth="420" prefHeight="760"
       style="-fx-background-color: #f5f7f3;"
 xmlns="http://javafx.com/javafx/21"
       fx:controller="com.smartpantry.controllers.CreateAccountController">
