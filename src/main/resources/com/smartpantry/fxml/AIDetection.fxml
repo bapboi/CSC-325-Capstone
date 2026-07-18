@@ -13,8 +13,8 @@
 <BorderPane xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.smartpantry.controllers.AIDetectionController"
-            prefWidth="400"
-            prefHeight="700"
+            prefWidth="420"
+prefHeight="760"
             style="-fx-background-color: white;">
 
     <top>
