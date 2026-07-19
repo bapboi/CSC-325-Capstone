@@ -2,49 +2,76 @@ package com.smartpantry.controllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
 import javafx.stage.Stage;
-
-import java.io.IOException;
 
 public class SettingsController {
 
     @FXML
-    private CheckBox notificationsCheckBox;
-
-    @FXML
-    private ComboBox<String> themeComboBox;
-
-    @FXML
-    private void initialize() {
-        notificationsCheckBox.setSelected(true);
-        themeComboBox.getItems().addAll("Light", "Dark", "System Default");
-        themeComboBox.getSelectionModel().select("Light");
+    public void initialize() {
+        // No setup is needed for this screen right now.
     }
 
     @FXML
-    private void handleSaveSettings() {
-        String notifications = notificationsCheckBox.isSelected() ? "on" : "off";
-        String theme = themeComboBox.getValue();
-
-        showInfo("Settings Saved", "Notifications: " + notifications + "\nTheme: " + theme);
+    private void onChangePassword() {
+        showNotImplementedMessage();
     }
 
     @FXML
-    private void handleBackToPantry() {
-        try {
-            Nav.go((Stage) notificationsCheckBox.getScene().getWindow(), Nav.Screen.PANTRY);
-        } catch (IOException e) {
-            showInfo("Navigation Error", "Failed to load pantry screen: " + e.getMessage());
-        }
+    private void onDeleteAccount() {
+        showNotImplementedMessage();
     }
 
-    private void showInfo(String title, String message) {
+    @FXML
+    private void onBackToProfile() {
+        nav(Nav.Screen.PROFILE);
+    }
+
+    @FXML
+    private void onNavPantry() {
+        nav(Nav.Screen.PANTRY);
+    }
+
+    @FXML
+    private void onNavRecipes() {
+        nav(Nav.Screen.RECIPES);
+    }
+
+    @FXML
+    private void onNavAdd() {
+        nav(Nav.Screen.ADD);
+    }
+
+    @FXML
+    private void onNavShopping() {
+        nav(Nav.Screen.SHOPPING);
+    }
+
+    @FXML
+    private void onNavProfile() {
+        nav(Nav.Screen.PROFILE);
+    }
+
+    private void showNotImplementedMessage() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
+        alert.setTitle("Coming Soon");
         alert.setHeaderText(null);
-        alert.setContentText(message);
+        alert.setContentText("This feature is not implemented in the current version.");
         alert.showAndWait();
+    }
+
+    private void nav(Nav.Screen screen) {
+        try {
+            Stage stage = (Stage) Stage.getWindows()
+                    .stream()
+                    .filter(window -> window.isShowing())
+                    .findFirst()
+                    .orElse(null);
+
+            if (stage != null) {
+                Nav.go(stage, screen);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }

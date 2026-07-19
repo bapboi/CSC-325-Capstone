@@ -4,143 +4,348 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
 
-<VBox alignment="TOP_CENTER"
-      spacing="0"
-      prefWidth="390"
-      prefHeight="844"
-      xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml">
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.smartpantry.controllers.ProfileController"
+            prefWidth="420"
+            prefHeight="760"
+            style="-fx-background-color: #F7F7F7;">
 
-    <VBox alignment="CENTER"
-          spacing="8"
-          prefHeight="200"
-          prefWidth="390"
-          style="-fx-background-color: #2f6b4f;">
+    <top>
+        <VBox alignment="CENTER"
+              spacing="7"
+              prefHeight="195"
+              style="-fx-background-color: #21634D;">
 
-        <Label text="J"
-               alignment="CENTER"
-               prefWidth="70"
-               prefHeight="70"
-               style="-fx-background-color: #7fab8a;
-                      -fx-background-radius: 40;
-                      -fx-text-fill: white;
-                      -fx-font-size: 28px;" />
+            <padding>
+                <Insets top="24"
+                        right="18"
+                        bottom="22"
+                        left="18"/>
+            </padding>
 
-        <Label text="Jane Smith"
-               style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;" />
+            <StackPane>
+                <Circle radius="31"
+                        style="-fx-fill: #83B394;"/>
 
-        <Label text="jane@example.com"
-               style="-fx-text-fill: white; -fx-font-size: 12px;" />
+                <Label text="♙"
+                       alignment="CENTER"
+                       style="-fx-font-size: 28px;
+                              -fx-text-fill: white;"/>
+            </StackPane>
 
-    </VBox>
-
-    <ScrollPane fitToWidth="true"
-                prefWidth="390"
-                prefHeight="580"
-                style="-fx-background-color: transparent;">
-
-        <VBox spacing="18" style="-fx-padding: 15;">
-
-            <HBox spacing="14" alignment="CENTER">
-
-                <VBox alignment="CENTER"
-                      spacing="4"
-                      prefWidth="145"
-                      prefHeight="65"
-                      style="-fx-background-color: white;
-                             -fx-border-color: lightgray;
-                             -fx-border-radius: 20;
-                             -fx-background-radius: 20;">
-
-                    <Label text="12"
-                           style="-fx-text-fill: #2f6b4f; -fx-font-size: 18px; -fx-font-weight: bold;" />
-
-                    <Label text="Ingredients"
-                           style="-fx-text-fill: gray; -fx-font-size: 11px;" />
-
-                </VBox>
-
-                <VBox alignment="CENTER"
-                      spacing="4"
-                      prefWidth="145"
-                      prefHeight="65"
-                      style="-fx-background-color: white;
-                             -fx-border-color: lightgray;
-                             -fx-border-radius: 20;
-                             -fx-background-radius: 20;">
-
-                    <Label text="3"
-                           style="-fx-text-fill: #2f6b4f; -fx-font-size: 18px; -fx-font-weight: bold;" />
-
-                    <Label text="Saved"
-                           style="-fx-text-fill: gray; -fx-font-size: 11px;" />
-
-                </VBox>
-
-            </HBox>
-
-            <Label text="ACCOUNT"
-                   style="-fx-text-fill: gray; -fx-font-size: 12px;" />
-
-            <VBox spacing="12"
-                  style="-fx-background-color: white;
-                         -fx-border-color: lightgray;
-                         -fx-border-radius: 18;
-                         -fx-background-radius: 18;
-                         -fx-padding: 14;">
-
-                <HBox>
-                    <Label text="Full Name" style="-fx-text-fill: gray;"/>
-                    <Label text="Jane Smith   >" style="-fx-font-weight: bold;"/>
-                </HBox>
-
-                <HBox>
-                    <Label text="Email" style="-fx-text-fill: gray;"/>
-                    <Label text="jane@example.com   >" style="-fx-font-weight: bold;"/>
-                </HBox>
-
-            </VBox>
-
-            <Label text="APP"
-                   style="-fx-text-fill: gray; -fx-font-size: 12px;" />
-
-            <VBox spacing="12"
-                  style="-fx-background-color: white;
-                         -fx-border-color: lightgray;
-                         -fx-border-radius: 18;
-                         -fx-background-radius: 18;
-                         -fx-padding: 14;">
-
-                <HBox>
-                    <Label text="Settings" style="-fx-text-fill: gray;"/>
-                    <Label text=">" />
-                </HBox>
-
-                <HBox>
-                    <Label text="Version" style="-fx-text-fill: gray;"/>
-                    <Label text="1.0.0" />
-                </HBox>
-
-            </VBox>
-
-            <Button text="Sign Out"
-                    prefWidth="330"
-                    style="-fx-background-color: #2f6b4f; -fx-text-fill: white;"/>
-
+            <Label fx:id="headerEmailLabel"
+                   text=""
+                   style="-fx-font-size: 12px;
+                          -fx-text-fill: #E8F2ED;"/>
         </VBox>
+    </top>
 
-    </ScrollPane>
+    <center>
+        <ScrollPane fitToWidth="true"
+                    hbarPolicy="NEVER"
+                    style="-fx-background-color: transparent;
+                           -fx-background: transparent;">
 
-    <HBox alignment="CENTER" spacing="15" prefHeight="64">
-        <Button text="Pantry" prefWidth="70"/>
-        <Button text="Recipes" prefWidth="70"/>
-        <Button text="+" prefWidth="55"
-                style="-fx-background-color: #2f6b4f; -fx-text-fill: white; -fx-font-size: 20px;"/>
-        <Button text="Shopping" prefWidth="80"/>
-        <Button text="Profile" prefWidth="70"/>
-    </HBox>
+            <VBox spacing="15"
+                  style="-fx-background-color: #F7F7F7;">
 
-</VBox>
+                <padding>
+                    <Insets top="14"
+                            right="18"
+                            bottom="20"
+                            left="18"/>
+                </padding>
+
+                <HBox alignment="CENTER"
+                      spacing="12">
+
+                    <VBox alignment="CENTER"
+                          spacing="5"
+                          prefWidth="180">
+
+                        <Label text="Ingredients"
+                               style="-fx-font-size: 11px;
+                                      -fx-text-fill: #777777;"/>
+
+                        <HBox alignment="CENTER"
+                              spacing="8"
+                              prefWidth="180"
+                              prefHeight="54"
+                              onMouseClicked="#onIngredientCountClicked"
+                              style="-fx-background-color: white;
+                                     -fx-background-radius: 24;
+                                     -fx-border-color: #CFCFCF;
+                                     -fx-border-radius: 24;
+                                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.16), 4, 0, 0, 2);
+                                     -fx-cursor: hand;">
+
+                            <Label fx:id="ingredientCountLabel"
+                                   text="0"
+                                   style="-fx-font-size: 18px;
+                                          -fx-font-weight: bold;
+                                          -fx-text-fill: #21634D;"/>
+
+                            <Label text="›"
+                                   style="-fx-font-size: 18px;
+                                          -fx-text-fill: #A0A0A0;"/>
+                        </HBox>
+                    </VBox>
+
+                    <VBox alignment="CENTER"
+                          spacing="5"
+                          prefWidth="180">
+
+                        <Label text="Saved Recipes"
+                               style="-fx-font-size: 11px;
+                                      -fx-text-fill: #777777;"/>
+
+                        <HBox alignment="CENTER"
+                              spacing="8"
+                              prefWidth="180"
+                              prefHeight="54"
+                              onMouseClicked="#onSavedRecipesClicked"
+                              style="-fx-background-color: white;
+                                     -fx-background-radius: 24;
+                                     -fx-border-color: #CFCFCF;
+                                     -fx-border-radius: 24;
+                                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.16), 4, 0, 0, 2);
+                                     -fx-cursor: hand;">
+
+                            <Label fx:id="savedRecipeCountLabel"
+                                   text="0"
+                                   style="-fx-font-size: 18px;
+                                          -fx-font-weight: bold;
+                                          -fx-text-fill: #21634D;"/>
+
+                            <Label text="›"
+                                   style="-fx-font-size: 18px;
+                                          -fx-text-fill: #A0A0A0;"/>
+                        </HBox>
+                    </VBox>
+                </HBox>
+
+                <Label text="ACCOUNT"
+                       style="-fx-font-size: 11px;
+                              -fx-font-weight: bold;
+                              -fx-text-fill: #777777;"/>
+
+                <VBox spacing="0"
+                      style="-fx-background-color: white;
+                             -fx-background-radius: 22;
+                             -fx-border-color: #CFCFCF;
+                             -fx-border-radius: 22;">
+
+                    <HBox alignment="CENTER_LEFT"
+                          prefHeight="55">
+
+                        <padding>
+                            <Insets top="12"
+                                    right="16"
+                                    bottom="12"
+                                    left="16"/>
+                        </padding>
+
+                        <Label text="Email"
+                               style="-fx-font-size: 11px;
+                                      -fx-text-fill: #888888;"/>
+
+                        <Region HBox.hgrow="ALWAYS"/>
+
+                        <Label fx:id="accountEmailLabel"
+                               text=""
+                               style="-fx-font-size: 12px;
+                                      -fx-font-weight: bold;
+                                      -fx-text-fill: #222222;"/>
+                    </HBox>
+                </VBox>
+
+                <Label text="APP"
+                       style="-fx-font-size: 11px;
+                              -fx-font-weight: bold;
+                              -fx-text-fill: #777777;"/>
+
+                <VBox spacing="0"
+                      style="-fx-background-color: white;
+                             -fx-background-radius: 22;
+                             -fx-border-color: #CFCFCF;
+                             -fx-border-radius: 22;">
+
+                    <HBox alignment="CENTER_LEFT"
+                          prefHeight="55"
+                          onMouseClicked="#onNavSettings"
+                          style="-fx-cursor: hand;">
+
+                        <padding>
+                            <Insets top="12"
+                                    right="16"
+                                    bottom="12"
+                                    left="16"/>
+                        </padding>
+
+                        <Label text="Settings"
+                               style="-fx-font-size: 12px;
+                                      -fx-text-fill: #777777;"/>
+
+                        <Region HBox.hgrow="ALWAYS"/>
+
+                        <Label text="›"
+                               style="-fx-font-size: 17px;
+                                      -fx-text-fill: #A0A0A0;"/>
+                    </HBox>
+
+                    <Region prefHeight="1"
+                            style="-fx-background-color: #E1E1E1;"/>
+
+                    <HBox alignment="CENTER_LEFT"
+                          prefHeight="55">
+
+                        <padding>
+                            <Insets top="12"
+                                    right="16"
+                                    bottom="12"
+                                    left="16"/>
+                        </padding>
+
+                        <Label text="Version"
+                               style="-fx-font-size: 12px;
+                                      -fx-text-fill: #777777;"/>
+
+                        <Region HBox.hgrow="ALWAYS"/>
+
+                        <Label fx:id="versionLabel"
+                               text="1.0.0"
+                               style="-fx-font-size: 12px;
+                                      -fx-text-fill: #999999;"/>
+                    </HBox>
+                </VBox>
+
+                <Button text="Sign Out"
+                        onAction="#onSignOut"
+                        maxWidth="Infinity"
+                        prefHeight="46"
+                        focusTraversable="false"
+                        style="-fx-background-color: #416E50;
+                               -fx-background-radius: 12;
+                               -fx-text-fill: white;
+                               -fx-font-size: 15px;
+                               -fx-font-weight: bold;
+                               -fx-cursor: hand;"/>
+            </VBox>
+        </ScrollPane>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER"
+              spacing="0"
+              prefHeight="72"
+              style="-fx-background-color: white;
+                     -fx-border-color: #E4E4E4;
+                     -fx-border-width: 1 0 0 0;">
+
+            <padding>
+                <Insets top="8"
+                        right="12"
+                        bottom="8"
+                        left="12"/>
+            </padding>
+
+            <VBox alignment="CENTER"
+                  spacing="3"
+                  prefWidth="76"
+                  onMouseClicked="#onNavPantry"
+                  style="-fx-cursor: hand;">
+
+                <Label text="⌂"
+                       alignment="CENTER"
+                       prefWidth="28"
+                       prefHeight="28"
+                       style="-fx-font-size: 22px;
+                              -fx-text-fill: #A5A5A5;"/>
+
+                <Label text="Pantry"
+                       style="-fx-font-size: 11px;
+                              -fx-text-fill: #777777;"/>
+            </VBox>
+
+            <VBox alignment="CENTER"
+                  spacing="3"
+                  prefWidth="76"
+                  onMouseClicked="#onNavRecipes"
+                  style="-fx-cursor: hand;">
+
+                <Label text="▤"
+                       alignment="CENTER"
+                       prefWidth="28"
+                       prefHeight="28"
+                       style="-fx-font-size: 22px;
+                              -fx-text-fill: #A5A5A5;"/>
+
+                <Label text="Recipes"
+                       style="-fx-font-size: 11px;
+                              -fx-text-fill: #777777;"/>
+            </VBox>
+
+            <VBox alignment="CENTER"
+                  prefWidth="76">
+
+                <StackPane onMouseClicked="#onNavAdd"
+                           style="-fx-cursor: hand;">
+
+                    <Circle radius="24"
+                            style="-fx-fill: #21634D;"/>
+
+                    <Label text="+"
+                           style="-fx-font-size: 28px;
+                                  -fx-font-weight: bold;
+                                  -fx-text-fill: white;"/>
+                </StackPane>
+            </VBox>
+
+            <VBox alignment="CENTER"
+                  spacing="3"
+                  prefWidth="76"
+                  onMouseClicked="#onNavShopping"
+                  style="-fx-cursor: hand;">
+
+                <Label text="⌑"
+                       alignment="CENTER"
+                       prefWidth="28"
+                       prefHeight="28"
+                       style="-fx-font-size: 22px;
+                              -fx-text-fill: #A5A5A5;"/>
+
+                <Label text="Shopping"
+                       style="-fx-font-size: 11px;
+                              -fx-text-fill: #777777;"/>
+            </VBox>
+
+            <VBox alignment="CENTER"
+                  spacing="3"
+                  prefWidth="76"
+                  onMouseClicked="#onNavProfile"
+                  style="-fx-cursor: hand;">
+
+                <Label text="♙"
+                       alignment="CENTER"
+                       prefWidth="28"
+                       prefHeight="28"
+                       style="-fx-font-size: 25px;
+                              -fx-text-fill: #21634D;"/>
+
+                <Label text="Profile"
+                       style="-fx-font-size: 11px;
+                              -fx-font-weight: bold;
+                              -fx-text-fill: #21634D;"/>
+            </VBox>
+        </HBox>
+    </bottom>
+
+</BorderPane>
