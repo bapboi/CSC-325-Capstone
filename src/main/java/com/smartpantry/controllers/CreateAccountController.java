@@ -10,34 +10,24 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 
 public class CreateAccountController {
 
-    @FXML private TextField nameField;
     @FXML private TextField emailField;
     @FXML private PasswordField passwordField;
-    @FXML private PasswordField confirmPasswordField;
     @FXML private Label statusLabel;
     @FXML private Button createButton;
-    @FXML private Button backButton;
 
     private final AuthService authService = new AuthService();
 
     @FXML
     private void handleCreateAccount() {
-        String name     = nameField.getText().trim();
         String email    = emailField.getText().trim();
         String password = passwordField.getText();
-        String confirm  = confirmPasswordField.getText();
 
-        if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
+        if (email.isEmpty() || password.isEmpty()) {
             setStatus("Complete all fields before creating an account.", false);
-            return;
-        }
-        if (!password.equals(confirm)) {
-            setStatus("Passwords do not match.", false);
             return;
         }
 
@@ -66,7 +56,7 @@ public class CreateAccountController {
     }
 
     @FXML
-    private void handleBackToLogin() {
+    private void onSignInToggle() {
         goTo(Nav.Screen.LOGIN);
     }
 
