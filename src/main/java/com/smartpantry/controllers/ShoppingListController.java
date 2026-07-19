@@ -1,5 +1,6 @@
 package com.smartpantry.controllers;
 
+import com.smartpantry.model.Ingredient;
 import com.smartpantry.model.ShoppingItem;
 import com.smartpantry.services.FirebaseService;
 import com.smartpantry.services.Session;
@@ -21,12 +22,16 @@ public class ShoppingListController {
 
   @FXML
   private TextField nameField;
+
   @FXML
   private TextField quantityField;
+
   @FXML
   private TextField unitField;
+
   @FXML
   private Label statusLabel;
+
   @FXML
   private ListView<ShoppingItem> listView;
 
@@ -36,7 +41,7 @@ public class ShoppingListController {
   @FXML
   public void initialize() {
     listView.setItems(items);
-    listView.setCellFactory(lv -> new ShoppingCell());
+    listView.setCellFactory(list -> new ShoppingCell());
     onRefresh();
   }
 
@@ -46,37 +51,72 @@ public class ShoppingListController {
       setStatus("Not connected to Firebase", false);
       return;
     }
+
     Task<List<ShoppingItem>> task = new Task<>() {
       @Override
       protected List<ShoppingItem> call() throws Exception {
         return firebaseService.getShoppingList();
       }
     };
-    task.setOnSucceeded(e -> {
+
+    task.setOnSucceeded(event -> {
       items.setAll(task.getValue());
-      long done = items.stream().filter(ShoppingItem::isChecked).count();
-      setStatus(done + "/" + items.size() + " checked", true);
+      updateItemCount();
     });
-    task.setOnFailed(e -> setStatus("Load failed: " + task.getException().getMessage(), false));
-    new Thread(task, "shopping-load").start();
+
+    task.setOnFailed(event -> {
+      setStatus("Load failed: " + task.getException().getMessage(), false);
+    });
+
+    Thread thread = new Thread(task, "shopping-load");
+    thread.setDaemon(true);
+    thread.start();
   }
 
   @FXML
   private void onAdd() {
     String name = nameField.getText();
+
     if (name == null || name.isBlank()) {
       setStatus("Enter an item name", false);
       return;
     }
-    double qty;
+
+    String cleanedName = name.trim();
+
+    if (alreadyInShoppingList(cleanedName)) {
+      setStatus("\"" + cleanedName + "\" is already in your shopping list", false);
+      return;
+    }
+
+    double quantity;
+
     try {
-      qty = quantityField.getText().isBlank() ? 1.0 : Double.parseDouble(quantityField.getText());
-    } catch (NumberFormatException ex) {
+      String quantityText = quantityField.getText();
+
+      if (quantityText == null || quantityText.isBlank()) {
+        quantity = 1.0;
+      } else {
+        quantity = Double.parseDouble(quantityText);
+      }
+    } catch (NumberFormatException exception) {
       setStatus("Quantity must be a number", false);
       return;
     }
 
-    ShoppingItem item = new ShoppingItem(name.trim(), qty, unitField.getText(), Session.getInstance().getUid());
+    String unit = unitField.getText();
+
+    if (unit == null) {
+      unit = "";
+    }
+
+    ShoppingItem item = new ShoppingItem(
+            cleanedName,
+            quantity,
+            unit.trim(),
+            Session.getInstance().getUid()
+    );
+
     Task<Void> task = new Task<>() {
       @Override
       protected Void call() throws Exception {
@@ -84,34 +124,67 @@ public class ShoppingListController {
         return null;
       }
     };
-    task.setOnSucceeded(e -> {
+
+    task.setOnSucceeded(event -> {
       nameField.clear();
-      quantityField.clear();
+      quantityField.setText("1");
       unitField.clear();
       onRefresh();
     });
-    task.setOnFailed(e -> setStatus("Add failed: " + task.getException().getMessage(), false));
-    new Thread(task, "shopping-add").start();
+
+    task.setOnFailed(event -> {
+      setStatus("Add failed: " + task.getException().getMessage(), false);
+    });
+
+    Thread thread = new Thread(task, "shopping-add");
+    thread.setDaemon(true);
+    thread.start();
+  }
+
+  private boolean alreadyInShoppingList(String newItemName) {
+    for (ShoppingItem item : items) {
+      String currentItemName = item.getName();
+
+      if (currentItemName != null
+              && currentItemName.trim().equalsIgnoreCase(newItemName.trim())) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   @FXML
   private void onToggleChecked() {
-    ShoppingItem selected = listView.getSelectionModel().getSelectedItem();
-    if (selected == null || selected.getId() == null) {
+    ShoppingItem selectedItem = listView.getSelectionModel().getSelectedItem();
+
+    if (selectedItem == null || selectedItem.getId() == null) {
       setStatus("Select an item first", false);
       return;
     }
-    boolean newState = !selected.isChecked();
+
+    boolean newCheckedValue = !selectedItem.isChecked();
+
     Task<Void> task = new Task<>() {
       @Override
       protected Void call() throws Exception {
-        firebaseService.updateShoppingItem(selected.getId(), Map.of("checked", newState));
+        firebaseService.updateShoppingItem(
+                selectedItem.getId(),
+                Map.of("checked", newCheckedValue)
+        );
         return null;
       }
     };
-    task.setOnSucceeded(e -> onRefresh());
-    task.setOnFailed(e -> setStatus("Update failed: " + task.getException().getMessage(), false));
-    new Thread(task, "shopping-toggle").start();
+
+    task.setOnSucceeded(event -> onRefresh());
+
+    task.setOnFailed(event -> {
+      setStatus("Update failed: " + task.getException().getMessage(), false);
+    });
+
+    Thread thread = new Thread(task, "shopping-toggle");
+    thread.setDaemon(true);
+    thread.start();
   }
 
   /**
@@ -120,106 +193,195 @@ public class ShoppingListController {
    */
   @FXML
   private void onMoveToPantry() {
-    ShoppingItem selected = listView.getSelectionModel().getSelectedItem();
-    if (selected == null || selected.getId() == null) {
+    ShoppingItem selectedItem = listView.getSelectionModel().getSelectedItem();
+
+    if (selectedItem == null || selectedItem.getId() == null) {
       setStatus("Select an item first", false);
       return;
     }
 
-    com.smartpantry.model.Ingredient ingredient = new com.smartpantry.model.Ingredient(
-        selected.getName(), selected.getQuantity(), selected.getUnit(), "");
+    if (!selectedItem.isChecked()) {
+      setStatus("Mark the item as checked before moving it to the pantry", false);
+      return;
+    }
+
+    Ingredient ingredient = new Ingredient(
+            selectedItem.getName(),
+            selectedItem.getQuantity(),
+            selectedItem.getUnit(),
+            ""
+    );
+
     ingredient.setUserID(Session.getInstance().getUid());
 
     Task<Void> task = new Task<>() {
       @Override
       protected Void call() throws Exception {
         firebaseService.addIngredient(ingredient);
-        firebaseService.deleteShoppingItem(selected.getId());
+        firebaseService.deleteShoppingItem(selectedItem.getId());
         return null;
       }
     };
-    task.setOnSucceeded(e -> {
-      setStatus("Moved \"" + selected.getName() + "\" to pantry", true);
+
+    task.setOnSucceeded(event -> {
+      setStatus("Moved \"" + selectedItem.getName() + "\" to pantry", true);
       onRefresh();
     });
-    task.setOnFailed(e -> setStatus("Failed: " + task.getException().getMessage(), false));
-    new Thread(task, "shopping-to-pantry").start();
+
+    task.setOnFailed(event -> {
+      setStatus("Move failed: " + task.getException().getMessage(), false);
+    });
+
+    Thread thread = new Thread(task, "shopping-to-pantry");
+    thread.setDaemon(true);
+    thread.start();
   }
 
   @FXML
   private void onDelete() {
-    ShoppingItem selected = listView.getSelectionModel().getSelectedItem();
-    if (selected == null || selected.getId() == null) {
+    ShoppingItem selectedItem = listView.getSelectionModel().getSelectedItem();
+
+    if (selectedItem == null || selectedItem.getId() == null) {
       setStatus("Select an item to delete", false);
       return;
     }
+
     Task<Void> task = new Task<>() {
       @Override
       protected Void call() throws Exception {
-        firebaseService.deleteShoppingItem(selected.getId());
+        firebaseService.deleteShoppingItem(selectedItem.getId());
         return null;
       }
     };
-    task.setOnSucceeded(e -> onRefresh());
-    task.setOnFailed(e -> setStatus("Delete failed: " + task.getException().getMessage(), false));
-    new Thread(task, "shopping-delete").start();
+
+    task.setOnSucceeded(event -> onRefresh());
+
+    task.setOnFailed(event -> {
+      setStatus("Delete failed: " + task.getException().getMessage(), false);
+    });
+
+    Thread thread = new Thread(task, "shopping-delete");
+    thread.setDaemon(true);
+    thread.start();
+  }
+
+  private void updateItemCount() {
+    int checkedCount = 0;
+
+    for (ShoppingItem item : items) {
+      if (item.isChecked()) {
+        checkedCount++;
+      }
+    }
+
+    setStatus(checkedCount + " of " + items.size() + " items checked", true);
   }
 
   private static class ShoppingCell extends ListCell<ShoppingItem> {
     @Override
     protected void updateItem(ShoppingItem item, boolean empty) {
       super.updateItem(item, empty);
+
       if (empty || item == null) {
         setText(null);
         setStyle("");
         return;
       }
-      setText((item.isChecked() ? "✓  " : "○  ") + item.getName()
-          + "  —  " + item.getQuantity()
-          + (item.getUnit() != null && !item.getUnit().isBlank() ? " " + item.getUnit() : ""));
-      setStyle(item.isChecked()
-          ? "-fx-text-fill: #aaa; -fx-font-style: italic;"
-          : "-fx-text-fill: #222;");
+
+      String checkSymbol;
+
+      if (item.isChecked()) {
+        checkSymbol = "✓";
+      } else {
+        checkSymbol = "○";
+      }
+
+      String itemText = checkSymbol + "  " + item.getName();
+      itemText += "  —  " + formatQuantity(item.getQuantity());
+
+      if (item.getUnit() != null && !item.getUnit().isBlank()) {
+        itemText += " " + item.getUnit();
+      }
+
+      setText(itemText);
+
+      if (item.isChecked()) {
+        setStyle(
+                "-fx-text-fill: #999999;"
+                        + "-fx-font-style: italic;"
+                        + "-fx-font-size: 14px;"
+                        + "-fx-padding: 12;"
+        );
+      } else {
+        setStyle(
+                "-fx-text-fill: #222222;"
+                        + "-fx-font-size: 14px;"
+                        + "-fx-padding: 12;"
+        );
+      }
+    }
+
+    private static String formatQuantity(double quantity) {
+      if (quantity == Math.floor(quantity)) {
+        return String.valueOf((int) quantity);
+      }
+
+      return String.valueOf(quantity);
     }
   }
 
   // inline nav bar
   @FXML
   private void onNavPantry() {
-    nav(Nav.Screen.PANTRY);
+    navigateTo(Nav.Screen.PANTRY);
   }
 
   @FXML
   private void onNavAdd() {
-    nav(Nav.Screen.ADD);
+    navigateTo(Nav.Screen.ADD);
   }
 
   @FXML
   private void onNavRecipes() {
-    nav(Nav.Screen.RECIPES);
+    navigateTo(Nav.Screen.RECIPES);
   }
 
   @FXML
   private void onNavShopping() {
-    /* already here */ }
+    /* already here */
+  }
 
   @FXML
   private void onNavProfile() {
-    nav(Nav.Screen.PROFILE);
+    navigateTo(Nav.Screen.PROFILE);
   }
 
-  private void nav(Nav.Screen screen) {
+  private void navigateTo(Nav.Screen screen) {
     try {
-      Nav.go((Stage) listView.getScene().getWindow(), screen);
-    } catch (Exception ex) {
-      setStatus("Navigation error: " + ex.getMessage(), false);
+      Stage stage = (Stage) listView.getScene().getWindow();
+      Nav.go(stage, screen);
+    } catch (Exception exception) {
+      setStatus("Navigation error: " + exception.getMessage(), false);
     }
   }
 
-  private void setStatus(String msg, boolean ok) {
+  private void setStatus(String message, boolean success) {
     Platform.runLater(() -> {
-      statusLabel.setText(msg);
-      statusLabel.setStyle(ok ? "-fx-text-fill: #2e7d32;" : "-fx-text-fill: #c62828;");
+      statusLabel.setText(message);
+
+      if (success) {
+        statusLabel.setStyle(
+                "-fx-font-size: 12px;"
+                        + "-fx-font-style: italic;"
+                        + "-fx-text-fill: #D7E5DD;"
+        );
+      } else {
+        statusLabel.setStyle(
+                "-fx-font-size: 12px;"
+                        + "-fx-font-weight: bold;"
+                        + "-fx-text-fill: #FFD1D1;"
+        );
+      }
     });
   }
 }
