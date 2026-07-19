@@ -1,6 +1,7 @@
 package com.smartpantry.controllers;
 
 import com.google.cloud.Timestamp;
+import com.google.gson.JsonObject;
 import com.smartpantry.model.Ingredient;
 import com.smartpantry.services.FirebaseService;
 import com.smartpantry.services.GeminiRecipeService;
@@ -19,9 +20,10 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.io.IOException;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
@@ -29,22 +31,28 @@ public class AddIngredientController {
 
   @FXML
   private Label statusLabel;
+
   @FXML
   private Button connectButton;
 
   @FXML
   private Label photoStatusTitle;
+
   @FXML
   private Label photoStatusSubtitle;
 
   @FXML
   private TextField nameField;
+
   @FXML
   private TextField quantityField;
+
   @FXML
   private TextField unitField;
+
   @FXML
   private TextField categoryField;
+
   @FXML
   private DatePicker expirationDatePicker;
 
@@ -52,186 +60,542 @@ public class AddIngredientController {
   private ListView<String> pantryListView;
 
   private File selectedPhotoFile;
-  private final FirebaseService firebaseService = FirebaseService.getInstance();
-  private final ObservableList<String> pantryDisplayItems = FXCollections.observableArrayList();
+
+  private final FirebaseService firebaseService =
+          FirebaseService.getInstance();
+
+  private final GeminiRecipeService geminiService =
+          new GeminiRecipeService();
+
+  private final ObservableList<String> pantryDisplayItems =
+          FXCollections.observableArrayList();
 
   @FXML
   public void initialize() {
     pantryListView.setItems(pantryDisplayItems);
-    String savedPath = firebaseService.resolveSavedCredentialPath();
-    if (savedPath != null)
+
+    String savedPath =
+            firebaseService.resolveSavedCredentialPath();
+
+    if (savedPath != null) {
       connectToFirebase(savedPath);
-    else
-      setStatus("Not connected — click \"Connect Firebase\"", false);
+    } else {
+      setStatus(
+              "Not connected to Firebase",
+              false
+      );
+    }
   }
 
   @FXML
   private void onConnectFirebase() {
     FileChooser chooser = new FileChooser();
-    chooser.setTitle("Select your Firebase service account JSON key");
-    chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON files", "*.json"));
-    File file = chooser.showOpenDialog(connectButton.getScene().getWindow());
-    if (file != null)
-      connectToFirebase(file.getAbsolutePath());
+
+    chooser.setTitle(
+            "Select your Firebase service account JSON key"
+    );
+
+    chooser.getExtensionFilters().add(
+            new FileChooser.ExtensionFilter(
+                    "JSON files",
+                    "*.json"
+            )
+    );
+
+    File file = chooser.showOpenDialog(
+            connectButton.getScene().getWindow()
+    );
+
+    if (file != null) {
+      connectToFirebase(
+              file.getAbsolutePath()
+      );
+    }
   }
 
-  private void connectToFirebase(String credentialPath) {
+  private void connectToFirebase(
+          String credentialPath
+  ) {
     Task<Void> task = new Task<>() {
       @Override
       protected Void call() throws Exception {
-        firebaseService.initialize(credentialPath);
-        firebaseService.saveCredentialPath(credentialPath);
+        firebaseService.initialize(
+                credentialPath
+        );
+
+        firebaseService.saveCredentialPath(
+                credentialPath
+        );
+
         return null;
       }
     };
-    task.setOnSucceeded(e -> {
-      setStatus("Connected to Firebase", true);
-      onRefreshPantry();
+
+    task.setOnSucceeded(event -> {
+      setStatus(
+              "Connected to Firebase",
+              true
+      );
+
+      loadPantry(false);
     });
-    task.setOnFailed(e -> setStatus("Connection failed: " + task.getException().getMessage(), false));
-    new Thread(task, "firebase-connect").start();
+
+    task.setOnFailed(event -> {
+      setStatus(
+              "Failed to connect to Firebase: "
+                      + getErrorMessage(
+                      task.getException()
+              ),
+              false
+      );
+    });
+
+    Thread thread =
+            new Thread(task, "firebase-connect");
+
+    thread.setDaemon(true);
+    thread.start();
   }
 
   @FXML
   private void onTakePhoto() {
-    try {
-      Nav.go((Stage) photoStatusTitle.getScene().getWindow(), Nav.Screen.AI_DETECTION);
-    } catch (IOException e) {
-      setStatus("Failed to open AI Detection: " + e.getMessage(), false);
-    }
+    nav(Nav.Screen.AI_DETECTION);
   }
 
   @FXML
   private void onChoosePhoto() {
     FileChooser chooser = new FileChooser();
-    chooser.setTitle("Choose a photo of the ingredient");
+
+    chooser.setTitle(
+            "Choose a photo of the ingredient"
+    );
+
     chooser.getExtensionFilters().add(
-        new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg"));
-    File file = chooser.showOpenDialog(photoStatusTitle.getScene().getWindow());
-    if (file == null)
+            new FileChooser.ExtensionFilter(
+                    "Images",
+                    "*.png",
+                    "*.jpg",
+                    "*.jpeg"
+            )
+    );
+
+    File file = chooser.showOpenDialog(
+            photoStatusTitle
+                    .getScene()
+                    .getWindow()
+    );
+
+    if (file == null) {
       return;
+    }
 
     selectedPhotoFile = file;
-    photoStatusTitle.setText("Identifying ingredient...");
-    photoStatusSubtitle.setText(file.getName());
 
-    Task<com.google.gson.JsonObject> task = new Task<>() {
+    photoStatusTitle.setText(
+            "Identifying ingredient..."
+    );
+
+    photoStatusSubtitle.setText(
+            file.getName()
+    );
+
+    Task<JsonObject> task = new Task<>() {
       @Override
-      protected com.google.gson.JsonObject call() throws Exception {
-        byte[] bytes = java.nio.file.Files.readAllBytes(file.toPath());
-        String base64 = java.util.Base64.getEncoder().encodeToString(bytes);
-        String mime = file.getName().toLowerCase().endsWith(".png") ? "image/png" : "image/jpeg";
-        return new GeminiRecipeService().identifyIngredientFromImage(base64, mime);
+      protected JsonObject call()
+              throws Exception {
+
+        byte[] bytes =
+                Files.readAllBytes(
+                        file.toPath()
+                );
+
+        String base64 =
+                Base64.getEncoder()
+                        .encodeToString(bytes);
+
+        String fileName =
+                file.getName().toLowerCase();
+
+        String mime =
+                fileName.endsWith(".png")
+                        ? "image/png"
+                        : "image/jpeg";
+
+        return geminiService
+                .identifyIngredientFromImage(
+                        base64,
+                        mime
+                );
       }
     };
-    task.setOnSucceeded(e -> fillFromGemini(task.getValue(), file.getName()));
-    task.setOnFailed(e -> {
-      photoStatusTitle.setText("Photo selected");
-      photoStatusSubtitle.setText(file.getName());
-      setStatus("Could not identify ingredient: " + task.getException().getMessage(), false);
+
+    task.setOnSucceeded(event ->
+            fillFromGemini(
+                    task.getValue(),
+                    file.getName()
+            )
+    );
+
+    task.setOnFailed(event -> {
+      photoStatusTitle.setText(
+              "Photo selected"
+      );
+
+      photoStatusSubtitle.setText(
+              file.getName()
+      );
+
+      setStatus(
+              "Could not identify ingredient: "
+                      + getErrorMessage(
+                      task.getException()
+              ),
+              false
+      );
     });
-    new Thread(task, "gemini-vision-upload").start();
+
+    Thread thread =
+            new Thread(
+                    task,
+                    "gemini-vision-upload"
+            );
+
+    thread.setDaemon(true);
+    thread.start();
   }
 
-  private void fillFromGemini(com.google.gson.JsonObject result, String sourceLabel) {
+  private void fillFromGemini(
+          JsonObject result,
+          String sourceLabel
+  ) {
     Platform.runLater(() -> {
-      if (result.has("name") && !result.get("name").getAsString().isBlank())
-        nameField.setText(result.get("name").getAsString());
-      if (result.has("category") && !result.get("category").getAsString().isBlank())
-        categoryField.setText(result.get("category").getAsString());
-      if (result.has("quantity"))
-        quantityField.setText(String.valueOf(result.get("quantity").getAsDouble()));
-      if (result.has("unit") && !result.get("unit").getAsString().isBlank())
-        unitField.setText(result.get("unit").getAsString());
-      photoStatusTitle.setText("Photo selected");
-      photoStatusSubtitle.setText(sourceLabel);
-      setStatus("Ingredient identified — review and confirm before saving", true);
+      if (result == null) {
+        setStatus(
+                "Could not identify the ingredient.",
+                false
+        );
+
+        return;
+      }
+
+      if (result.has("name")
+              && !result.get("name")
+              .isJsonNull()) {
+
+        String name =
+                result.get("name")
+                        .getAsString();
+
+        if (!name.isBlank()) {
+          nameField.setText(name);
+        }
+      }
+
+      if (result.has("category")
+              && !result.get("category")
+              .isJsonNull()) {
+
+        String category =
+                result.get("category")
+                        .getAsString();
+
+        if (!category.isBlank()) {
+          categoryField.setText(category);
+        }
+      }
+
+      if (result.has("quantity")
+              && !result.get("quantity")
+              .isJsonNull()) {
+
+        try {
+          double quantity =
+                  result.get("quantity")
+                          .getAsDouble();
+
+          quantityField.setText(
+                  String.valueOf(quantity)
+          );
+        } catch (Exception exception) {
+          quantityField.setText("1.0");
+        }
+      }
+
+      if (result.has("unit")
+              && !result.get("unit")
+              .isJsonNull()) {
+
+        String unit =
+                result.get("unit")
+                        .getAsString();
+
+        if (!unit.isBlank()) {
+          unitField.setText(unit);
+        }
+      }
+
+      photoStatusTitle.setText(
+              "Photo selected"
+      );
+
+      photoStatusSubtitle.setText(
+              sourceLabel
+      );
+
+      setStatus(
+              "Review the ingredient before saving.",
+              true
+      );
     });
   }
 
   @FXML
   private void onRefreshPantry() {
+    loadPantry(true);
+  }
+
+  private void loadPantry(
+          boolean showRefreshMessage
+  ) {
     if (!firebaseService.isConnected()) {
-      setStatus("Not connected to Firebase yet", false);
+      setStatus(
+              "Not connected to Firebase yet",
+              false
+      );
+
       return;
     }
-    Task<List<Ingredient>> task = new Task<>() {
-      @Override
-      protected List<Ingredient> call() throws Exception {
-        return firebaseService.getAllIngredients();
-      }
-    };
-    task.setOnSucceeded(e -> {
+
+    Task<List<Ingredient>> task =
+            new Task<>() {
+              @Override
+              protected List<Ingredient> call()
+                      throws Exception {
+
+                return firebaseService
+                        .getAllIngredients();
+              }
+            };
+
+    task.setOnSucceeded(event -> {
       pantryDisplayItems.clear();
-      for (Ingredient i : task.getValue()) {
-        pantryDisplayItems.add(i.getName() + " — " + i.getQuantity() + " " + i.getUnit());
+
+      List<Ingredient> ingredients =
+              task.getValue();
+
+      if (ingredients != null) {
+        for (Ingredient ingredient :
+                ingredients) {
+
+          String itemText =
+                  ingredient.getName()
+                          + " — "
+                          + ingredient.getQuantity();
+
+          if (ingredient.getUnit() != null
+                  && !ingredient.getUnit()
+                  .isBlank()) {
+
+            itemText +=
+                    " " + ingredient.getUnit();
+          }
+
+          pantryDisplayItems.add(itemText);
+        }
+      }
+
+      if (showRefreshMessage) {
+        setStatus(
+                "Pantry refreshed",
+                true
+        );
       }
     });
-    task.setOnFailed(e -> setStatus("Failed to load pantry: " + task.getException().getMessage(), false));
-    new Thread(task, "firebase-refresh").start();
+
+    task.setOnFailed(event ->
+            setStatus(
+                    "Failed to load pantry: "
+                            + getErrorMessage(
+                            task.getException()
+                    ),
+                    false
+            )
+    );
+
+    Thread thread =
+            new Thread(task, "firebase-refresh");
+
+    thread.setDaemon(true);
+    thread.start();
   }
 
   @FXML
   private void onSave() {
     if (!firebaseService.isConnected()) {
-      setStatus("Connect Firebase before saving", false);
+      setStatus(
+              "Connect Firebase before saving",
+              false
+      );
+
       return;
     }
+
     String name = nameField.getText();
+
     if (name == null || name.isBlank()) {
-      setStatus("Enter an ingredient name first", false);
+      setStatus(
+              "Enter an ingredient name first",
+              false
+      );
+
       return;
     }
 
     double quantity;
+
     try {
-      quantity = quantityField.getText() == null || quantityField.getText().isBlank()
-          ? 1.0
-          : Double.parseDouble(quantityField.getText());
-    } catch (NumberFormatException ex) {
-      setStatus("Quantity must be a number", false);
+      String quantityText =
+              quantityField.getText();
+
+      if (quantityText == null
+              || quantityText.isBlank()) {
+
+        quantity = 1.0;
+      } else {
+        quantity =
+                Double.parseDouble(
+                        quantityText.trim()
+                );
+      }
+    } catch (NumberFormatException exception) {
+      setStatus(
+              "Quantity must be a number",
+              false
+      );
+
       return;
     }
 
-    Ingredient ingredient = new Ingredient(name.trim(), quantity,
-        unitField.getText(), categoryField.getText());
-    ingredient.setDetectedByAI(false);
-    ingredient.setUserID(Session.getInstance().getUid());
-    ingredient.setCreatedAt(Timestamp.now());
+    String unit = unitField.getText();
+    String category = categoryField.getText();
 
-    LocalDate expiry = expirationDatePicker.getValue();
-    if (expiry != null) {
-      Date date = Date.from(expiry.atStartOfDay(ZoneId.systemDefault()).toInstant());
-      ingredient.setExpirationDate(com.google.cloud.Timestamp.of(date));
+    if (unit == null) {
+      unit = "";
     }
-    if (selectedPhotoFile != null)
-      ingredient.setPhotoFileName(selectedPhotoFile.getName());
 
-    setStatus("Saving...", true);
+    if (category == null) {
+      category = "";
+    }
+
+    Ingredient ingredient =
+            new Ingredient(
+                    name.trim(),
+                    quantity,
+                    unit.trim(),
+                    category.trim()
+            );
+
+    ingredient.setDetectedByAI(
+            selectedPhotoFile != null
+    );
+
+    ingredient.setUserID(
+            Session.getInstance().getUid()
+    );
+
+    ingredient.setCreatedAt(
+            Timestamp.now()
+    );
+
+    LocalDate expirationDate =
+            expirationDatePicker.getValue();
+
+    if (expirationDate != null) {
+      Date date = Date.from(
+              expirationDate
+                      .atStartOfDay(
+                              ZoneId.systemDefault()
+                      )
+                      .toInstant()
+      );
+
+      ingredient.setExpirationDate(
+              Timestamp.of(date)
+      );
+    }
+
+    if (selectedPhotoFile != null) {
+      ingredient.setPhotoFileName(
+              selectedPhotoFile.getName()
+      );
+    }
+
+    setStatus(
+            "Saving...",
+            true
+    );
+
     Task<Void> task = new Task<>() {
       @Override
       protected Void call() throws Exception {
-        firebaseService.addIngredient(ingredient);
+        firebaseService.addIngredient(
+                ingredient
+        );
+
         return null;
       }
     };
-    task.setOnSucceeded(e -> {
-      setStatus("Added \"" + ingredient.getName() + "\" to your pantry", true);
-      nameField.clear();
-      quantityField.clear();
-      unitField.clear();
-      categoryField.clear();
-      expirationDatePicker.setValue(null);
-      selectedPhotoFile = null;
-      photoStatusTitle.setText("Take Photo");
-      photoStatusSubtitle.setText("Tap to open camera");
-      onRefreshPantry();
+
+    task.setOnSucceeded(event -> {
+      setStatus(
+              "Added \""
+                      + ingredient.getName()
+                      + "\" to your pantry",
+              true
+      );
+
+      clearForm();
+      loadPantry(false);
     });
-    task.setOnFailed(e -> setStatus("Failed to save: " + task.getException().getMessage(), false));
-    new Thread(task, "firebase-add-ingredient").start();
+
+    task.setOnFailed(event ->
+            setStatus(
+                    "Failed to save: "
+                            + getErrorMessage(
+                            task.getException()
+                    ),
+                    false
+            )
+    );
+
+    Thread thread =
+            new Thread(
+                    task,
+                    "firebase-add-ingredient"
+            );
+
+    thread.setDaemon(true);
+    thread.start();
   }
 
-  // ── Nav ──────────────────────────────────────────────────────────────────
+  private void clearForm() {
+    nameField.clear();
+    quantityField.clear();
+    unitField.clear();
+    categoryField.clear();
+
+    expirationDatePicker.setValue(null);
+    selectedPhotoFile = null;
+
+    photoStatusTitle.setText(
+            "Take Photo"
+    );
+
+    photoStatusSubtitle.setText(
+            "Tap to open camera"
+    );
+  }
+
   @FXML
   private void onNavPantry() {
     nav(Nav.Screen.PANTRY);
@@ -239,7 +603,6 @@ public class AddIngredientController {
 
   @FXML
   private void onNavAdd() {
-    // already here
   }
 
   @FXML
@@ -257,18 +620,54 @@ public class AddIngredientController {
     nav(Nav.Screen.PROFILE);
   }
 
-  private void nav(Nav.Screen screen) {
+  private void nav(
+          Nav.Screen screen
+  ) {
     try {
-      Nav.go((Stage) connectButton.getScene().getWindow(), screen);
-    } catch (Exception ex) {
-      setStatus("Navigation error: " + ex.getMessage(), false);
+      Stage stage =
+              (Stage) photoStatusTitle
+                      .getScene()
+                      .getWindow();
+
+      Nav.go(stage, screen);
+    } catch (Exception exception) {
+      setStatus(
+              "Navigation error: "
+                      + exception.getMessage(),
+              false
+      );
     }
   }
 
-  private void setStatus(String message, boolean ok) {
+  private String getErrorMessage(
+          Throwable exception
+  ) {
+    if (exception == null
+            || exception.getMessage() == null
+            || exception.getMessage().isBlank()) {
+
+      return "Unknown error";
+    }
+
+    return exception.getMessage();
+  }
+
+  private void setStatus(
+          String message,
+          boolean ok
+  ) {
     Platform.runLater(() -> {
+      if (statusLabel == null) {
+        return;
+      }
+
       statusLabel.setText(message);
-      statusLabel.setStyle(ok ? "-fx-text-fill: #2e7d32;" : "-fx-text-fill: #c62828;");
+
+      statusLabel.setStyle(
+              ok
+                      ? "-fx-text-fill: #2e7d32;"
+                      : "-fx-text-fill: #c62828;"
+      );
     });
   }
 }
