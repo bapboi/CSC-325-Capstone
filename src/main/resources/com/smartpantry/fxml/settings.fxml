@@ -140,12 +140,17 @@
                   style="-fx-cursor: hand;">
 
                 <Label text="⌂"
+                       alignment="CENTER"
+                       prefWidth="28"
+                       prefHeight="28"
                        style="-fx-font-size: 22px;
                               -fx-text-fill: #A5A5A5;"/>
 
-                <Label text="Pantry"
+                <Label text="Profile"
                        style="-fx-font-size: 11px;
-                              -fx-text-fill: #777777;"/>
+                              -fx-font-weight: bold;
+                              -fx-text-fill: #21634D;"/>
+
             </VBox>
 
             <VBox alignment="CENTER"
@@ -155,6 +160,9 @@
                   style="-fx-cursor: hand;">
 
                 <Label text="▤"
+                       alignment="CENTER"
+                       prefWidth="28"
+                       prefHeight="28"
                        style="-fx-font-size: 22px;
                               -fx-text-fill: #A5A5A5;"/>
 
@@ -185,7 +193,10 @@
                   onMouseClicked="#onNavShopping"
                   style="-fx-cursor: hand;">
 
-                <Label text="⌑"
+                <Label text="☑"
+                       alignment="CENTER"
+                       prefWidth="26"
+                       prefHeight="26"
                        style="-fx-font-size: 22px;
                               -fx-text-fill: #A5A5A5;"/>
 
@@ -200,16 +211,20 @@
                   onMouseClicked="#onNavProfile"
                   style="-fx-cursor: hand;">
 
-                <Label text="♙"
-                       style="-fx-font-size: 21px;
+                <Label text="⚙"
+                       alignment="CENTER"
+                       prefWidth="28"
+                       prefHeight="28"
+                       translateY="-2"
+                       style="-fx-font-size: 22px;
                               -fx-text-fill: #21634D;"/>
 
                 <Label text="Profile"
                        style="-fx-font-size: 11px;
                               -fx-font-weight: bold;
                               -fx-text-fill: #21634D;"/>
-            </VBox>
 
+            </VBox>
         </HBox>
     </bottom>
 

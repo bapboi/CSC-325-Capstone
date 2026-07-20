@@ -145,10 +145,7 @@
                      -fx-border-width: 1 0 0 0;">
 
             <padding>
-                <Insets top="8"
-                        right="12"
-                        bottom="8"
-                        left="12"/>
+                <Insets top="8" right="12" bottom="8" left="12"/>
             </padding>
 
             <VBox alignment="CENTER"
@@ -167,6 +164,7 @@
                 <Label text="Pantry"
                        style="-fx-font-size: 11px;
                               -fx-text-fill: #777777;"/>
+
             </VBox>
 
             <VBox alignment="CENTER"
@@ -209,10 +207,10 @@
                   onMouseClicked="#onNavShopping"
                   style="-fx-cursor: hand;">
 
-                <Label text="⌑"
+                <Label text="☑"
                        alignment="CENTER"
-                       prefWidth="28"
-                       prefHeight="28"
+                       prefWidth="26"
+                       prefHeight="26"
                        style="-fx-font-size: 22px;
                               -fx-text-fill: #21634D;"/>
 
@@ -228,18 +226,18 @@
                   onMouseClicked="#onNavProfile"
                   style="-fx-cursor: hand;">
 
-                <Label text="♙"
+                <Label text="⚙"
                        alignment="CENTER"
                        prefWidth="28"
                        prefHeight="28"
-                       style="-fx-font-size: 25px;
+                       translateY="-2"
+                       style="-fx-font-size: 22px;
                               -fx-text-fill: #A5A5A5;"/>
 
                 <Label text="Profile"
                        style="-fx-font-size: 11px;
                               -fx-text-fill: #777777;"/>
             </VBox>
-
         </HBox>
     </bottom>
 
