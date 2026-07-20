@@ -175,7 +175,7 @@
                   onMouseClicked="#onNavShopping"
                   style="-fx-cursor: hand;">
 
-                <Label text="⌑"
+                <Label text="☑"
                        alignment="CENTER"
                        prefWidth="28"
                        prefHeight="28"
@@ -193,11 +193,11 @@
                   onMouseClicked="#onNavProfile"
                   style="-fx-cursor: hand;">
 
-                <Label text="♙"
+                <Label text="⚙"
                        alignment="CENTER"
                        prefWidth="28"
                        prefHeight="28"
-                       style="-fx-font-size: 25px;
+                       style="-fx-font-size: 22px;
                               -fx-text-fill: #A5A5A5;"/>
 
                 <Label text="Profile"
