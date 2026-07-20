@@ -23,7 +23,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -32,7 +31,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class RecipeSuggestionController {
@@ -68,13 +66,13 @@ public class RecipeSuggestionController {
     recipeListView.setOnMouseClicked(event -> {
       if (event.getClickCount() == 1) {
         Recipe selected = recipeListView.getSelectionModel().getSelectedItem();
-        if (selected != null)
+        if (selected != null) {
           openRecipeDetails(selected);
+        }
       }
     });
-  }
 
-  // Find recipes 
+  }
 
   @FXML
   private void onFindRecipe() {
@@ -83,45 +81,55 @@ public class RecipeSuggestionController {
       return;
     }
 
+    RecipeCache.clear();
+    cacheLabel.setText("");
+
     findButton.setDisable(true);
     loadMoreButton.setVisible(false);
     progressIndicator.setVisible(true);
     recipes.clear();
-    cacheLabel.setText("");
     setStatus("Reading your pantry...", true);
 
     Task<List<Recipe>> task = new Task<>() {
       @Override
       protected List<Recipe> call() throws Exception {
         List<Ingredient> pantry = firebaseService.getAllIngredients();
-        if (pantry.isEmpty())
-          throw new IllegalStateException("Your pantry is empty — add some ingredients first.");
+
+        if (pantry.isEmpty()) {
+          throw new IllegalStateException(
+                  "Your pantry is empty — add some ingredients first.");
+        }
 
         currentPantryIngredients = pantry.stream()
-            .map(Ingredient::getName)
-            .collect(Collectors.toList());
+                .map(Ingredient::getName)
+                .collect(Collectors.toList());
 
         String cacheKey = RecipeCache.keyFor(currentPantryIngredients);
         boolean fromCache = RecipeCache.get(cacheKey) != null;
-        if (fromCache)
+
+        if (fromCache) {
           Platform.runLater(() -> cacheLabel.setText("Loaded from cache"));
+        }
 
         return geminiService.findRecipesByPantry(currentPantryIngredients);
       }
     };
 
-    task.setOnSucceeded(e -> {
+    task.setOnSucceeded(event -> {
       recipes.setAll(task.getValue());
-      setStatus(recipes.size() + " recipe(s) found — tap one to view details", true);
+      setStatus(
+              recipes.size() + " recipe(s) found — tap one to view details",
+              true);
       progressIndicator.setVisible(false);
       loadMoreButton.setVisible(true);
       findButton.setDisable(false);
     });
 
-    task.setOnFailed(e -> {
+    task.setOnFailed(event -> {
       String message = task.getException() == null
-          ? "Unknown error"
-          : task.getException().getMessage();
+              ? "Unknown error"
+              : task.getException().getMessage();
+
       setStatus(message, false);
       progressIndicator.setVisible(false);
       findButton.setDisable(false);
@@ -129,8 +137,6 @@ public class RecipeSuggestionController {
 
     new Thread(task, "gemini-recipe-search").start();
   }
-
-  //  Load more 
 
   @FXML
   private void onLoadMore() {
@@ -144,26 +150,33 @@ public class RecipeSuggestionController {
     cacheLabel.setText("");
 
     List<String> alreadyShown = recipes.stream()
-        .map(Recipe::getName)
-        .collect(Collectors.toList());
+            .map(Recipe::getName)
+            .collect(Collectors.toList());
 
     Task<List<Recipe>> task = new Task<>() {
       @Override
       protected List<Recipe> call() throws Exception {
-        return geminiService.findMoreRecipes(currentPantryIngredients, alreadyShown);
+        return geminiService.findMoreRecipes(
+                currentPantryIngredients,
+                alreadyShown);
       }
     };
-    task.setOnSucceeded(e -> {
+
+    task.setOnSucceeded(event -> {
       recipes.addAll(task.getValue());
       setStatus(recipes.size() + " recipe(s) total", true);
       progressIndicator.setVisible(false);
       loadMoreButton.setDisable(false);
     });
-    task.setOnFailed(e -> {
-      setStatus("Load more failed: " + task.getException().getMessage(), false);
+
+    task.setOnFailed(event -> {
+      setStatus(
+              "Load more failed: " + task.getException().getMessage(),
+              false);
       progressIndicator.setVisible(false);
       loadMoreButton.setDisable(false);
     });
+
     new Thread(task, "gemini-load-more").start();
   }
 
@@ -171,22 +184,26 @@ public class RecipeSuggestionController {
   private void onClearCache() {
     RecipeCache.clear();
     cacheLabel.setText("Cache cleared");
-    setStatus("Cache cleared — next search will call Gemini fresh.", true);
+    setStatus(
+            "Cache cleared — next search will call Gemini fresh.",
+            true);
   }
-
-  //  Card actions (kept for future use on Recipe Details screen)
 
   private void onFavoriteRecipe(Recipe recipe) {
     if (!firebaseService.isConnected()) {
       setStatus("Not connected to Firebase.", false);
       return;
     }
+
     String uid = Session.getInstance().getUid();
+
     if (uid == null || uid.isBlank()) {
       setStatus("No user is currently signed in.", false);
       return;
     }
+
     recipe.setUserID(uid);
+
     Task<Void> task = new Task<>() {
       @Override
       protected Void call() throws Exception {
@@ -194,96 +211,160 @@ public class RecipeSuggestionController {
         return null;
       }
     };
-    task.setOnSucceeded(e -> setStatus("\"" + recipe.getName() + "\" saved to favourites.", true));
-    task.setOnFailed(e -> setStatus("Failed to save: " + task.getException().getMessage(), false));
+
+    task.setOnSucceeded(event ->
+            setStatus(
+                    "\"" + recipe.getName() + "\" saved to favourites.",
+                    true));
+
+    task.setOnFailed(event ->
+            setStatus(
+                    "Failed to save: " + task.getException().getMessage(),
+                    false));
+
     new Thread(task, "save-favourite").start();
   }
 
   private void onAddMissingToShopping(Recipe recipe) {
-    if (recipe.getMissingIngredients() == null || recipe.getMissingIngredients().isEmpty()) {
+    if (recipe.getMissingIngredients() == null
+            || recipe.getMissingIngredients().isEmpty()) {
       setStatus("No missing ingredients for this recipe.", true);
       return;
     }
+
     if (!firebaseService.isConnected()) {
       setStatus("Not connected to Firebase.", false);
       return;
     }
+
     String uid = Session.getInstance().getUid();
+
     if (uid == null || uid.isBlank()) {
       setStatus("No user is currently signed in.", false);
       return;
     }
+
     Task<Void> task = new Task<>() {
       @Override
       protected Void call() throws Exception {
-        String uid = Session.getInstance().getUid();
+        String currentUid = Session.getInstance().getUid();
+
         for (String name : recipe.getMissingIngredients()) {
-          firebaseService.addShoppingItem(new ShoppingItem(name, 1.0, "", uid));
+          firebaseService.addShoppingItem(
+                  new ShoppingItem(name, 1.0, "", currentUid));
         }
+
         return null;
       }
     };
-    task.setOnSucceeded(e -> setStatus(
-        recipe.getMissingIngredients().size() + " missing item(s) added to shopping list.", true));
-    task.setOnFailed(e -> setStatus("Failed: " + task.getException().getMessage(), false));
+
+    task.setOnSucceeded(event ->
+            setStatus(
+                    recipe.getMissingIngredients().size()
+                            + " missing item(s) added to shopping list.",
+                    true));
+
+    task.setOnFailed(event ->
+            setStatus(
+                    "Failed: " + task.getException().getMessage(),
+                    false));
+
     new Thread(task, "add-missing-shopping").start();
   }
 
   private void openRecipeDetails(Recipe recipe) {
     SelectedRecipeStore.setSelectedRecipe(recipe);
+
     try {
-      Nav.go((Stage) recipeListView.getScene().getWindow(), Nav.Screen.RECIPE_DETAILS);
-    } catch (IOException e) {
-      setStatus("Failed to open recipe: " + e.getMessage(), false);
+      Nav.go(
+              (Stage) recipeListView.getScene().getWindow(),
+              Nav.Screen.RECIPE_DETAILS);
+    } catch (IOException exception) {
+      setStatus(
+              "Failed to open recipe: " + exception.getMessage(),
+              false);
     }
   }
 
-  //  Recipe card (matches Figma: image top, match badge, title, meta) ──
-
   private static class RecipeCard extends ListCell<Recipe> {
 
+    private static final double IMAGE_WIDTH = 360;
+    private static final double IMAGE_HEIGHT = 150;
+
     private final ImageView thumbnail = new ImageView();
+    private final Label imagePlaceholder = new Label("Recipe Image");
     private final Label matchBadge = new Label();
     private final Label nameLabel = new Label();
     private final Label metaLabel = new Label();
     private final VBox card;
 
     RecipeCard() {
-      thumbnail.setFitWidth(360);
-      thumbnail.setFitHeight(160);
+      thumbnail.setFitWidth(IMAGE_WIDTH);
+      thumbnail.setFitHeight(IMAGE_HEIGHT);
       thumbnail.setPreserveRatio(false);
+      thumbnail.setSmooth(true);
+      thumbnail.setManaged(true);
+
+      imagePlaceholder.setStyle(
+              "-fx-text-fill: #7A8A82;"
+                      + "-fx-font-size: 13px;"
+                      + "-fx-font-weight: bold;");
 
       matchBadge.setStyle(
-          "-fx-background-color: white;"
-              + "-fx-text-fill: #2f6b4f;"
-              + "-fx-font-size: 11px;"
-              + "-fx-font-weight: bold;"
-              + "-fx-background-radius: 12;"
-              + "-fx-padding: 4 10;");
+              "-fx-background-color: rgba(255,255,255,0.96);"
+                      + "-fx-text-fill: #21634D;"
+                      + "-fx-font-size: 11px;"
+                      + "-fx-font-weight: bold;"
+                      + "-fx-background-radius: 12;"
+                      + "-fx-padding: 4 10;");
 
-      StackPane imageStack = new StackPane(thumbnail, matchBadge);
+      StackPane imageStack = new StackPane(imagePlaceholder, thumbnail, matchBadge);
+      imageStack.setPrefHeight(IMAGE_HEIGHT);
+      imageStack.setMinHeight(IMAGE_HEIGHT);
+      imageStack.setMaxHeight(IMAGE_HEIGHT);
+      imageStack.setStyle(
+              "-fx-background-color: #E8F0EA;"
+                      + "-fx-background-radius: 18 18 0 0;");
+
       StackPane.setAlignment(matchBadge, Pos.TOP_LEFT);
       StackPane.setMargin(matchBadge, new Insets(10, 0, 0, 10));
 
-      nameLabel.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;");
+      nameLabel.setStyle(
+              "-fx-font-size: 16px;"
+                      + "-fx-font-weight: bold;"
+                      + "-fx-text-fill: #222222;");
       nameLabel.setWrapText(true);
-      metaLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #666;");
 
-      VBox textCol = new VBox(4, nameLabel, metaLabel);
-      textCol.setStyle("-fx-padding: 12 14 14 14;");
-      VBox.setVgrow(textCol, Priority.NEVER);
+      metaLabel.setStyle(
+              "-fx-font-size: 12px;"
+                      + "-fx-text-fill: #777777;");
 
-      card = new VBox(imageStack, textCol);
+      VBox textColumn = new VBox(4, nameLabel, metaLabel);
+      textColumn.setPadding(new Insets(10, 14, 12, 14));
+      VBox.setVgrow(textColumn, Priority.NEVER);
+
+      card = new VBox(imageStack, textColumn);
+      card.setSpacing(0);
+      card.setPrefHeight(215);
+      card.setMinHeight(215);
+      card.setMaxHeight(215);
       card.setStyle(
-          "-fx-background-color: white;"
-              + "-fx-background-radius: 14;"
-              + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 6, 0, 0, 2);");
-      setStyle("-fx-padding: 6 10 6 10; -fx-cursor: hand;");
+              "-fx-background-color: white;"
+                      + "-fx-background-radius: 18;"
+                      + "-fx-border-color: #E6E6E6;"
+                      + "-fx-border-radius: 18;"
+                      + "-fx-border-width: 1;");
+
+      setStyle(
+              "-fx-background-color: transparent;"
+                      + "-fx-padding: 8;"
+                      + "-fx-cursor: hand;");
     }
 
     @Override
     protected void updateItem(Recipe item, boolean empty) {
       super.updateItem(item, empty);
+
       if (empty || item == null) {
         setGraphic(null);
         return;
@@ -292,72 +373,117 @@ public class RecipeSuggestionController {
       nameLabel.setText(item.getName());
       metaLabel.setText(buildMeta(item));
 
-      int pct = item.getPantryMatchPercent();
-      matchBadge.setText(pct + "% match");
+      int percentage = item.getPantryMatchPercent();
+      matchBadge.setText(percentage + "% match");
 
       thumbnail.setImage(null);
-      final Recipe currentItem = item;
+
+      Recipe currentItem = item;
       String storedUrl = item.getImageUrl();
 
       if (storedUrl != null && !storedUrl.isBlank()) {
-        tryLoadImage(storedUrl, item.getSourceLink(), currentItem);
+        tryLoadImage(
+                storedUrl,
+                item.getSourceLink(),
+                currentItem);
       } else {
         fetchOgImage(item.getSourceLink(), currentItem);
       }
 
-      Rectangle clip = new Rectangle(360, 160);
-      clip.setArcWidth(28);
-      clip.setArcHeight(28);
+      Rectangle clip =
+              new Rectangle(IMAGE_WIDTH, IMAGE_HEIGHT);
+      clip.setArcWidth(36);
+      clip.setArcHeight(36);
       thumbnail.setClip(clip);
 
       setGraphic(card);
     }
 
-    private void tryLoadImage(String url, String fallbackPage, Recipe currentItem) {
+    private void tryLoadImage(
+            String url,
+            String fallbackPage,
+            Recipe currentItem) {
+
       try {
-        Image img = new Image(url, 360, 160, false, true, true);
-        img.errorProperty().addListener((obs, old, err) -> {
-          if (err)
-            fetchOgImage(fallbackPage, currentItem);
-        });
-        thumbnail.setImage(img);
-      } catch (Exception e) {
+        Image image = new Image(
+                url,
+                IMAGE_WIDTH,
+                IMAGE_HEIGHT,
+                false,
+                true,
+                true);
+
+        image.errorProperty().addListener(
+                (observable, oldValue, hasError) -> {
+                  if (hasError) {
+                    fetchOgImage(fallbackPage, currentItem);
+                  }
+                });
+
+        thumbnail.setImage(image);
+      } catch (Exception exception) {
         fetchOgImage(fallbackPage, currentItem);
       }
     }
 
-    private void fetchOgImage(String pageUrl, Recipe currentItem) {
-      if (pageUrl == null || pageUrl.isBlank())
+    private void fetchOgImage(
+            String pageUrl,
+            Recipe currentItem) {
+
+      if (pageUrl == null || pageUrl.isBlank()) {
         return;
-      Thread t = new Thread(() -> {
+      }
+
+      Thread thread = new Thread(() -> {
         String ogUrl = OgImageFetcher.fetch(pageUrl);
-        if (ogUrl == null)
+
+        if (ogUrl == null) {
           return;
+        }
+
         Platform.runLater(() -> {
-          if (getItem() != currentItem)
+          if (getItem() != currentItem) {
             return;
+          }
+
           try {
-            Image img = new Image(ogUrl, 360, 160, false, true, true);
-            thumbnail.setImage(img);
+            Image image = new Image(
+                    ogUrl,
+                    IMAGE_WIDTH,
+                    IMAGE_HEIGHT,
+                    false,
+                    true,
+                    true);
+
+            thumbnail.setImage(image);
           } catch (Exception ignored) {
+            // Leave the image area blank when no image can be loaded.
           }
         });
       }, "og-thumb-fetch");
-      t.setDaemon(true);
-      t.start();
+
+      thread.setDaemon(true);
+      thread.start();
     }
 
-    private String buildMeta(Recipe r) {
-      StringBuilder sb = new StringBuilder();
-      if (r.getCookTime() != null && !r.getCookTime().isBlank())
-        sb.append("🕐 ").append(r.getCookTime()).append("   ");
-      if (r.getDifficulty() != null && !r.getDifficulty().isBlank())
-        sb.append(r.getDifficulty());
-      return sb.toString().trim();
+    private String buildMeta(Recipe recipe) {
+      StringBuilder result = new StringBuilder();
+
+      if (recipe.getCookTime() != null
+              && !recipe.getCookTime().isBlank()) {
+        result.append("🕐 ")
+                .append(recipe.getCookTime())
+                .append("    ");
+      }
+
+      if (recipe.getDifficulty() != null
+              && !recipe.getDifficulty().isBlank()) {
+        result.append(recipe.getDifficulty());
+      }
+
+      return result.toString().trim();
     }
   }
-
-  // Nav
 
   @FXML
   private void onNavPantry() {
@@ -371,7 +497,8 @@ public class RecipeSuggestionController {
 
   @FXML
   private void onNavRecipes() {
-    /* already here */ }
+    // Already on the Recipes screen.
+  }
 
   @FXML
   private void onNavShopping() {
@@ -390,16 +517,23 @@ public class RecipeSuggestionController {
 
   private void nav(Nav.Screen screen) {
     try {
-      Nav.go((Stage) findButton.getScene().getWindow(), screen);
-    } catch (Exception e) {
-      setStatus("Navigation error: " + e.getMessage(), false);
+      Nav.go(
+              (Stage) findButton.getScene().getWindow(),
+              screen);
+    } catch (Exception exception) {
+      setStatus(
+              "Navigation error: " + exception.getMessage(),
+              false);
     }
   }
 
   private void setStatus(String message, boolean ok) {
     Platform.runLater(() -> {
       statusLabel.setText(message);
-      statusLabel.setStyle(ok ? "-fx-text-fill: #2e7d32;" : "-fx-text-fill: #c62828;");
+      statusLabel.setStyle(
+              ok
+                      ? "-fx-text-fill: #2e7d32;"
+                      : "-fx-text-fill: #c62828;");
     });
   }
 }
