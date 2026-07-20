@@ -175,16 +175,16 @@
                   onMouseClicked="#onNavShopping"
                   style="-fx-cursor: hand;">
 
-                <Label text="⌑"
+                <Label text="☑"
                        alignment="CENTER"
-                       prefWidth="28"
-                       prefHeight="28"
+                       prefWidth="26"
+                       prefHeight="26"
                        style="-fx-font-size: 22px;
-                              -fx-text-fill: #A5A5A5;"/>
+                  -fx-text-fill: #A5A5A5;"/>
 
                 <Label text="Shopping"
                        style="-fx-font-size: 11px;
-                              -fx-text-fill: #777777;"/>
+                  -fx-text-fill: #777777;"/>
             </VBox>
 
             <VBox alignment="CENTER"
@@ -193,18 +193,18 @@
                   onMouseClicked="#onNavProfile"
                   style="-fx-cursor: hand;">
 
-                <Label text="♙"
+                <Label text="⚙"
                        alignment="CENTER"
                        prefWidth="28"
                        prefHeight="28"
-                       style="-fx-font-size: 25px;
-                              -fx-text-fill: #A5A5A5;"/>
+                       translateY="-2"
+                       style="-fx-font-size: 22px;
+                  -fx-text-fill: #A5A5A5;"/>
 
                 <Label text="Profile"
                        style="-fx-font-size: 11px;
-                              -fx-text-fill: #777777;"/>
+                  -fx-text-fill: #777777;"/>
             </VBox>
-
         </HBox>
     </bottom>
 
