@@ -1,26 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-
-<VBox xmlns:fx="http://javafx.com/fxml"
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.smartpantry.controllers.LoginController"
-      alignment="CENTER"
-      spacing="14"
-      prefWidth="400"
-      prefHeight="700">
-    <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
-    </padding>
-    <Label text="SmartPantry" style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
-    <TextField fx:id="emailField" promptText="Email" maxWidth="280"/>
-    <PasswordField fx:id="passwordField" promptText="Password" maxWidth="280"/>
+      alignment="TOP_CENTER" spacing="16" prefWidth="420" prefHeight="760">
+
+    <fx:define>
+        <ToggleGroup fx:id="authToggleGroup"/>
+    </fx:define>
+
+    <VBox alignment="CENTER" spacing="4" prefHeight="170" prefWidth="420"
+          style="-fx-background-color: #2f6b4f;">
+        <ImageView fitHeight="48" fitWidth="48" preserveRatio="true">
+            <image>
+                <Image url="@../images/logo.png"/>
+            </image>
+        </ImageView>
+        <Label text="SmartPantry"
+               style="-fx-text-fill: white; -fx-font-size: 26px; -fx-font-weight: bold;"/>
+        <Label text="Track, Scan, and Cook Smarter"
+               style="-fx-text-fill: white; -fx-font-style: italic; -fx-font-size: 13px;"/>
+    </VBox>
+
+    <HBox alignment="CENTER" maxWidth="300" prefHeight="44"
+          style="-fx-background-color: #e6e6e6; -fx-background-radius: 22;">
+        <ToggleButton fx:id="signInToggle" text="Sign In" selected="true"
+                      toggleGroup="$authToggleGroup" maxWidth="150" prefHeight="36"
+                      style="-fx-background-color: #2f6b4f; -fx-text-fill: white; -fx-background-radius: 18; -fx-padding: 6 20;"/>
+        <ToggleButton fx:id="createAccountToggle" text="Create Account"
+                      toggleGroup="$authToggleGroup" onAction="#onCreateAccountToggle" maxWidth="150" prefHeight="36"
+                      style="-fx-background-color: transparent; -fx-text-fill: #1a1a1a; -fx-background-radius: 18; -fx-padding: 6 20;"/>
+    </HBox>
+
+    <TextField fx:id="emailField" promptText="Email address" maxWidth="300"
+               style="-fx-background-radius: 22; -fx-border-radius: 22; -fx-border-color: #d0d0d0; -fx-padding: 10 16; -fx-font-style: italic;"/>
+    <PasswordField fx:id="passwordField" promptText="Password" maxWidth="300"
+                    style="-fx-background-radius: 22; -fx-border-radius: 22; -fx-border-color: #d0d0d0; -fx-padding: 10 16; -fx-font-style: italic;"/>
     <Label fx:id="statusLabel" text="" wrapText="true" maxWidth="280"/>
-    <Button fx:id="loginButton" text="Log In" onAction="#onLogin" maxWidth="280"/>
-    <Button fx:id="signUpButton" text="Create Account" onAction="#onSignUp" maxWidth="280"/>
+    <Button fx:id="loginButton" text="Sign In" onAction="#onLogin" prefWidth="300" prefHeight="44"
+            style="-fx-background-color: #2f6b4f; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 22;"/>
 </VBox>
