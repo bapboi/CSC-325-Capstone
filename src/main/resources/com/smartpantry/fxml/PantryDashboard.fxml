@@ -16,6 +16,7 @@
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.smartpantry.controllers.PantryDashboardController"
+            stylesheets="@styles.css"
             prefWidth="420"
             prefHeight="760"
             style="-fx-background-color: #FAFAF9;">
@@ -106,9 +107,12 @@
                         <padding>
                             <Insets top="2" right="2" bottom="18" left="2"/>
                         </padding>
+
                     </TilePane>
                 </content>
+
             </ScrollPane>
+
         </VBox>
     </center>
 
@@ -141,6 +145,7 @@
                        style="-fx-font-size: 11px;
                               -fx-font-weight: bold;
                               -fx-text-fill: #21634D;"/>
+
             </VBox>
 
             <VBox alignment="CENTER"
@@ -159,6 +164,7 @@
                 <Label text="Recipes"
                        style="-fx-font-size: 11px;
                               -fx-text-fill: #777777;"/>
+
             </VBox>
 
             <VBox alignment="CENTER"
@@ -174,7 +180,9 @@
                            style="-fx-font-size: 28px;
                                   -fx-font-weight: bold;
                                   -fx-text-fill: white;"/>
+
                 </StackPane>
+
             </VBox>
 
             <VBox alignment="CENTER"
@@ -193,6 +201,7 @@
                 <Label text="Shopping"
                        style="-fx-font-size: 11px;
                               -fx-text-fill: #777777;"/>
+
             </VBox>
 
             <VBox alignment="CENTER"
@@ -212,7 +221,9 @@
                 <Label text="Profile"
                        style="-fx-font-size: 11px;
                               -fx-text-fill: #777777;"/>
+
             </VBox>
+
         </HBox>
     </bottom>
 
