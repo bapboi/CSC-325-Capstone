@@ -14,18 +14,20 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -54,7 +56,6 @@ public class RecipeSuggestionController {
   private final GeminiRecipeService geminiService = new GeminiRecipeService();
   private final ObservableList<Recipe> recipes = FXCollections.observableArrayList();
 
-  // Kept so "load more" can tell Gemini what's already shown
   private List<String> currentPantryIngredients = List.of();
 
   @FXML
@@ -62,7 +63,7 @@ public class RecipeSuggestionController {
     progressIndicator.setVisible(false);
     loadMoreButton.setVisible(false);
     recipeListView.setItems(recipes);
-    recipeListView.setCellFactory(lv -> new RecipeCard(this::onFavoriteRecipe, this::onAddMissingToShopping));
+    recipeListView.setCellFactory(lv -> new RecipeCard());
 
     recipeListView.setOnMouseClicked(event -> {
       if (event.getClickCount() == 1) {
@@ -73,7 +74,7 @@ public class RecipeSuggestionController {
     });
   }
 
-  // ── Find recipes ──────────────────────────────────────────────────────────
+  // Find recipes 
 
   @FXML
   private void onFindRecipe() {
@@ -129,7 +130,7 @@ public class RecipeSuggestionController {
     new Thread(task, "gemini-recipe-search").start();
   }
 
-  // ── Load more ─────────────────────────────────────────────────────────────
+  //  Load more 
 
   @FXML
   private void onLoadMore() {
@@ -173,7 +174,7 @@ public class RecipeSuggestionController {
     setStatus("Cache cleared — next search will call Gemini fresh.", true);
   }
 
-  // ── Card actions ──────────────────────────────────────────────────────────
+  //  Card actions (kept for future use on Recipe Details screen)
 
   private void onFavoriteRecipe(Recipe recipe) {
     if (!firebaseService.isConnected()) {
@@ -237,72 +238,47 @@ public class RecipeSuggestionController {
     }
   }
 
-  // ── Recipe card cell ──────────────────────────────────────────────────────
+  //  Recipe card (matches Figma: image top, match badge, title, meta) ──
 
   private static class RecipeCard extends ListCell<Recipe> {
 
     private final ImageView thumbnail = new ImageView();
+    private final Label matchBadge = new Label();
     private final Label nameLabel = new Label();
     private final Label metaLabel = new Label();
-    private final Label descLabel = new Label();
-    private final Label matchLabel = new Label();
-    private final ProgressBar matchBar = new ProgressBar(0);
-    private final Button favouriteBtn = new Button("♡ Save");
-    private final Button missingBtn = new Button("+ Missing → List");
     private final VBox card;
 
-    private final Consumer<Recipe> onFavourite;
-    private final Consumer<Recipe> onAddMissing;
+    RecipeCard() {
+      thumbnail.setFitWidth(360);
+      thumbnail.setFitHeight(160);
+      thumbnail.setPreserveRatio(false);
 
-    RecipeCard(Consumer<Recipe> onFavourite, Consumer<Recipe> onAddMissing) {
-      this.onFavourite = onFavourite;
-      this.onAddMissing = onAddMissing;
+      matchBadge.setStyle(
+          "-fx-background-color: white;"
+              + "-fx-text-fill: #2f6b4f;"
+              + "-fx-font-size: 11px;"
+              + "-fx-font-weight: bold;"
+              + "-fx-background-radius: 12;"
+              + "-fx-padding: 4 10;");
 
-      thumbnail.setFitWidth(80);
-      thumbnail.setFitHeight(80);
-      thumbnail.setPreserveRatio(true);
+      StackPane imageStack = new StackPane(thumbnail, matchBadge);
+      StackPane.setAlignment(matchBadge, Pos.TOP_LEFT);
+      StackPane.setMargin(matchBadge, new Insets(10, 0, 0, 10));
 
-      nameLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
+      nameLabel.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;");
       nameLabel.setWrapText(true);
-      metaLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #666;");
-      descLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #444;");
-      descLabel.setWrapText(true);
-      matchLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #2f6b4f; -fx-font-weight: bold;");
-      matchBar.setPrefWidth(160);
-      matchBar.setStyle("-fx-accent: #2f6b4f;");
+      metaLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #666;");
 
-      favouriteBtn.setStyle("-fx-font-size: 10px;");
-      missingBtn.setStyle("-fx-font-size: 10px; -fx-text-fill: #c62828;");
+      VBox textCol = new VBox(4, nameLabel, metaLabel);
+      textCol.setStyle("-fx-padding: 12 14 14 14;");
+      VBox.setVgrow(textCol, Priority.NEVER);
 
-      favouriteBtn.setOnAction(e -> {
-        if (getItem() != null)
-          onFavourite.accept(getItem());
-        e.consume();
-      });
-      missingBtn.setOnAction(e -> {
-        if (getItem() != null)
-          onAddMissing.accept(getItem());
-        e.consume();
-      });
-
-      HBox matchRow = new HBox(8, matchBar, matchLabel);
-      matchRow.setAlignment(Pos.CENTER_LEFT);
-      HBox actionRow = new HBox(8, favouriteBtn, missingBtn);
-
-      VBox textCol = new VBox(4, nameLabel, metaLabel, descLabel, matchRow, actionRow);
-      HBox.setHgrow(textCol, Priority.ALWAYS);
-
-      HBox row = new HBox(12, thumbnail, textCol);
-      row.setAlignment(Pos.CENTER_LEFT);
-
-      card = new VBox(row);
+      card = new VBox(imageStack, textCol);
       card.setStyle(
           "-fx-background-color: white;"
-              + "-fx-border-color: #dde8e0;"
-              + "-fx-border-radius: 10;"
-              + "-fx-background-radius: 10;"
-              + "-fx-padding: 12;");
-      setStyle("-fx-padding: 5 10 5 10; -fx-cursor: hand;");
+              + "-fx-background-radius: 14;"
+              + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 6, 0, 0, 2);");
+      setStyle("-fx-padding: 6 10 6 10; -fx-cursor: hand;");
     }
 
     @Override
@@ -315,20 +291,10 @@ public class RecipeSuggestionController {
 
       nameLabel.setText(item.getName());
       metaLabel.setText(buildMeta(item));
-      descLabel.setText(item.getDescription() != null ? item.getDescription() : "");
 
       int pct = item.getPantryMatchPercent();
-      matchBar.setProgress(pct / 100.0);
-      matchLabel.setText(pct + "% pantry match");
+      matchBadge.setText(pct + "% match");
 
-      boolean hasMissing = item.getMissingIngredients() != null
-          && !item.getMissingIngredients().isEmpty();
-      missingBtn.setVisible(hasMissing);
-      missingBtn.setManaged(hasMissing);
-      if (hasMissing)
-        missingBtn.setText("+ " + item.getMissingIngredients().size() + " missing → List");
-
-      // Thumbnail: try stored imageUrl, fall back to og:image fetch
       thumbnail.setImage(null);
       final Recipe currentItem = item;
       String storedUrl = item.getImageUrl();
@@ -339,12 +305,17 @@ public class RecipeSuggestionController {
         fetchOgImage(item.getSourceLink(), currentItem);
       }
 
+      Rectangle clip = new Rectangle(360, 160);
+      clip.setArcWidth(28);
+      clip.setArcHeight(28);
+      thumbnail.setClip(clip);
+
       setGraphic(card);
     }
 
     private void tryLoadImage(String url, String fallbackPage, Recipe currentItem) {
       try {
-        Image img = new Image(url, 80, 80, true, true, true);
+        Image img = new Image(url, 360, 160, false, true, true);
         img.errorProperty().addListener((obs, old, err) -> {
           if (err)
             fetchOgImage(fallbackPage, currentItem);
@@ -363,11 +334,10 @@ public class RecipeSuggestionController {
         if (ogUrl == null)
           return;
         Platform.runLater(() -> {
-          // Guard against cell recycling
           if (getItem() != currentItem)
             return;
           try {
-            Image img = new Image(ogUrl, 80, 80, true, true, true);
+            Image img = new Image(ogUrl, 360, 160, false, true, true);
             thumbnail.setImage(img);
           } catch (Exception ignored) {
           }
@@ -379,20 +349,15 @@ public class RecipeSuggestionController {
 
     private String buildMeta(Recipe r) {
       StringBuilder sb = new StringBuilder();
-      if (r.getPrepTime() != null && !r.getPrepTime().isBlank())
-        sb.append("Prep ").append(r.getPrepTime()).append("  ·  ");
       if (r.getCookTime() != null && !r.getCookTime().isBlank())
-        sb.append("Cook ").append(r.getCookTime()).append("  ·  ");
+        sb.append("🕐 ").append(r.getCookTime()).append("   ");
       if (r.getDifficulty() != null && !r.getDifficulty().isBlank())
-        sb.append(r.getDifficulty()).append("  ·  ");
-      if (r.getServings() > 0)
-        sb.append(r.getServings()).append(" servings");
-      String s = sb.toString();
-      return s.endsWith("  ·  ") ? s.substring(0, s.length() - 5) : s;
+        sb.append(r.getDifficulty());
+      return sb.toString().trim();
     }
   }
 
-  // ── Nav (HEAD style — full bar) ───────────────────────────────────────────
+  // Nav
 
   @FXML
   private void onNavPantry() {
@@ -416,6 +381,11 @@ public class RecipeSuggestionController {
   @FXML
   private void onNavProfile() {
     nav(Nav.Screen.PROFILE);
+  }
+
+  @FXML
+  private void onNavSavedRecipes() {
+    nav(Nav.Screen.SAVED_RECIPES);
   }
 
   private void nav(Nav.Screen screen) {
