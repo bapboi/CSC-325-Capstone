@@ -68,3 +68,14 @@ webcam.
    ```bash
    mvn clean javafx:run
    ```
+
+5. **Credits:**
+   Sam DiPietro
+   Zeshan Asif
+   Ammar Ali
+   Jestyn Campos
+   Christopher Cardillo
+
+```
+
+```
