@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.smartpantry.controllers.CameraCaptureController"
+            prefWidth="420"
+            prefHeight="760"
+            style="-fx-background-color: #FAFAF7;">
+
+    <top>
+        <VBox prefHeight="100"
+              style="-fx-background-color: #21634D;">
+            <padding>
+                <Insets top="22" right="20" bottom="18" left="20"/>
+            </padding>
+
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Button text="←"
+                        onAction="#handleBack"
+                        prefWidth="38"
+                        prefHeight="38"
+                        style="-fx-background-color: #7EAE93;
+                               -fx-background-radius: 20;
+                               -fx-font-size: 22px;
+                               -fx-font-weight: bold;
+                               -fx-text-fill: white;
+                               -fx-cursor: hand;
+                               -fx-padding: 0;"/>
+
+                <VBox spacing="3">
+                    <Label text="Take a Photo"
+                           style="-fx-font-size: 21px;
+                                  -fx-font-weight: bold;
+                                  -fx-text-fill: white;"/>
+
+                    <Label text="Use your camera to identify an ingredient"
+                           style="-fx-font-size: 13px;
+                                  -fx-font-style: italic;
+                                  -fx-text-fill: #D8E7E0;"/>
+                </VBox>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true"
+                    hbarPolicy="NEVER"
+                    vbarPolicy="AS_NEEDED"
+                    style="-fx-background-color: transparent;
+                           -fx-background: transparent;
+                           -fx-border-color: transparent;">
+
+            <VBox spacing="16"
+                  style="-fx-background-color: #FAFAF7;">
+                <padding>
+                    <Insets top="14" right="20" bottom="24" left="20"/>
+                </padding>
+
+                <StackPane prefHeight="300"
+                           maxWidth="Infinity"
+                           style="-fx-background-color: #111111;
+                                  -fx-background-radius: 24;">
+
+                    <ImageView fx:id="previewImageView"
+                               fitWidth="380"
+                               fitHeight="300"
+                               preserveRatio="true"
+                               smooth="true"/>
+                </StackPane>
+
+                <Label fx:id="resultLabel"
+                       text=""
+                       wrapText="true"
+                       maxWidth="Infinity"
+                       style="-fx-font-size: 16px;
+                              -fx-font-weight: bold;
+                              -fx-text-fill: #222222;"/>
+
+                <HBox spacing="10" maxWidth="Infinity">
+                    <Button fx:id="captureButton"
+                            text="Capture Photo"
+                            onAction="#handleCapture"
+                            prefHeight="48"
+                            HBox.hgrow="ALWAYS"
+                            maxWidth="Infinity"
+                            style="-fx-background-color: #3E6C52;
+                                   -fx-background-radius: 25;
+                                   -fx-font-size: 15px;
+                                   -fx-font-weight: bold;
+                                   -fx-text-fill: white;
+                                   -fx-cursor: hand;"/>
+
+                    <Button fx:id="retakeButton"
+                            text="Retake"
+                            onAction="#handleRetake"
+                            prefHeight="48"
+                            prefWidth="105"
+                            style="-fx-background-color: white;
+                                   -fx-background-radius: 25;
+                                   -fx-border-color: #777777;
+                                   -fx-border-radius: 25;
+                                   -fx-font-size: 14px;
+                                   -fx-font-weight: bold;
+                                   -fx-text-fill: #111111;
+                                   -fx-cursor: hand;"/>
+
+                    <Button fx:id="useButton"
+                            text="Use Photo"
+                            onAction="#handleUsePhoto"
+                            prefHeight="48"
+                            HBox.hgrow="ALWAYS"
+                            maxWidth="Infinity"
+                            style="-fx-background-color: #3E6C52;
+                                   -fx-background-radius: 25;
+                                   -fx-font-size: 15px;
+                                   -fx-font-weight: bold;
+                                   -fx-text-fill: white;
+                                   -fx-cursor: hand;"/>
+                </HBox>
+
+                <Label fx:id="statusLabel"
+                       text=""
+                       wrapText="true"
+                       alignment="CENTER"
+                       maxWidth="Infinity"
+                       style="-fx-font-size: 12px;"/>
+
+                <VBox spacing="10"
+                      maxWidth="Infinity"
+                      style="-fx-background-color: white;
+                             -fx-background-radius: 28;
+                             -fx-border-color: #5E806D;
+                             -fx-border-radius: 28;
+                             -fx-border-width: 1;">
+                    <padding>
+                        <Insets top="18" right="18" bottom="18" left="18"/>
+                    </padding>
+
+                    <Label text="Ingredient Name"
+                           style="-fx-font-size: 12px;
+                                  -fx-font-weight: bold;
+                                  -fx-text-fill: #222222;"/>
+
+                    <TextField fx:id="detectedNameField"
+                               promptText="Detected ingredient"
+                               prefHeight="38"
+                               style="-fx-background-color: white;
+                                      -fx-border-color: #B5B5B5;
+                                      -fx-border-radius: 20;
+                                      -fx-background-radius: 20;
+                                      -fx-padding: 0 14 0 14;"/>
+
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="Quantity"
+                               style="-fx-font-size: 12px;
+                                      -fx-font-weight: bold;
+                                      -fx-text-fill: #222222;"/>
+
+                        <Region HBox.hgrow="ALWAYS"/>
+
+                        <TextField fx:id="detectedQuantityField"
+                                   promptText="1"
+                                   prefWidth="65"
+                                   prefHeight="32"
+                                   alignment="CENTER"
+                                   style="-fx-background-color: white;
+                                          -fx-border-color: #9C9C9C;
+                                          -fx-border-radius: 18;
+                                          -fx-background-radius: 18;
+                                          -fx-padding: 0 8 0 8;"/>
+
+                        <TextField fx:id="detectedUnitField"
+                                   promptText="unit"
+                                   prefWidth="85"
+                                   prefHeight="32"
+                                   alignment="CENTER"
+                                   style="-fx-background-color: white;
+                                          -fx-border-color: #9C9C9C;
+                                          -fx-border-radius: 18;
+                                          -fx-background-radius: 18;
+                                          -fx-padding: 0 8 0 8;"/>
+                    </HBox>
+
+                    <Region prefHeight="1"
+                            maxWidth="Infinity"
+                            style="-fx-background-color: #D3D3D3;"/>
+
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="Category"
+                               style="-fx-font-size: 12px;
+                                      -fx-font-weight: bold;
+                                      -fx-text-fill: #222222;"/>
+
+                        <Region HBox.hgrow="ALWAYS"/>
+
+                        <TextField fx:id="detectedCategoryField"
+                                   promptText="Category"
+                                   prefWidth="145"
+                                   prefHeight="32"
+                                   alignment="CENTER"
+                                   style="-fx-background-color: white;
+                                          -fx-border-color: #9C9C9C;
+                                          -fx-border-radius: 18;
+                                          -fx-background-radius: 18;
+                                          -fx-padding: 0 8 0 8;"/>
+                    </HBox>
+                </VBox>
+
+                <Button fx:id="addButton"
+                        text="Save to Pantry"
+                        onAction="#handleAddDetectedItem"
+                        prefHeight="48"
+                        maxWidth="Infinity"
+                        disable="true"
+                        style="-fx-background-color: #3E6C52;
+                               -fx-background-radius: 25;
+                               -fx-font-size: 15px;
+                               -fx-font-weight: bold;
+                               -fx-text-fill: white;
+                               -fx-cursor: hand;"/>
+            </VBox>
+        </ScrollPane>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER"
+              spacing="0"
+              prefHeight="72"
+              style="-fx-background-color: white;
+                     -fx-border-color: #E4E4E4;
+                     -fx-border-width: 1 0 0 0;">
+
+            <padding>
+                <Insets top="8" right="12" bottom="8" left="12"/>
+            </padding>
+
+            <VBox alignment="CENTER"
+                  spacing="3"
+                  prefWidth="76"
+                  onMouseClicked="#onNavPantry"
+                  style="-fx-cursor: hand;">
+
+                <Label text="⌂"
+                       alignment="CENTER"
+                       prefWidth="28"
+                       prefHeight="28"
+                       style="-fx-font-size: 22px;
+                              -fx-text-fill: #A5A5A5;"/>
+
+                <Label text="Pantry"
+                       style="-fx-font-size: 11px;
+              -fx-text-fill: #777777;"/>
+
+            </VBox>
+
+            <VBox alignment="CENTER"
+                  spacing="3"
+                  prefWidth="76"
+                  onMouseClicked="#onNavRecipes"
+                  style="-fx-cursor: hand;">
+
+                <Label text="▤"
+                       alignment="CENTER"
+                       prefWidth="28"
+                       prefHeight="28"
+                       style="-fx-font-size: 22px;
+                              -fx-text-fill: #A5A5A5;"/>
+
+                <Label text="Recipes"
+                       style="-fx-font-size: 11px;
+                              -fx-text-fill: #777777;"/>
+            </VBox>
+
+            <VBox alignment="CENTER"
+                  prefWidth="76">
+
+                <StackPane onMouseClicked="#onNavAdd"
+                           style="-fx-cursor: hand;">
+
+                    <Circle radius="24"
+                            style="-fx-fill: #21634D;"/>
+
+                    <Label text="+"
+                           style="-fx-font-size: 28px;
+                                  -fx-font-weight: bold;
+                                  -fx-text-fill: white;"/>
+                </StackPane>
+            </VBox>
+
+            <VBox alignment="CENTER"
+                  spacing="3"
+                  prefWidth="76"
+                  onMouseClicked="#onNavShopping"
+                  style="-fx-cursor: hand;">
+
+                <Label text="☑"
+                       alignment="CENTER"
+                       prefWidth="26"
+                       prefHeight="26"
+                       style="-fx-font-size: 22px;
+                              -fx-text-fill: #A5A5A5;"/>
+
+                <Label text="Shopping"
+                       style="-fx-font-size: 11px;
+                              -fx-text-fill: #777777;"/>
+            </VBox>
+
+            <VBox alignment="CENTER"
+                  spacing="3"
+                  prefWidth="76"
+                  onMouseClicked="#onNavProfile"
+                  style="-fx-cursor: hand;">
+
+                <Label text="⚙"
+                       alignment="CENTER"
+                       prefWidth="28"
+                       prefHeight="28"
+                       translateY="-2"
+                       style="-fx-font-size: 22px;
+                              -fx-text-fill: #A5A5A5;"/>
+
+                <Label text="Profile"
+                       style="-fx-font-size: 11px;
+                              -fx-text-fill: #777777;"/>
+            </VBox>
+        </HBox>
+    </bottom>
+
+</BorderPane>
