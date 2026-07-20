@@ -10,35 +10,19 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 
 public class LoginController {
 
-  @FXML
-  private TextField emailField;
-  @FXML
-  private PasswordField passwordField;
-  @FXML
-  private Label statusLabel;
-  @FXML
-  private Button loginButton;
-  @FXML
-  private Button signUpButton;
+  @FXML private TextField emailField;
+  @FXML private PasswordField passwordField;
+  @FXML private Label statusLabel;
+  @FXML private Button loginButton;
 
   private final AuthService authService = new AuthService();
 
   @FXML
   private void onLogin() {
-    attemptAuth(false);
-  }
-
-  @FXML
-  private void onSignUp() {
-    attemptAuth(true);
-  }
-
-  private void attemptAuth(boolean isSignUp) {
     String email = emailField.getText();
     String password = passwordField.getText();
 
@@ -48,15 +32,12 @@ public class LoginController {
     }
 
     loginButton.setDisable(true);
-    signUpButton.setDisable(true);
-    setStatus(isSignUp ? "Creating account..." : "Signing in...", true);
+    setStatus("Signing in...", true);
 
     Task<AuthService.AuthResult> task = new Task<>() {
       @Override
       protected AuthService.AuthResult call() throws Exception {
-        return isSignUp
-            ? authService.signUp(email, password)
-            : authService.signIn(email, password);
+        return authService.signIn(email, password);
       }
     };
 
@@ -68,17 +49,26 @@ public class LoginController {
           Nav.go((Stage) emailField.getScene().getWindow(), Nav.Screen.PANTRY);
         } catch (IOException ex) {
           setStatus("Failed to load main screen: " + ex.getMessage(), false);
+          loginButton.setDisable(false);
         }
       });
     });
 
     task.setOnFailed(e -> {
-      setStatus(task.getException().getMessage(), false);
+      setStatus("We couldn't sign you in. Please check your email and password and try again.", false);
       loginButton.setDisable(false);
-      signUpButton.setDisable(false);
     });
 
     new Thread(task, "auth-request").start();
+  }
+
+  @FXML
+  private void onCreateAccountToggle() {
+    try {
+      Nav.go((Stage) emailField.getScene().getWindow(), Nav.Screen.CREATE_ACCOUNT);
+    } catch (IOException e) {
+      setStatus("Failed to load screen: " + e.getMessage(), false);
+    }
   }
 
   private void setStatus(String message, boolean ok) {
