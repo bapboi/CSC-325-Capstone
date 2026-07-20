@@ -3,45 +3,217 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml"
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.smartpantry.controllers.PantryDashboardController"
-            stylesheets="@styles.css"
-            prefWidth="420" prefHeight="760">
+            prefWidth="420"
+            prefHeight="760"
+            style="-fx-background-color: #FAFAF9;">
+
     <top>
-        <VBox styleClass="header" spacing="4">
-            <Label fx:id="userLabel" text="Pantry" styleClass="header-title"/>
-            <Label fx:id="statusLabel" text="" styleClass="header-subtitle"/>
-            <Label fx:id="statsLabel" text="" styleClass="header-subtitle"/>
+        <VBox spacing="4"
+              prefHeight="118"
+              style="-fx-background-color: #21634D;
+                     -fx-background-radius: 0;">
+
+            <padding>
+                <Insets top="24" right="20" bottom="18" left="20"/>
+            </padding>
+
+            <VBox spacing="6">
+
+                <Label text="My Pantry"
+                       style="-fx-font-size: 28px;
+                              -fx-text-fill: white;"/>
+
+                <Label text="View and manage your ingredients"
+                       style="-fx-font-size: 12px;
+                              -fx-text-fill: white;"/>
+
+            </VBox>
         </VBox>
     </top>
+
     <center>
-        <VBox spacing="10">
-            <padding><Insets top="14" right="14" bottom="14" left="14"/></padding>
-            <HBox spacing="8">
-                <Button text="Refresh" onAction="#onRefresh"/>
-                <Button text="Delete Selected" onAction="#onDelete"/>
+        <VBox spacing="13">
+
+            <padding>
+                <Insets top="35" right="16" bottom="10" left="16"/>
+            </padding>
+
+            <TextField fx:id="searchField"
+                       promptText="Search ingredients..."
+                       prefHeight="38"
+                       style="-fx-background-color: white;
+                              -fx-background-radius: 20;
+                              -fx-border-color: #D9DDDA;
+                              -fx-border-radius: 20;
+                              -fx-padding: 0 16;
+                              -fx-font-size: 12px;"/>
+
+            <HBox alignment="CENTER_LEFT"
+                  spacing="8">
+
+                <Label fx:id="ingredientCountLabel"
+                       text="ALL INGREDIENTS (0)"
+                       style="-fx-font-size: 14px;
+                              -fx-font-weight: bold;
+                              -fx-text-fill: #D0D1D0;"/>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <Button text="Remove Selected Ingredient"
+                        onAction="#onDelete"
+                        style="-fx-background-color: transparent;
+                               -fx-text-fill: #8A2D2D;
+                               -fx-font-size: 11px;
+                               -fx-font-weight: bold;
+                               -fx-cursor: hand;"/>
             </HBox>
-            <ListView fx:id="pantryListView" VBox.vgrow="ALWAYS"/>
+
+            <Label fx:id="statusLabel"
+                   text=""
+                   wrapText="true"
+                   minHeight="14"
+                   style="-fx-font-size: 11px;
+                          -fx-text-fill: #4F6559;"/>
+
+            <ScrollPane VBox.vgrow="ALWAYS"
+                        fitToWidth="true"
+                        hbarPolicy="NEVER"
+                        style="-fx-background-color: transparent;
+                               -fx-background: transparent;
+                               -fx-border-color: transparent;">
+
+                <content>
+                    <TilePane fx:id="pantryTilePane"
+                              prefColumns="3"
+                              hgap="14"
+                              vgap="14"
+                              alignment="TOP_CENTER"
+                              tileAlignment="CENTER">
+
+                        <padding>
+                            <Insets top="2" right="2" bottom="18" left="2"/>
+                        </padding>
+                    </TilePane>
+                </content>
+            </ScrollPane>
         </VBox>
     </center>
+
     <bottom>
-        <HBox xmlns="http://javafx.com/javafx/21" styleClass="nav-bar" alignment="CENTER" spacing="30">
-            <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
-            <Label text="Pantry"   styleClass="nav-item" onMouseClicked="#onNavPantry"   style="-fx-cursor:hand;"/>
-            <Label text="Recipes"  styleClass="nav-item" onMouseClicked="#onNavRecipes"  style="-fx-cursor:hand;"/>
-            <StackPane onMouseClicked="#onNavAdd" style="-fx-cursor:hand;">
-                <Circle radius="22" styleClass="nav-add-circle"/>
-                <Label text="+" styleClass="nav-add-plus"/>
-            </StackPane>
-            <Label text="Shopping" styleClass="nav-item" onMouseClicked="#onNavShopping" style="-fx-cursor:hand;"/>
-            <Label text="Profile"  styleClass="nav-item" onMouseClicked="#onNavProfile"  style="-fx-cursor:hand;"/>
+        <HBox alignment="CENTER"
+              spacing="0"
+              prefHeight="72"
+              style="-fx-background-color: white;
+                     -fx-border-color: #E4E4E4;
+                     -fx-border-width: 1 0 0 0;">
+
+            <padding>
+                <Insets top="8" right="12" bottom="8" left="12"/>
+            </padding>
+
+            <VBox alignment="CENTER"
+                  spacing="3"
+                  prefWidth="76"
+                  onMouseClicked="#onNavPantry"
+                  style="-fx-cursor: hand;">
+
+                <Label text="⌂"
+                       alignment="CENTER"
+                       prefWidth="28"
+                       prefHeight="28"
+                       style="-fx-font-size: 22px;
+                              -fx-text-fill: #21634D;"/>
+
+                <Label text="Pantry"
+                       style="-fx-font-size: 11px;
+                              -fx-font-weight: bold;
+                              -fx-text-fill: #21634D;"/>
+            </VBox>
+
+            <VBox alignment="CENTER"
+                  spacing="3"
+                  prefWidth="76"
+                  onMouseClicked="#onNavRecipes"
+                  style="-fx-cursor: hand;">
+
+                <Label text="▤"
+                       alignment="CENTER"
+                       prefWidth="28"
+                       prefHeight="28"
+                       style="-fx-font-size: 22px;
+                              -fx-text-fill: #A5A5A5;"/>
+
+                <Label text="Recipes"
+                       style="-fx-font-size: 11px;
+                              -fx-text-fill: #777777;"/>
+            </VBox>
+
+            <VBox alignment="CENTER"
+                  prefWidth="76">
+
+                <StackPane onMouseClicked="#onNavAdd"
+                           style="-fx-cursor: hand;">
+
+                    <Circle radius="24"
+                            style="-fx-fill: #21634D;"/>
+
+                    <Label text="+"
+                           style="-fx-font-size: 28px;
+                                  -fx-font-weight: bold;
+                                  -fx-text-fill: white;"/>
+                </StackPane>
+            </VBox>
+
+            <VBox alignment="CENTER"
+                  spacing="3"
+                  prefWidth="76"
+                  onMouseClicked="#onNavShopping"
+                  style="-fx-cursor: hand;">
+
+                <Label text="☑"
+                       alignment="CENTER"
+                       prefWidth="26"
+                       prefHeight="26"
+                       style="-fx-font-size: 22px;
+                              -fx-text-fill: #A5A5A5;"/>
+
+                <Label text="Shopping"
+                       style="-fx-font-size: 11px;
+                              -fx-text-fill: #777777;"/>
+            </VBox>
+
+            <VBox alignment="CENTER"
+                  spacing="3"
+                  prefWidth="76"
+                  onMouseClicked="#onNavProfile"
+                  style="-fx-cursor: hand;">
+
+                <Label text="⚙"
+                       alignment="CENTER"
+                       prefWidth="28"
+                       prefHeight="28"
+                       translateY="-2"
+                       style="-fx-font-size: 22px;
+                              -fx-text-fill: #A5A5A5;"/>
+
+                <Label text="Profile"
+                       style="-fx-font-size: 11px;
+                              -fx-text-fill: #777777;"/>
+            </VBox>
         </HBox>
     </bottom>
+
 </BorderPane>
