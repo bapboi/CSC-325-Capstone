@@ -4,23 +4,208 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
 
-<VBox spacing="12" prefWidth="400" prefHeight="700"
-      style="-fx-background-color: #f5f7f3;"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.smartpantry.controllers.SavedRecipesController">
-    <padding>
-        <Insets top="25" right="20" bottom="25" left="20" />
-    </padding>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.smartpantry.controllers.SavedRecipesController"
+            prefWidth="420"
+            prefHeight="760"
+            style="-fx-background-color: #F6F7F5;">
 
-    <Label text="Saved Recipes" style="-fx-font-size: 26px; -fx-font-weight: bold;" />
-    <ListView fx:id="savedRecipeListView" prefHeight="500" />
+    <top>
+        <VBox alignment="CENTER_LEFT"
+              prefHeight="125"
+              style="-fx-background-color: #2F6B4F;">
 
-    <HBox spacing="8">
-        <Button text="View" onAction="#handleViewDetails" prefWidth="105" />
-        <Button text="Remove" onAction="#handleRemoveSavedRecipe" prefWidth="105" />
-        <Button text="Back" onAction="#handleBackToPantry" prefWidth="105" />
-    </HBox>
-</VBox>
+            <padding>
+                <Insets top="30" right="24" bottom="25" left="24"/>
+            </padding>
+
+            <Label text="Saved Recipes"
+                   style="-fx-text-fill: white;
+                          -fx-font-size: 28px;
+                          -fx-font-weight: bold;"/>
+
+            <Label text="View and manage your favorite recipes"
+                   style="-fx-text-fill: #E3EEE8;
+                          -fx-font-size: 13px;"/>
+        </VBox>
+    </top>
+
+    <center>
+        <VBox spacing="14">
+
+            <padding>
+                <Insets top="20" right="22" bottom="16" left="22"/>
+            </padding>
+
+            <HBox alignment="CENTER_LEFT">
+
+                <Label text="Your Recipes"
+                       style="-fx-font-size: 17px;
+                              -fx-font-weight: bold;
+                              -fx-text-fill: #26352D;"/>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <Button text="Refresh"
+                        onAction="#onRefresh"
+                        style="-fx-background-color: transparent;
+                               -fx-text-fill: #2F6B4F;
+                               -fx-font-weight: bold;
+                               -fx-cursor: hand;"/>
+            </HBox>
+
+            <Label fx:id="statusLabel"
+                   text="Loading saved recipes..."
+                   wrapText="true"
+                   style="-fx-font-size: 12px;
+                          -fx-text-fill: #66736C;"/>
+
+            <ListView fx:id="savedRecipeListView"
+                      VBox.vgrow="ALWAYS"
+                      style="-fx-background-color: white;
+                 -fx-background-radius: 14;
+                 -fx-border-color: #D8DDD9;
+                 -fx-border-radius: 14;
+                 -fx-padding: 6;"/>
+
+            <HBox spacing="10"
+                  alignment="CENTER">
+
+                <Button text="View Details"
+                        onAction="#handleViewDetails"
+                        prefWidth="175"
+                        prefHeight="42"
+                        style="-fx-background-color: #2F6B4F;
+                               -fx-text-fill: white;
+                               -fx-font-weight: bold;
+                               -fx-background-radius: 20;
+                               -fx-cursor: hand;"/>
+
+                <Button text="Remove Recipe"
+                        onAction="#handleRemoveSavedRecipe"
+                        prefWidth="175"
+                        prefHeight="42"
+                        style="-fx-background-color: #E9EFEB;
+                               -fx-text-fill: #8A2D2D;
+                               -fx-font-weight: bold;
+                               -fx-background-radius: 20;
+                               -fx-border-color: #CFAFAF;
+                               -fx-border-radius: 20;
+                               -fx-cursor: hand;"/>
+            </HBox>
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER"
+              spacing="0"
+              prefHeight="72"
+              style="-fx-background-color: white;
+                     -fx-border-color: #E4E4E4;
+                     -fx-border-width: 1 0 0 0;">
+
+            <padding>
+                <Insets top="8" right="12" bottom="8" left="12"/>
+            </padding>
+
+            <VBox alignment="CENTER"
+                  spacing="3"
+                  prefWidth="76"
+                  onMouseClicked="#onNavPantry"
+                  style="-fx-cursor: hand;">
+
+                <Label text="⌂"
+                       alignment="CENTER"
+                       prefWidth="28"
+                       prefHeight="28"
+                       style="-fx-font-size: 22px;
+                              -fx-text-fill: #A5A5A5;"/>
+
+                <Label text="Pantry"
+                       style="-fx-font-size: 11px;
+                              -fx-text-fill: #777777;"/>
+            </VBox>
+
+            <VBox alignment="CENTER"
+                  spacing="3"
+                  prefWidth="76"
+                  onMouseClicked="#onNavRecipes"
+                  style="-fx-cursor: hand;">
+
+                <Label text="▤"
+                       alignment="CENTER"
+                       prefWidth="28"
+                       prefHeight="28"
+                       style="-fx-font-size: 22px;
+                              -fx-text-fill: #21634D;"/>
+
+                <Label text="Recipes"
+                       style="-fx-font-size: 11px;
+                              -fx-font-weight: bold;
+                              -fx-text-fill: #21634D;"/>
+            </VBox>
+
+            <VBox alignment="CENTER"
+                  prefWidth="76">
+
+                <StackPane onMouseClicked="#onNavAdd"
+                           style="-fx-cursor: hand;">
+
+                    <Circle radius="24"
+                            style="-fx-fill: #21634D;"/>
+
+                    <Label text="+"
+                           style="-fx-font-size: 28px;
+                                  -fx-font-weight: bold;
+                                  -fx-text-fill: white;"/>
+                </StackPane>
+            </VBox>
+
+            <VBox alignment="CENTER"
+                  spacing="3"
+                  prefWidth="76"
+                  onMouseClicked="#onNavShopping"
+                  style="-fx-cursor: hand;">
+
+                <Label text="⌑"
+                       alignment="CENTER"
+                       prefWidth="28"
+                       prefHeight="28"
+                       style="-fx-font-size: 22px;
+                              -fx-text-fill: #A5A5A5;"/>
+
+                <Label text="Shopping"
+                       style="-fx-font-size: 11px;
+                              -fx-text-fill: #777777;"/>
+            </VBox>
+
+            <VBox alignment="CENTER"
+                  spacing="3"
+                  prefWidth="76"
+                  onMouseClicked="#onNavProfile"
+                  style="-fx-cursor: hand;">
+
+                <Label text="♙"
+                       alignment="CENTER"
+                       prefWidth="28"
+                       prefHeight="28"
+                       style="-fx-font-size: 25px;
+                              -fx-text-fill: #A5A5A5;"/>
+
+                <Label text="Profile"
+                       style="-fx-font-size: 11px;
+                              -fx-text-fill: #777777;"/>
+            </VBox>
+
+        </HBox>
+    </bottom>
+
+</BorderPane>
