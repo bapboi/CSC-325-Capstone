@@ -258,7 +258,7 @@
 
     <bottom>
         <HBox alignment="CENTER"
-              spacing="24"
+              spacing="0"
               prefHeight="72"
               style="-fx-background-color: white;
                      -fx-border-color: #E4E4E4;
@@ -270,24 +270,33 @@
 
             <VBox alignment="CENTER"
                   spacing="3"
+                  prefWidth="76"
                   onMouseClicked="#onNavPantry"
                   style="-fx-cursor: hand;">
 
                 <Label text="⌂"
+                       alignment="CENTER"
+                       prefWidth="28"
+                       prefHeight="28"
                        style="-fx-font-size: 22px;
                               -fx-text-fill: #A5A5A5;"/>
 
                 <Label text="Pantry"
                        style="-fx-font-size: 11px;
-                              -fx-text-fill: #777777;"/>
+              -fx-text-fill: #777777;"/>
+
             </VBox>
 
             <VBox alignment="CENTER"
                   spacing="3"
+                  prefWidth="76"
                   onMouseClicked="#onNavRecipes"
                   style="-fx-cursor: hand;">
 
                 <Label text="▤"
+                       alignment="CENTER"
+                       prefWidth="28"
+                       prefHeight="28"
                        style="-fx-font-size: 22px;
                               -fx-text-fill: #A5A5A5;"/>
 
@@ -296,25 +305,34 @@
                               -fx-text-fill: #777777;"/>
             </VBox>
 
-            <StackPane onMouseClicked="#onNavAdd"
-                       style="-fx-cursor: hand;">
+            <VBox alignment="CENTER"
+                  prefWidth="76">
 
-                <Circle radius="24"
-                        style="-fx-fill: #21634D;"/>
+                <StackPane onMouseClicked="#onNavAdd"
+                           style="-fx-cursor: hand;">
 
-                <Label text="+"
-                       style="-fx-font-size: 28px;
-                              -fx-font-weight: bold;
-                              -fx-text-fill: white;"/>
-            </StackPane>
+                    <Circle radius="24"
+                            style="-fx-fill: #21634D;"/>
+
+                    <Label text="+"
+                           style="-fx-font-size: 28px;
+                                  -fx-font-weight: bold;
+                                  -fx-text-fill: white;"/>
+                </StackPane>
+            </VBox>
 
             <VBox alignment="CENTER"
                   spacing="3"
+                  prefWidth="76"
                   onMouseClicked="#onNavShopping"
                   style="-fx-cursor: hand;">
 
-                <Label text="🛒"
-                       style="-fx-font-size: 18px;"/>
+                <Label text="☑"
+                       alignment="CENTER"
+                       prefWidth="26"
+                       prefHeight="26"
+                       style="-fx-font-size: 22px;
+                              -fx-text-fill: #A5A5A5;"/>
 
                 <Label text="Shopping"
                        style="-fx-font-size: 11px;
@@ -323,18 +341,22 @@
 
             <VBox alignment="CENTER"
                   spacing="3"
+                  prefWidth="76"
                   onMouseClicked="#onNavProfile"
                   style="-fx-cursor: hand;">
 
-                <Label text="♙"
-                       style="-fx-font-size: 21px;
+                <Label text="⚙"
+                       alignment="CENTER"
+                       prefWidth="28"
+                       prefHeight="28"
+                       translateY="-2"
+                       style="-fx-font-size: 22px;
                               -fx-text-fill: #A5A5A5;"/>
 
                 <Label text="Profile"
                        style="-fx-font-size: 11px;
                               -fx-text-fill: #777777;"/>
             </VBox>
-
         </HBox>
     </bottom>
 
