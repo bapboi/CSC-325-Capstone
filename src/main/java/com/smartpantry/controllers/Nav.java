@@ -20,6 +20,7 @@ public class Nav {
         SHOPPING       ("/com/smartpantry/fxml/ShoppingList.fxml",    420, 760),
         PROFILE        ("/com/smartpantry/fxml/Profile.fxml",         420, 760),
         AI_DETECTION   ("/com/smartpantry/fxml/AIDetection.fxml",     420, 760),
+        CAMERA_CAPTURE ("/com/smartpantry/fxml/CameraCapture.fxml",   420, 760),
         SETTINGS       ("/com/smartpantry/fxml/settings.fxml",        420, 760);
 
         final String fxml;
