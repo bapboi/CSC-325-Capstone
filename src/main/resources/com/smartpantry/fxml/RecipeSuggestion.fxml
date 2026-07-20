@@ -8,8 +8,8 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 
 <BorderPane xmlns="http://javafx.com/javafx/21"
@@ -17,22 +17,42 @@
             fx:controller="com.smartpantry.controllers.RecipeSuggestionController"
             prefWidth="420"
             prefHeight="760"
-            style="-fx-background-color: #f5f7f3;">
+            style="-fx-background-color: #F6F7F5;">
 
     <top>
-        <VBox style="-fx-background-color: #2f6b4f;" spacing="4">
-            <padding><Insets top="24" right="20" bottom="16" left="20"/></padding>
+        <VBox prefHeight="104"
+              spacing="4"
+              style="-fx-background-color: #2F6B4F;">
+
+            <padding>
+                <Insets top="18" right="20" bottom="14" left="20"/>
+            </padding>
+
             <HBox alignment="CENTER_LEFT">
-                <VBox spacing="4">
+                <VBox spacing="3">
                     <Label text="Recipes"
-                           style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                           style="-fx-font-size: 27px;
+                                  -fx-font-weight: bold;
+                                  -fx-text-fill: white;"/>
+
                     <Label text="Based on your pantry"
-                           style="-fx-font-size: 13px; -fx-font-style: italic; -fx-text-fill: #c8ddd0;"/>
+                           style="-fx-font-size: 13px;
+                                  -fx-font-style: italic;
+                                  -fx-text-fill: #D5E6DC;"/>
                 </VBox>
+
                 <Region HBox.hgrow="ALWAYS"/>
-                <StackPane onMouseClicked="#onNavSavedRecipes" style="-fx-cursor: hand;">
-                    <Circle radius="20" style="-fx-fill: rgba(255,255,255,0.15);"/>
-                    <Label text="♡" style="-fx-font-size: 20px; -fx-text-fill: white;"/>
+
+                <StackPane onMouseClicked="#onNavSavedRecipes"
+                           style="-fx-cursor: hand;">
+                    <Circle radius="21"
+                            style="-fx-fill: rgba(255,255,255,0.18);
+                                   -fx-stroke: rgba(255,255,255,0.50);
+                                   -fx-stroke-width: 1;"/>
+                    <Label text="♡"
+                           translateY="-1"
+                           style="-fx-font-size: 22px;
+                                  -fx-text-fill: white;"/>
                 </StackPane>
             </HBox>
         </VBox>
@@ -40,30 +60,75 @@
 
     <center>
         <VBox spacing="8">
-            <padding><Insets top="12" right="14" bottom="8" left="14"/></padding>
+            <padding>
+                <Insets top="8" right="10" bottom="8" left="10"/>
+            </padding>
 
-            <HBox spacing="8" alignment="CENTER_LEFT">
-                <Button fx:id="findButton" text="Find Recipes"
+            <HBox alignment="CENTER_LEFT"
+                  spacing="8">
+
+                <Button fx:id="findButton"
+                        text="Find Recipes"
                         onAction="#onFindRecipe"
-                        style="-fx-background-color: #2f6b4f; -fx-text-fill: white; -fx-font-weight: bold;"/>
-                <Button fx:id="clearCacheButton" text="Clear Cache"
+                        prefHeight="36"
+                        style="-fx-background-color: #2F6B4F;
+                               -fx-background-radius: 18;
+                               -fx-text-fill: white;
+                               -fx-font-size: 12px;
+                               -fx-font-weight: bold;
+                               -fx-padding: 0 18;
+                               -fx-cursor: hand;"/>
+
+                <Button fx:id="clearCacheButton"
+                        text="Clear Cache"
                         onAction="#onClearCache"
-                        style="-fx-font-size: 11px;"/>
-                <ProgressIndicator fx:id="progressIndicator" maxWidth="22" maxHeight="22"/>
+                        visible="false"
+                        managed="false"/>
+
+                <ProgressIndicator fx:id="progressIndicator"
+                                   maxWidth="22"
+                                   maxHeight="22"
+                                   prefWidth="22"
+                                   prefHeight="22"/>
+
                 <Region HBox.hgrow="ALWAYS"/>
-                <Label fx:id="cacheLabel" text=""
-                       style="-fx-font-size: 11px; -fx-text-fill: #999; -fx-font-style: italic;"/>
+
+                <Label fx:id="cacheLabel"
+                       text=""
+                       style="-fx-font-size: 10px;
+                              -fx-text-fill: #7D8982;
+                              -fx-font-style: italic;"/>
             </HBox>
 
-            <Label fx:id="statusLabel" text="" wrapText="true"/>
+            <Label fx:id="statusLabel"
+                   text=""
+                   wrapText="true"
+                   minHeight="16"
+                   maxWidth="Infinity"
+                   style="-fx-font-size: 11px;
+                          -fx-text-fill: #66736C;
+                          -fx-padding: 0 2 0 2;"/>
 
-            <ListView fx:id="recipeListView" VBox.vgrow="ALWAYS"
-                      style="-fx-background-color: transparent; -fx-border-color: transparent;"/>
+            <ListView fx:id="recipeListView"
+                      VBox.vgrow="ALWAYS"
+                      style="-fx-background-color: transparent;
+                             -fx-background: transparent;
+                             -fx-border-color: transparent;
+                             -fx-padding: 0;"/>
 
-            <Button fx:id="loadMoreButton" text="Load 5 More Recipes"
+            <Button fx:id="loadMoreButton"
+                    text="Load 5 More Recipes"
                     onAction="#onLoadMore"
                     maxWidth="Infinity"
-                    style="-fx-background-color: #e8f0ea; -fx-text-fill: #2f6b4f; -fx-font-weight: bold;"/>
+                    prefHeight="38"
+                    style="-fx-background-color: #E7F0EA;
+                           -fx-background-radius: 19;
+                           -fx-border-color: #D4E1D8;
+                           -fx-border-radius: 19;
+                           -fx-text-fill: #2F6B4F;
+                           -fx-font-size: 12px;
+                           -fx-font-weight: bold;
+                           -fx-cursor: hand;"/>
         </VBox>
     </center>
 
