@@ -11,6 +11,7 @@ public class Nav {
 
     public enum Screen {
         LOGIN          ("/com/smartpantry/fxml/Login.fxml",           420, 760),
+        CREATE_ACCOUNT ("/com/smartpantry/fxml/CreateAccount.fxml",   420, 760),
         PANTRY         ("/com/smartpantry/fxml/PantryDashboard.fxml", 420, 760),
         ADD            ("/com/smartpantry/fxml/AddIngredient.fxml",   420, 760),
         RECIPES        ("/com/smartpantry/fxml/RecipeSuggestion.fxml",420, 760),
