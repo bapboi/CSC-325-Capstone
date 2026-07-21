@@ -45,6 +45,26 @@
             <artifactId>opencv</artifactId>
             <version>4.9.0-0</version>
         </dependency>
+        <!--
+          TwelveMonkeys — adds WebP/AVIF decoding to javax.imageio.ImageIO.
+          JavaFX 21's own Image class cannot decode WebP or AVIF at all, and a
+          large share of recipe sites serve thumbnails in one of those formats
+          by default. OgImageFetcher detects this (via Content-Type and magic
+          bytes) and converts to JPEG using ImageIO.read()/write() — these
+          dependencies just need to be on the classpath; they register
+          themselves with ImageIO automatically via SPI, no code references
+          com.twelvemonkeys.* directly.
+        -->
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-webp</artifactId>
+            <version>3.11.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.twelvemonkeys.imageio</groupId>
+            <artifactId>imageio-jpeg</artifactId>
+            <version>3.11.0</version>
+        </dependency>
     </dependencies>
 
     <build>
